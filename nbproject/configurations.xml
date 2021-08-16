@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Arquivos de Cabeçalho"
+                   projectFiles="true">
+      <itemPath>data_structures.h</itemPath>
+      <itemPath>data_structures_modcarga.h</itemPath>
+      <itemPath>funcoesCalculoEletrico.h</itemPath>
+      <itemPath>funcoesFluxoVarredura.h</itemPath>
+      <itemPath>funcoesLeitura.h</itemPath>
+      <itemPath>funcoesMatematicas.h</itemPath>
+      <itemPath>funcoesModCarga.h</itemPath>
+      <itemPath>funcoesTopologia.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Arquivos de Código-Fonte"
+                   projectFiles="true">
+      <itemPath>funcoesCalculoEletrico.c</itemPath>
+      <itemPath>funcoesFluxoVarredura.c</itemPath>
+      <itemPath>funcoesLeitura.c</itemPath>
+      <itemPath>funcoesMatematicas.c</itemPath>
+      <itemPath>funcoesModCarga.c</itemPath>
+      <itemPath>funcoesTopologia.c</itemPath>
+      <itemPath>main.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Arquivos de Recurso"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Arquivos de Teste"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Arquivos Importantes"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <commandLine>-fopenmp</commandLine>
+        </cTool>
+      </compileType>
+      <item path="data_structures.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data_structures_modcarga.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesCalculoEletrico.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesCalculoEletrico.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesFluxoVarredura.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesFluxoVarredura.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesLeitura.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesLeitura.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesMatematicas.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesMatematicas.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesModCarga.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesModCarga.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesTopologia.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesTopologia.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="data_structures.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="data_structures_modcarga.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesCalculoEletrico.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesCalculoEletrico.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesFluxoVarredura.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesFluxoVarredura.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesLeitura.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesLeitura.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesMatematicas.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesMatematicas.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesModCarga.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesModCarga.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="funcoesTopologia.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="funcoesTopologia.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
