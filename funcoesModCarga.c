@@ -9,6 +9,7 @@
 #include "data_structures.h"
 #include "data_structures_modcarga.h"
 #include "funcoesLeitura.h"
+#include "funcoesTopologia.h"
 #include "funcoesModCarga.h"
 
 
@@ -760,132 +761,96 @@ void imprimeCurvasAgregadas(CURVA_TRAFO *curvasTrafos, long int numeroBarrasPara
 
 
 
-//--------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Busca AMs adjacentes e Elenca os nós da AM
-void buscaAM(GRAFO * grafo, AREA_MEDICAO *areasAM, long int idNoRaiz, int alim, BOOL * visitado) {
+void buscaAM(long int idNo, int idAM,  BOOL *visitado, GRAFO * grafo, AREA_MEDICAO *areasAM, int fase){
+    //Depth-Search Algorithm - busca no e a sua profundidade (gera RNP))
+    long int barraAdj,i = 0, idAM_jus;
+    int nmed;
     
-    long int i, barraAdj, idNo,idNoAM,idAM;    
-    FILABARRAS * filaTrecho = NULL;
-    FILABARRAS * filaAM = NULL;
-    
-    adicionaNoNaFila(&filaTrecho, idNoRaiz);
-    while(filaNaoVazia(filaTrecho)){
-        idNo = retiraNoDaFila(&filaTrecho);
-        GRAFO * no = &grafo[idNo];
-        
-        if (barraMedClasseA(grafo[idNo])){
-            idAM = grafo[barraAdj].idAM;
-            areasAM[idAM].idAlim = alim; 
-            areasAM[idAM].medidor->k = idNo;
-            areasAM[idAM].descarte = 0;
-        }
-        
-        for(i = 0; i<no->numeroAdjacentes; i++){
-            barraAdj = no->adjacentes[i].idNo;
-            //------------------------------------------------------------------
-            //
-            //PERCORRE O ALIMENTADOR ATÉ ENCONTRAR UM MEDIDOR
-            //
-            if(ramoLigado(no->adjacentes[i])){ 
-                if (!visitado[barraAdj]){
-                    if(!ligadoPorMedidor(no->adjacentes[i])){
-                        adicionaNoNaFila(&filaTrecho, barraAdj);
-                    }
-                    else if(ligadoPorMedidor(no->adjacentes[i])){ 
-                        //------------------------------------------------------------------
-                        //
-                        //PERCORRE O ALIMENTADOR ATÉ MONTAR A AM E OS ADJACENTES
-                        //
-                        visitado[no->idNo] = true;
-                        idAM = no->adjacentes[i].idAM;
-                        areasAM[idAM].idAlim = alim;            
-                        areasAM[idAM].medidor->k = idNo;
-                        areasAM[idAM].medidor->m = barraAdj;
-                        areasAM[idAM].descarte = 0; 
-                        if (barraMedClasseA(grafo[barraAdj])){
-                            adicionaNoNaFila(&filaAM, barraAdj);
+    visitado[idNo] = true;
+    GRAFO * no = &grafo[idNo];
+    for(i = 0; i < no->numeroAdjacentes; i++)
+    {   
+        barraAdj = no->adjacentes[i].idNo;
+        //Se ramo ligado e ainda não visitado na sequencia
+        if ((ramoLigado(no->adjacentes[i]) == true) && (visitado[barraAdj]== false)) {
+            //------------------------------------------------------------------------
+            // Novo medidor em ramo -> Atualiza a idAM
+            if(ligadoPorMedidor(no->adjacentes[i])){ 
+                if (idAM != -1){ // Tem um medidor a jusante
+                    for (nmed = 0; nmed < no->adjacentes[i].nmed; nmed++){
+                        if (((no->adjacentes[i].medidores[nmed]->tipo == 0) || (no->adjacentes[i].medidores[nmed]->tipo == 6)) && (no->adjacentes[i].medidores[nmed]->fases == fase)){ //Testa se é medidor de potência ou magnitude de corrente na fase especificada
+                            idAM_jus = no->adjacentes[i].medidores[nmed]->idArea;
                             areasAM[idAM].numeroAdj++;
-                            if(areasAM[idAM].numeroAdj > 5)
-                                    areasAM[idAM].med_adjacentes = (long int *) realloc (areasAM[idAM].med_adjacentes,areasAM[idAM].numeroAdj*sizeof(long int));
-                            areasAM[idAM].med_adjacentes[areasAM[idAM].numeroAdj-1] = grafo[barraAdj].idAM;
+                            areasAM[idAM].med_adjacentes = (long int *) realloc (areasAM[idAM].med_adjacentes,areasAM[idAM].numeroAdj*sizeof(long int));
+                            areasAM[idAM].med_adjacentes[areasAM[idAM].numeroAdj-1] = idAM_jus;   
+                            break;
                         }
-                        else{
-                            adicionaNoNaFila(&filaAM, barraAdj);
-                            if (grafo[barraAdj].tipoNo == 1){
-                                areasAM[idAM].numeroNosAM++;
-                                if(areasAM[idAM].numeroNosAM > 5)
-                                    areasAM[idAM].nos = (long int*) realloc (areasAM[idAM].nos,areasAM[idAM].numeroNosAM*sizeof(long int));
-                                areasAM[idAM].nos[areasAM[idAM].numeroNosAM-1] = barraAdj;
-                            }
+                    }
+                    idAM = idAM_jus; //Atualiza a AM para a recursão
+                    areasAM[idAM].descarte = 0;
+                }
+                else{ //Primeiro medidor encontrado
+                    for (nmed = 0; nmed < no->adjacentes[i].nmed; nmed++){
+                        if (((no->adjacentes[i].medidores[nmed]->tipo == 0) || (no->adjacentes[i].medidores[nmed]->tipo == 6)) && (no->adjacentes[i].medidores[nmed]->fases == fase)){ //Testa se é medidor de potência ou magnitude de corrente na fase especificada
+                            idAM = no->adjacentes[i].medidores[nmed]->idArea; //Atualiza a AM para a recursão
+                            areasAM[idAM].descarte = 0;
+                            break;
                         }
-                        
-                        while(filaNaoVazia(filaAM)){
-                            idNoAM = retiraNoDaFila(&filaAM);
-                            GRAFO * noAM = &grafo[idNoAM];
-                            for(i = 0; i<noAM->numeroAdjacentes; i++){
-                                barraAdj = noAM->adjacentes[i].idNo;
-                                if(ramoLigado(noAM->adjacentes[i])){
-                                    if (!visitado[barraAdj]){
-                                        if(!ligadoPorMedidor(noAM->adjacentes[i]) && !barraMedClasseA(grafo[noAM->adjacentes[i].idNo])){
-                                            adicionaNoNaFila(&filaAM, barraAdj);
-                                            if(grafo[barraAdj].tipoNo == 1){
-                                                areasAM[idAM].numeroNosAM++;
-                                                if(areasAM[idAM].numeroNosAM > 5)
-                                                        areasAM[idAM].nos = (long int*) realloc (areasAM[idAM].nos,areasAM[idAM].numeroNosAM*sizeof(long int));
-                                                areasAM[idAM].nos[areasAM[idAM].numeroNosAM-1] = barraAdj;
-                                            }
-                                        }
-                                        else{
-                                            if(ligadoPorMedidor(noAM->adjacentes[i])){
-                                                adicionaNoNaFila(&filaTrecho, idNoAM);
-                                                areasAM[idAM].numeroAdj++;
-                                                if(areasAM[idAM].numeroAdj > 5)
-                                                    areasAM[idAM].med_adjacentes = (long int *) realloc (areasAM[idAM].med_adjacentes,areasAM[idAM].numeroAdj*sizeof(long int));
-                                                areasAM[idAM].med_adjacentes[areasAM[idAM].numeroAdj-1] = noAM->adjacentes[i].idAM;
-                                            }
-                                            else if (barraMedClasseA(grafo[noAM->adjacentes[i].idNo])){
-                                                adicionaNoNaFila(&filaAM, barraAdj);
-                                                areasAM[idAM].numeroAdj++;
-                                                if(areasAM[idAM].numeroAdj > 5)
-                                                    areasAM[idAM].med_adjacentes = (long int *) realloc (areasAM[idAM].med_adjacentes,areasAM[idAM].numeroAdj*sizeof(long int));
-                                                areasAM[idAM].med_adjacentes[areasAM[idAM].numeroAdj-1] = grafo[barraAdj].idAM;
-                                            }
-
-                                        }
-                                    }
-                                }
-                            }
-                        visitado[noAM->idNo] = true;
-                        }// fim da fila de montagem da AM
-
                     }
                 }
+                
             }
-        }        
-        visitado[no->idNo] = true;
-    }    
+            //------------------------------------------------------------------------
+            // Sem medidor no ramo -> Inlcui nó na idAM
+            else{ 
+                if ((barraMedClasseA(grafo[barraAdj])==true) && (idAM != -1)){ //Medidor Classe A a jusante, inclui ele na lista de AMs adjacentes para descontar valor medido
+                    for (nmed = 0; nmed < grafo[barraAdj].nmed; nmed++){
+                        if ((grafo[barraAdj].medidores[nmed]->tipo == 2) && (grafo[barraAdj].medidores[nmed]->fases == fase)){ //Testa se é medidor de potência na fase especificada
+                            idAM_jus = grafo[barraAdj].medidores[nmed]->idArea;
+                            areasAM[idAM].numeroAdj++;
+                            areasAM[idAM].med_adjacentes = (long int *) realloc (areasAM[idAM].med_adjacentes,areasAM[idAM].numeroAdj*sizeof(long int));
+                            areasAM[idAM].med_adjacentes[areasAM[idAM].numeroAdj-1] = idAM_jus;   
+                            break;
+                        }
+                    }
+                }
+                else if((grafo[barraAdj].tipoNo == 1) && (idAM != -1)){ // Barra com carga - incui na lista de barras 
+                    areasAM[idAM].numeroNosAM++;
+                    areasAM[idAM].nos = (long int*) realloc (areasAM[idAM].nos,areasAM[idAM].numeroNosAM*sizeof(long int));
+                    areasAM[idAM].nos[areasAM[idAM].numeroNosAM-1] = barraAdj;
+                }
+            }
+            
+            
+            //------------------------------------------------------------------------
+            // recursão
+            idNo= barraAdj;
+            buscaAM(idNo, idAM,  visitado, grafo, areasAM, fase);
+        } 
+    }
 }
 
 //------------------------------------------------------------------------------
 // Monta AMs
 void buscaAMs(GRAFO * grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DMED *medidas, long int **numeroMedidasTabela, AREA_MEDICAO **areasAM) {
-    int i, j, idAlim, contador;
+    int i, j, idAlim, contador, par;
     long int numeroMedidas;
     BOOL visitado[(numeroBarras+1)];
            
-    
+    FILABARRAS *barraAtual;
     //Soma número de medidas na tabela de entrada
     numeroMedidas=0;
     for (i = 0; i < 14; i++){ 
-         for (j = 0; j < 8; j++){
+         for (j = 0; j < 20; j++){
               numeroMedidas += numeroMedidasTabela[i][j];
          }
     }
     
     // Aloca Áreas de Medição
-    if (((*areasAM) = (AREA_MEDICAO *)malloc( (numeroMedidas) * sizeof(AREA_MEDICAO)))==NULL)
+    if (((*areasAM) = (AREA_MEDICAO *)malloc( (numeroMedidas+1) * sizeof(AREA_MEDICAO)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os dados de areas de medição!!!!");
         exit(1); 
@@ -894,23 +859,48 @@ void buscaAMs(GRAFO * grafo, long int numeroBarras, ALIMENTADOR *alimentadores, 
     // Aloca Áreas de Medição
     contador =0;
     for (i=0; i< numeroMedidas; i++){
-        if ((medidas[i].tipo <= 3) || (medidas[i].tipo == 6)){  //Medidas de Potência ou medida de Magnitude de Corrente{
+        if ((medidas[i].tipo == 0) || (medidas[i].tipo == 6)){  //Medidas de Potência ou medida de Magnitude de Corrente{
+            par = medidas[i].par;
             (*areasAM)[contador].medidor = &medidas[i];
+            (*areasAM)[contador].fase = medidas[i].fases;
+            (*areasAM)[contador].idAlim = medidas[i].idAlim;
             (*areasAM)[contador].numeroAdj = 0;
             (*areasAM)[contador].numeroNosAM = 0;
-            (*areasAM)[contador].idAlim = -1;
             (*areasAM)[contador].descarte = 4;
             (*areasAM)[contador].montante = -1;
-            (*areasAM)[contador].fp = 0.92;
-            (*areasAM)[contador].nos = (long int *)malloc(5*sizeof(long int));
-            (*areasAM)[contador].med_adjacentes = (long int *)malloc(5*sizeof(long int));
-            (*areasAM)[contador].fase = medidas[i].fases;
+            (*areasAM)[contador].nos = (long int *)malloc(1*sizeof(long int));
+            (*areasAM)[contador].med_adjacentes = (long int *)malloc(1*sizeof(long int));            
+            (*areasAM)[contador].med_local = 1;   // Para considerar ou nâo a medida no alimentador - exlcui classe A
             
-            (*areasAM)[contador].tipo = 1;
-            if (medidas[i].tipo == 7)
-                (*areasAM)[contador].tipo = 2;
             
-            if (medidas[i].m == -1){
+            
+            if (medidas[i].tipo == 0){ // Medida de potência ativa e reativa
+                (*areasAM)[contador].tipo = 1;
+                (*areasAM)[contador].Pmed = medidas[i].zmed;
+                (*areasAM)[contador].Qmed = medidas[par].zmed;
+                
+                //Cálculo do desvio padrão
+                (*areasAM)[contador].stdPmed = cabs(medidas[i].zmed)*medidas[i].prec/3 + 0.00001;
+                (*areasAM)[contador].stdQmed = cabs(medidas[par].zmed)*medidas[par].prec/3 + 0.00001;
+                
+                (*areasAM)[contador].fp = cos(atan2((*areasAM)[contador].Qmed,(*areasAM)[contador].Pmed));
+                
+                medidas[i].idArea = contador;
+                medidas[par].idArea = contador;
+            }                        
+            else if(medidas[i].tipo == 6){ // Medida de magnitude de corrente
+                (*areasAM)[contador].tipo = 2;                
+                (*areasAM)[contador].Imed = medidas[i].zmed;
+                (*areasAM)[contador].fp = 0.92;
+                
+                //Cálculo do desvio padrão
+                (*areasAM)[contador].stdImed = cabs(medidas[i].zmed)*medidas[i].prec/3 + 0.00001;
+                
+                medidas[i].idArea = contador;
+            }
+            
+            
+            if (medidas[i].m != -1){ // Identação do no adjecente que a medida está instalada
                 for (j=0;j<grafo[medidas[i].k].numeroAdjacentes;j++){
                     if (grafo[medidas[i].k].adjacentes[j].idNo == medidas[i].m){
                         (*areasAM)[contador].idAdj = j;
@@ -920,18 +910,68 @@ void buscaAMs(GRAFO * grafo, long int numeroBarras, ALIMENTADOR *alimentadores, 
             }
             contador++;
             
+        }   
+        else if (medidas[i].tipo == 2){  //Medidas de Potência Consumidor Classe A - Injeção de Ativa e Reativa
+            par = medidas[i].par;
+            (*areasAM)[contador].medidor = &medidas[i];
+            (*areasAM)[contador].fase = medidas[i].fases;
+            (*areasAM)[contador].idAlim = medidas[i].idAlim;
+            (*areasAM)[contador].numeroAdj = 0;
+            (*areasAM)[contador].numeroNosAM = 1;
+            (*areasAM)[contador].descarte = 0;
+            (*areasAM)[contador].montante = -1;
+            (*areasAM)[contador].nos = (long int *)malloc(1*sizeof(long int));
+            (*areasAM)[contador].med_adjacentes = NULL;            
+            (*areasAM)[contador].med_local = 0;   // Para considerar ou nâo a medida no alimentador - exlcui classe A
+            
+            (*areasAM)[contador].tipo = 1;
+            (*areasAM)[contador].Pmed = medidas[i].zmed;
+            (*areasAM)[contador].Qmed = medidas[par].zmed;
+            
+            //Cálculo do desvio padrão
+            (*areasAM)[contador].stdPmed = cabs(medidas[i].zmed)*medidas[i].prec/3 + 0.00001;
+            (*areasAM)[contador].stdQmed = cabs(medidas[par].zmed)*medidas[par].prec/3 + 0.00001;
+
+            (*areasAM)[contador].fp = cos(atan2((*areasAM)[contador].Qmed,(*areasAM)[contador].Pmed));
+
+            medidas[i].idArea = contador;
+            medidas[par].idArea = contador;            
+            
+            contador++;
+            
         }
+        // Montar um else para medida de magnitude de tensão
     }
     (*areasAM)[0].total = contador; //número total de AMs
     
     
     // Auxiliar para busca das AMs
-    for(i=0; i<numeroBarras; i++) 
+    for(i=0; i<numeroBarras; i++){
         visitado[i] = false;
+        if (grafo[i].barra->nloads > 0) grafo[i].tipoNo = 1;
+    }
     
     //Percorre os Alimentadore através de varredura em profundidade para montar as AMs
     for(idAlim=0; idAlim<numeroAlimentadores; idAlim++){
-        buscaAM(grafo, (*areasAM), alimentadores[idAlim].idRaiz, idAlim, visitado);
+//        buscaAM(grafo, (*areasAM), alimentadores[idAlim].idRaiz, idAlim, visitado);
+        buscaAM(alimentadores[idAlim].idRaiz, -1,  visitado, grafo, (*areasAM), 1); //função recursiva por fase
+        
+        barraAtual = &alimentadores[idAlim].rnp[0];
+        while(barraAtual != NULL)  {
+            visitado[barraAtual->idNo] = false;
+            barraAtual = barraAtual->prox;          
+            
+        }        
+        buscaAM(alimentadores[idAlim].idRaiz, -1,  visitado, grafo, (*areasAM), 2); //função recursiva por fase
+        
+        barraAtual = &alimentadores[idAlim].rnp[0];
+        while(barraAtual != NULL)  {
+            visitado[barraAtual->idNo] = false;
+            barraAtual = barraAtual->prox;          
+            
+        }     
+        buscaAM(alimentadores[idAlim].idRaiz, -1,  visitado, grafo, (*areasAM), 3); //função recursiva por fase
+        
     }
 }
 
@@ -1206,7 +1246,6 @@ void imprimeAMs(AREA_MEDICAO *areasAM){
     fclose(saida); 
 }
 
-
 //------------------------------------------------------------------------------
 // Atualiza os Valores Calculados nas Medidas e Verifica a Convergência
 long int atualizaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos,BOOL *conv_alim, long int it)
@@ -1225,14 +1264,14 @@ long int atualizaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos,BOOL 
             para = areaAM[i].medidor->m;
             idAdj = areaAM[i].idAdj;
             fase = areaAM[i].fase - 1;
-            areaAM[i].Pcalc = __real__ grafo[de].V[fase]*conj(grafo[de].adjacentes[idAdj].Cur[fase]);
-            areaAM[i].Qcalc = __imag__ grafo[de].V[fase]*conj(grafo[de].adjacentes[idAdj].Cur[fase]);
+            areaAM[i].Pcalc = creal(grafo[de].V[fase] * conj(grafo[de].adjacentes[idAdj].Cur[fase]));
+            areaAM[i].Qcalc = cimag(grafo[de].V[fase] * conj(grafo[de].adjacentes[idAdj].Cur[fase]));
             areaAM[i].Icalc = grafo[de].adjacentes[idAdj].Cur[fase];
             areaAM[i].Vcalc = grafo[de].V[fase];
             
             // TRATAMENTO PARA MEDIDAS INCOMPLETAS
             switch (areaAM[i].tipo){
-                case 2: //Area de mediçãp definida por Medida de corrente
+                case 2: //Area de medição definida por Medida de corrente
                     auxI = conj(grafo[de].adjacentes[idAdj].Cur[fase]);
                     if (it ==0){
                         __real__ auxI = cos(carg(grafo[de].V[fase]) - acos(areaAM[i].fp));
@@ -1347,20 +1386,22 @@ void ajustaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos){
                 areaAM[i].SumQnos = 0;
                 for (j=0;j<areaAM[i].numeroNosAM;j++){
                     noN = areaAM[i].nos[j];
-                    areaAM[i].SumPnos += __real__ grafo[de].S[fase];
-                    areaAM[i].SumQnos += __imag__ grafo[de].S[fase];
+                    areaAM[i].SumPnos += __real__ grafo[noN].S[fase];
+                    areaAM[i].SumQnos += __imag__ grafo[noN].S[fase];
                 }
 
                 for (j=0;j<areaAM[i].numeroNosAM;j++){
                     noN = areaAM[i].nos[j];
                     //Atualiza a potência ativa de todas as barras da AM
                     if (areaAM[i].convP == 0){
-                        grafo[de].S[fase] += __real__ (areaAM[i].DeltaP*grafo[de].S[fase]/areaAM[i].SumPnos);
+                        grafo[noN].S[fase] += __real__ (areaAM[i].DeltaP*grafo[noN].S[fase]/areaAM[i].SumPnos);
                     }
                     //Atualiza a potência reativa de todas as barras da AM
                     if (areaAM[i].convQ == 0){
-                        grafo[de].S[fase] += I * __imag__ (areaAM[i].DeltaQ*grafo[de].S[fase]/areaAM[i].SumQnos);
+                        grafo[noN].S[fase] += I * __imag__ (areaAM[i].DeltaQ*grafo[noN].S[fase]/areaAM[i].SumQnos);
                     }
+                    
+                    grafo[noN].Cur[fase] = conj(grafo[noN].S[fase]/grafo[noN].V_aux[fase]);
                 }
             }
         }
@@ -1438,9 +1479,7 @@ void estimadorDemandaTrifasico(GRAFO *grafo, long int numeroBarras, ALIMENTADOR 
     
     BOOL convECTR_alim[numeroAlimentadores];
     // Auxiliar para busca das AMs
-    for(i=0; i<numeroAlimentadores; i++) 
-        convECTR_alim[i] = false;
-    
+    for(i=0; i<numeroAlimentadores; i++) convECTR_alim[i] = false;    
     
     FILE *arqout;
     
@@ -1459,10 +1498,7 @@ void estimadorDemandaTrifasico(GRAFO *grafo, long int numeroBarras, ALIMENTADOR 
     while (conv_ECTR==0){
         //---------------------------------------------------------------------
         // Cálculo de Fluxo de Potência
-        
-        // Atualizar as correntes em função do valor ajustade de potência  - usar o grafo[no].S
-        
-        
+                
         fluxoPotencia_Niveis_BFS_Multiplos(grafo, numeroBarras, alimentadores, numeroAlimentadores, ramos, Sbase/1000, interfaceNiveis, numeroInterfaces, true);
         //fluxoPotencia_BFS_Multiplos(grafo, numeroBarras, alimentador, numeroAlimentadores, ramo, Sbase/1000);
         
@@ -1487,6 +1523,8 @@ void estimadorDemandaTrifasico(GRAFO *grafo, long int numeroBarras, ALIMENTADOR 
         else{
             // Função de Ajuste das Áreas de Medição
             ajustaAM(areasAM,grafo,numeroBarras);
+            
+            // Atualizar as correntes em função do valor ajustade de potência  - usar o grafo[no].S
             itECTR++;
         }
         

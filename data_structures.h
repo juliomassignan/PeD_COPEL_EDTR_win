@@ -86,7 +86,7 @@ typedef enum  {
 typedef enum  {
         N,
         A, // Fase a
-	    B, // Fase b
+	B, // Fase b
         C, //Fase c
         AB, //Fase ab
         CA, //Fase ca
@@ -353,33 +353,6 @@ typedef struct {
 } DMED;
 
 
-// 
-/*Dados de subestações do sistema de distribuição*/
-/**
- * @brief Define dados subestações do sistema de distribuição como agregador de alimentadores em determinado nível de tensão da rede elétrica
- *  
- * Representação individual das informações de subestações (um elemento DSUBESTACAO para cada transformador individual da subestação)
- * 
- *  
- */
-typedef struct {
-    long int idSubestacao; //Identificador da subestação
-    FASES fases;    // Número de fase
-    ESTADO estado;  // Estado da subestação (energizada ou não)
-    double Snominal; // Potência nominal do trafo da subestação
-    double Vpri;     // Tensão no nível primário da subestação   
-    double Vsec;     // Tensão no nível primário da subestação
-
-    int alimentadores[50];  //Lista de identificadores sequenciais de alimentadores atribuídos a cada subestação (Agregador de alimentadores) limitado em 50
-    int numeroAlimentadores;    //Contador do número de alimentadores
-    DTRF trafo;
-    
-
-    //Dados para equivalentes de curto circuito
-    double Pcc3F;
-    
-} DSUBESTACAO;
-
 
 //------------------------------------------------------------------------------
 //
@@ -399,7 +372,7 @@ typedef struct Fila {
 
 
 /**
- * @brief Estrutura de dados para representar alimentadores e respectiva topologia armazenada em lista encadeada através de RNP
+ * @brief Estrutura de dados para representar circuitos alimentadores e respectiva topologia armazenada em lista encadeada através de RNP
  *  
  */
 typedef struct {
@@ -504,6 +477,7 @@ typedef struct {
 typedef struct {
     int convergencia;       //Status de convergência do cálculo de fluxo de potência
     int iteracoes;          //Número de iterações para obter convergência
+    BOOL tap_change_flag;       // Flag de mudança de tap no alimentador
     double maiorCarregamentoCorrente;   //Maior valor de carregamento em percentual 
     double perdasResistivas;            //Valor total de perdas na rede elétrica
     double maiorCarregamentoTrafo;      //Carregamento em percentual das subestações
@@ -522,5 +496,74 @@ typedef struct {
     
 } PFSOLUTION;
 
+
+
+
+
+
+// ----------------------------------------------
+//
+// Elementos agregadores
+//
+// -------------------------------------------------
+
+ 
+/*Dados estáticos de alimentadores*/
+/**
+ * @brief Define dados 
+ *  
+ * Representação individual das informações de subestações (um elemento DSUBESTACAO para cada transformador individual da subestação)
+ * 
+ *  
+ */
+typedef struct {
+    long int ID; //Identificador da subestação
+    ESTADO estado;  // Estado do alimentador (energizada ou não)
+    int tipo;       // livre
+    double Snominal; // Potência nominal do trafo do alimentador
+    double Vpri;     // Tensão no nível primário do alimentador
+    char COD_CH[15]; //Código COPEL da Chave início Alimentador
+    char nome[40];   //nome do alimentador    
+    char sigla_SE[7];   //sigla da subestação
+
+    ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
+    int ID_SE;       // identificador da subestação
+    int ID_TR;       // identificador do trafo da Se
+    
+    // Sumário de cálculo
+    PFSOLUTION *powerflow_summary;
+} DALIM;
+
+// 
+/*Dados estáticos de subestações do sistema de distribuição*/
+/**
+ * @brief Define dados subestações do sistema de distribuição como agregador de alimentadores em determinado nível de tensão da rede elétrica
+ *  
+ * Representação individual das informações de subestações (um elemento DSUBESTACAO para cada transformador individual da subestação)
+ * 
+ *  
+ */
+typedef struct {
+    long int ID; //Identificador da subestação
+    ESTADO estado;  // Estado da subestação (energizada ou não)
+    int tipo;       // livre
+    double Snominal; // Potência nominal do trafo da subestação
+    double Vpri;     // Tensão no nível primário da subestação   
+    BOOL rede_basica; // Identificado de conexão com a rede básica
+    char nome[40];   //nome da subestação
+    char sigla[7];   //sigla da subestação
+
+    DALIM alimentadores[50];  //Lista de identificadores sequenciais de alimentadores atribuídos a cada subestação (Agregador de alimentadores) limitado em 50
+    int numeroAlimentadores;    //Contador do número de alimentadores
+    DTRF trafo[10];         // dados de transformador de subestação
+    int numeroTrafos;       // número total de trafos
+    
+    // Sumário de cálculo
+    PFSOLUTION *powerflow_summary;
+
+    //Dados para equivalentes de curto circuito (futuro)
+    double Pcc3F;
+    
+} DSUBESTACAO;
 
 #endif	/* DATA_STRUCTURES_H */

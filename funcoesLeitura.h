@@ -519,7 +519,10 @@ void free_ALIMENTADOR(ALIMENTADOR *alimentadores, long int numeroAlimentadores);
 
 
 
-long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces);
+long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, DBAR **barras, long int *numeroBarras, DRAM **ramos, long int *numeroRamos);
+void includeDREG(DRAM **ramos, long int *numeroRamos, int DE, int PARA);
+void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase);
+void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec);
 
 #endif	/* funcoesLeitura_H */
 

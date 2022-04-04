@@ -34,33 +34,33 @@ void salvaTensoesNodais(const char *filename, const char *modo, ALIMENTADOR alim
     FILE *arquivo;
     arquivo = fopen(filename,modo);
     
-    fprintf(arquivo,"\n\nAlimentador %ld \n",alimentador.idAlim);
-    fprintf(arquivo,"ID\tPROF\tVa \t Teta_a \tVb \t Teta_b \tVc \t Teta_c \n");
+//    fprintf(arquivo,"\n\nAlimentador %ld \n",alimentador.idAlim);
+//    fprintf(arquivo,"ID\tPROF\tVa \t Teta_a \tVb \t Teta_b \tVc \t Teta_c \n");
     i=0;
     barraAtual = &alimentador.rnp[0];
     while((barraAtual != NULL)){
         k = barraAtual->idNo;
         switch (grafo[k].fases){
             case 1:
-                fprintf(arquivo,"%ld\t%ld\t %.7lf \t %.5lf \t  -   \t  -   \t   -  \t    -   \n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t %.5lf \t-\t-\t-\t-\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI);
                 break;
             case 2:
-                fprintf(arquivo,"%ld\t%ld\t    -   \t    -    \t%.7lf \t %.5lf \t   -    \t    -   \n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t-\t-\t%.7lf \t %.5lf \t-\t-\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI);
                 break;
             case 3:
-                fprintf(arquivo,"%ld\t%ld\t   -    \t    -    \t    -    \t    -   \t %.7lf \t %.5lf\n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t-\t-\t-\t-\t %.7lf \t %.5lf\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
                 break;
             case 4:
-                fprintf(arquivo,"%ld\t%ld\t %.7lf \t %.5lf \t %.7lf \t %.5lf\t   -    \t    -   \n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t %.5lf \t %.7lf \t %.5lf\t-\t-\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI);
                 break;
             case 5:
-                fprintf(arquivo,"%ld\t%ld\t %.7lf \t %.5lf \t    -    \t    -   \t %.7lf \t %.5lf\n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t %.5lf \t-\t-\t %.7lf \t %.5lf\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
                 break;
             case 6:
-                fprintf(arquivo,"%ld\t%ld\t    -    \t    -    \t %.7lf \t %.5lf\t %.7lf \t %.5lf\n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t-\t-\t %.7lf \t %.5lf\t %.7lf \t %.5lf\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
                 break;
             case 7:
-                fprintf(arquivo,"%ld\t%ld\t %.7lf \t %.5lf \t %.7lf \t %.5lf\t %.7lf \t %.5lf\n",grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
+                fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t %.5lf \t %.7lf \t %.5lf\t %.7lf \t %.5lf\n",alimentador.idAlim,grafo[k].barra->ID,grafo[k].profundidade,cabs(grafo[k].V[0]),carg(grafo[k].V[0])*180/PI,cabs(grafo[k].V[1]),carg(grafo[k].V[1])*180/PI,cabs(grafo[k].V[2]),carg(grafo[k].V[2])*180/PI);
                 break;    
         }
         barraAtual = barraAtual->prox;
@@ -83,8 +83,8 @@ void salvaCorrentesRamos(const char *filename, const char *modo, ALIMENTADOR ali
     FILE *arquivo;
     arquivo = fopen(filename,modo);
     
-    fprintf(arquivo,"\n\nAlimentador %ld \n",alimentador.idAlim);
-    fprintf(arquivo,"DE\tPARA\tIa \t Ib \tIc \t Ampacidade \tCarregamento \tPa\tPb\tPc\tQa\tQb\tQc \n");
+//    fprintf(arquivo,"\n\nAlimentador %ld \n",alimentador.idAlim);
+//    fprintf(arquivo,"DE\tPARA\tIa \t Ib \tIc \t Ampacidade \tCarregamento \tPa\tPb\tPc\tQa\tQb\tQc \n");
     i=0;
     barraAtual = &alimentador.rnp[0];
     while((barraAtual != NULL)){
@@ -100,25 +100,25 @@ void salvaCorrentesRamos(const char *filename, const char *modo, ALIMENTADOR ali
                 
                 switch (grafo[adj].fases){
                     case 1:
-                        fprintf(arquivo,"%ld\t%ld\t %.7lf \t -  \t  -   \t   %.7lf  \t    %.7lf  \t %.7lf \t - \t - \t %.7lf \t - \t - \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[0]));
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t%.7lf\t-\t-\t%.7lf\t%.7lf  \t %.7lf \t-\t-\t %.7lf \t-\t-\n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[0]));
                         break;
                     case 2:
-                        fprintf(arquivo,"%ld\t%ld\t - \t %.7lf  \t  -   \t   %.7lf  \t    %.7lf  \t - \t %.7lf  \t - \t - \t %.7lf  \t -  \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[adj].Cur[1])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading , creal(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[1]) );
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t-\t %.7lf  \t-\t   %.7lf  \t    %.7lf  \t-\t %.7lf  \t-\t-\t %.7lf  \t-\n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[adj].Cur[1])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading , creal(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[1]) );
                         break;
                     case 3:
-                        fprintf(arquivo,"%ld\t%ld\t - \t -  \t  %.7lf   \t   %.7lf  \t    %.7lf  \t - \t - \t %.7lf  \t - \t - \t %.7lf   \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading , creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[2]));
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t-\t-\t  %.7lf   \t   %.7lf  \t    %.7lf  \t-\t-\t %.7lf  \t-\t-\t %.7lf   \n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading , creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[2]));
                         break;
                     case 4:
-                        fprintf(arquivo,"%ld\t%ld\t %.7lf \t %.7lf  \t  -   \t   %.7lf  \t    %.7lf \t %.7lf \t %.7lf \t - \t %.7lf \t %.7lf \t -   \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,cabs(grafo[k].adjacentes[m].Cur[1])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), creal(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[1]));
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t %.7lf  \t-\t   %.7lf  \t    %.7lf \t %.7lf \t %.7lf \t-\t %.7lf \t %.7lf \t- \n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,cabs(grafo[k].adjacentes[m].Cur[1])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), creal(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[1]));
                         break;
                     case 5:
-                        fprintf(arquivo,"%ld\t%ld\t - \t %.7lf  \t  %.7lf   \t   %.7lf  \t    %.7lf \t - \t %.7lf  \t %.7lf  \t - \t %.7lf  \t %.7lf   \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[1])*Ibase,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[1]), creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[2]));
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t-\t %.7lf  \t  %.7lf   \t   %.7lf  \t    %.7lf \t-\t %.7lf  \t %.7lf  \t-\t %.7lf  \t %.7lf   \n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[1])*Ibase,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[1]), creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[2]));
                         break;
                     case 6:
-                        fprintf(arquivo,"%ld\t%ld\t %.7lf \t -  \t  %.7lf   \t   %.7lf  \t    %.7lf  \t %.7lf  \t - \t %.7lf  \t %.7lf  \t - \t %.7lf  \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[2]));
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t-\t  %.7lf   \t   %.7lf  \t    %.7lf  \t %.7lf  \t-\t %.7lf  \t %.7lf  \t-\t %.7lf  \n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[2]));
                         break;
                     case 7:
-                        fprintf(arquivo,"%ld\t%ld\t %.7lf \t %.7lf  \t  %.7lf   \t   %.7lf  \t    %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \n",grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,cabs(grafo[k].adjacentes[m].Cur[1])*Ibase,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), creal(grafo[k].adjacentes[m].S[1]), creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[2]));
+                        fprintf(arquivo,"%ld\t%ld\t%ld\t %.7lf \t %.7lf  \t  %.7lf   \t   %.7lf  \t    %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \t %.7lf  \n",alimentador.idAlim,grafo[k].adjacentes[m].ramo->DE,grafo[k].adjacentes[m].ramo->PARA,cabs(grafo[k].adjacentes[m].Cur[0])*Ibase,cabs(grafo[k].adjacentes[m].Cur[1])*Ibase,cabs(grafo[k].adjacentes[m].Cur[2])*Ibase,grafo[k].adjacentes[m].ramo->ampacidade,grafo[k].adjacentes[m].loading, creal(grafo[k].adjacentes[m].S[0]), creal(grafo[k].adjacentes[m].S[1]), creal(grafo[k].adjacentes[m].S[2]), cimag(grafo[k].adjacentes[m].S[0]), cimag(grafo[k].adjacentes[m].S[1]), cimag(grafo[k].adjacentes[m].S[2]));
                         break;    
                 }
                 
@@ -157,22 +157,22 @@ void imprimeTensoesNodais(GRAFO *grafo){
 //    printf("Vbase:%.3lf\t",grafo->Vbase);
     switch (grafo->fases){
         case 1:
-            printf("%ld\tVa: %.5lf | %.3lf \tVb:    -    |    -   \tVc:    -    |    -   \n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI);
+            printf("%ld\tVa: %.5lf | %.3lf \tVb:- |-\tVc:- |-\n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI);
             break;
         case 2:
-            printf("%ld\tVa:    -    |    -    \tVb: %.5lf | %.3lf\tVc:    -    |    -   \n",grafo->barra->ID,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI);
+            printf("%ld\tVa:- |- \tVb: %.5lf | %.3lf\tVc:- |-\n",grafo->barra->ID,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI);
             break;
         case 3:
-            printf("%ld\tVa:    -    |    -    \tVb:    -    |    -   \tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
+            printf("%ld\tVa:- |- \tVb:- |-\tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
             break;
         case 4:
-            printf("%ld\tVa: %.5lf | %.3lf \tVb: %.5lf | %.3lf\tVc:    -    |    -   \n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI);
+            printf("%ld\tVa: %.5lf | %.3lf \tVb: %.5lf | %.3lf\tVc:- |-\n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI);
             break;
         case 5:
-            printf("%ld\tVa: %.5lf | %.3lf \tVb:    -    |    -   \tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
+            printf("%ld\tVa: %.5lf | %.3lf \tVb:  - |  -\tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
             break;
         case 6:
-            printf("%ld\tVa:    -    |    -    \tVb: %.5lf | %.3lf\tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
+            printf("%ld\tVa:  - |  - \tVb: %.5lf | %.3lf\tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
             break;
         case 7:
             printf("%ld\tVa: %.5lf | %.3lf \tVb: %.5lf | %.3lf\tVc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->V[0]),carg(grafo->V[0])*180/PI,cabs(grafo->V[1]),carg(grafo->V[1])*180/PI,cabs(grafo->V[2]),carg(grafo->V[2])*180/PI);
@@ -226,22 +226,22 @@ void imprimeiInjecoesCorrentes(GRAFO *grafo){
 //    printf("Vbase:%.3lf\t",grafo->Vbase);
     switch (grafo->fases){
         case 1:
-            printf("%ld\tIa: %.5lf | %.3lf \tIb:    -    |    -   \tIc:    -    |    -   \n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI);
+            printf("%ld\tIa: %.5lf | %.3lf \tIb:  - |  -\tIc:  - |  -\n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI);
             break;
         case 2:
-            printf("%ld\tIa:    -    |    -    \tIb: %.5lf | %.3lf\tIc:    -    |    -   \n",grafo->barra->ID,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI);
+            printf("%ld\tIa:  - |  - \tIb: %.5lf | %.3lf\tIc:  - |  -\n",grafo->barra->ID,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI);
             break;
         case 3:
-            printf("%ld\tIa:    -    |    -    \tIb:    -    |    -   \tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
+            printf("%ld\tIa:  - |  - \tIb:  - |  -\tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
             break;
         case 4:
-            printf("%ld\tIa: %.5lf | %.3lf \tIb: %.5lf | %.3lf\tIc:    -    |    -   \n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI);
+            printf("%ld\tIa: %.5lf | %.3lf \tIb: %.5lf | %.3lf\tIc:  - |  -\n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI);
             break;
         case 5:
-            printf("%ld\tIa: %.5lf | %.3lf \tIb:    -    |    -   \tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
+            printf("%ld\tIa: %.5lf | %.3lf \tIb:  - |  -\tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
             break;
         case 6:
-            printf("%ld\tIa:    -    |    -    \tIb: %.5lf | %.3lf\tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
+            printf("%ld\tIa:  - |  - \tIb: %.5lf | %.3lf\tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
             break;
         case 7:
             printf("%ld\tIa: %.5lf | %.3lf \tIb: %.5lf | %.3lf\tIc: %.5lf | %.3lf\n",grafo->barra->ID,cabs(grafo->Cur[0]),carg(grafo->Cur[0])*180/PI,cabs(grafo->Cur[1]),carg(grafo->Cur[1])*180/PI,cabs(grafo->Cur[2]),carg(grafo->Cur[2])*180/PI);
@@ -270,22 +270,22 @@ void imprimeCorrentes(NOADJACENTE *noAdj){
 //    printf("Vbase:%.3lf\t",grafo->Vbase);
    switch (noAdj->ramo->fases){
        case 1:
-           printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb:    -    |    -   \tIc:    -    |    -   \n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI);
+           printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb:  - |  -\tIc:  - |  -\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI);
            break;
        case 2:
-           printf("%ld - %ld\tIa:    -    |    -    \tIb: %.5lf | %.3lf\tIc:    -    |    -   \n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI);
+           printf("%ld - %ld\tIa:  - |  - \tIb: %.5lf | %.3lf\tIc:  - |  -\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI);
            break;
        case 3:
-           printf("%ld - %ld\tIa:    -    |    -    \tIb:    -    |    -   \tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
+           printf("%ld - %ld\tIa:  - |  - \tIb:  - |  -\tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
            break;
        case 4:
-           printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb: %.5lf | %.3lf\tIc:    -    |    -   \n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI);
+           printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb: %.5lf | %.3lf\tIc:  - |  -\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI);
            break;
        case 5:
-           printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb:    -    |    -   \tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
+           printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb:  - |  -\tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
            break;
        case 6:
-           printf("%ld - %ld\tIa:    -    |    -    \tIb: %.5lf | %.3lf\tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
+           printf("%ld - %ld\tIa:  - |  - \tIb: %.5lf | %.3lf\tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
            break;
        case 7:
            printf("%ld - %ld\tIa: %.5lf | %.3lf \tIb: %.5lf | %.3lf\tIc: %.5lf | %.3lf\n",noAdj->ramo->DE,noAdj->ramo->PARA,cabs(noAdj->Cur[0]),carg(noAdj->Cur[0])*180/PI,cabs(noAdj->Cur[1]),carg(noAdj->Cur[1])*180/PI,cabs(noAdj->Cur[2]),carg(noAdj->Cur[2])*180/PI);
@@ -499,6 +499,9 @@ void incializaTensoesVarredura(GRAFO *grafo, long int numeroBarras, ALIMENTADOR 
         barraAtual = &alimentadores[i].rnp[0];
         k=0;
         while(barraAtual != NULL){
+            grafo[barraAtual->idNo].V_aux[0] = grafo[barraAtual->idNo].V[0];
+            grafo[barraAtual->idNo].V_aux[1] = grafo[barraAtual->idNo].V[1];
+            grafo[barraAtual->idNo].V_aux[2] = grafo[barraAtual->idNo].V[2];
             atualizaInjecoes(&grafo[barraAtual->idNo]);
             barraAtual = barraAtual->prox;
         }
@@ -1526,6 +1529,8 @@ BOOL forward(GRAFO *noP, GRAFO *grafo){
     int i, noAdj, idx;
     complex double Vaux[3];
     BOOL control_action = 0; //variável para indicar se houve transição por parte dos controladores
+    BOOL return_control = 0; //variável para indicar se houve transição por parte dos controladores
+    
     extern double Sbase;
     double Ibase;
 
@@ -1556,12 +1561,13 @@ BOOL forward(GRAFO *noP, GRAFO *grafo){
                     }
                     control_action = controleReguladorTensao_LDC(noP->Vbase, Sbase/noP->Vbase, noP->V, Vaux, noP->adjacentes[i].Cur, grafo[noAdj].adjacentes[idx].Cur, noP->adjacentes[i].ramo);
                     if (control_action){
+                        return_control = true;
                         calculaTensaoJusante(noP->V, Vaux, noP->adjacentes[i].Cur, noP->adjacentes[i].ramo);
                         grafo[noAdj].V[0] = Vaux[0];
                         grafo[noAdj].V[1] = Vaux[1];
                         grafo[noAdj].V[2] = Vaux[2];
                     }
-                    // printf("\nLDC %d\n",control_action);
+                    //printf("\nLDC %d\n",control_action);
                 }
             }
             //------------------------------------------------------------------
@@ -1577,7 +1583,7 @@ BOOL forward(GRAFO *noP, GRAFO *grafo){
 
         }
     }
-    return (control_action);
+    return (return_control);
 }
 
 
@@ -1624,6 +1630,7 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, AL
     }
     nvar = alimentador.numeroNos*6;
     DV = aloca_vetor(nvar);
+    powerflow_result.tap_change_flag = false;
     powerflow_result.convergencia = 0;
     powerflow_result.maiorCarregamentoCorrente = 0;
     powerflow_result.perdasResistivas = 0;
@@ -1669,6 +1676,7 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, AL
         //Forward Sweep
         for(k = 0; k < alimentador.numeroNos; k++){
             control_action = forward(&grafo[RNP[k]], grafo);
+            if (control_action) powerflow_result.tap_change_flag = true;
         }
         
         
@@ -1684,6 +1692,7 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, AL
             }
             barraAtual = barraAtual->prox;
         }
+        
         
         nDV = norma_inf(DV,nvar);
         if ((fabs(nDV) < tolerance) && !control_action){
@@ -1753,6 +1762,7 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, AL
             
         }
         powerflow_result.carregamentoRede = powerflow_result.perdasResistivas + cargaAtivaTotal;
+        
         
         powerflow_result.carregamentoRedeABC[0] = creal(grafo[RNP[0]].V[0]*conj(grafo[RNP[0]].adjacentes[0].Cur[0]));
         powerflow_result.carregamentoRedeABC[1] = creal(grafo[RNP[0]].V[1]*conj(grafo[RNP[0]].adjacentes[0].Cur[1]));
@@ -2009,7 +2019,12 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
     int i,j, idAlim, it, n_threads;
     FILABARRAS *barraAtual = NULL;
     GRAFO *no  = NULL;
-
+    extern BOOL iteration_multiple_level_OPT;
+    
+    BOOL tap_modified = true;      // variable that checks if there is a change on tap position on the upper level of power flow
+    BOOL runPF_alimentador[numeroAlimentadores];
+    for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++) runPF_alimentador[idAlim] = true;
+    
     PFSOLUTION powerflow_result[numeroAlimentadores];
     PFSOLUTION powerflow_result_rede;
 
@@ -2028,6 +2043,9 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
     powerflow_result_rede.menorTensaoABC[1] = 0;
     powerflow_result_rede.menorTensaoABC[2] = 0;
     
+    
+    
+    
     FILE *arquivo;
     arquivo = fopen("tempos_alimentadores.txt","w+");
     double tempoAUX;
@@ -2039,95 +2057,137 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
     double tIni1 = omp_get_wtime(); 
     double tIni;
     double tEnd;
-    // Para execução em paralelo - Tem que ser melhorada o acesso interno à memória
-//    n_threads =  omp_get_num_procs();
-//
-//
-//    #pragma omp parallel num_threads(n_threads - 1)
-//    {
-
-       // Cálculo do Fluxo de Potência no nível de 13.8 kV
-//       #pragma omp for 
-       for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
-           tIni = omp_get_wtime();
-           if (grafo[alimentadores[idAlim].noRaiz].Vbase*sqrt(3)/1000 == 13.8)
-               if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
-               else powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_IteracaoUnica(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
-
-
-           tEnd = omp_get_wtime(); 
-           tempoAUX = tEnd - tIni;
-           fprintf(arquivo,"\n %d \t13.8\t%ld\t%d\t%.12lf\t%lf",i,alimentadores[idAlim].numeroNos,powerflow_result[idAlim].iteracoes,tempoAUX, powerflow_result[idAlim].menorTensao );
-
-       }//Fim do loop dos alimentadores  
-//    } //Final do pragma
-     
-     
-        //Atualiza as Interfaces das SEs de 34.5 kV com a carga calculada em 13.8 kV
-        for (idAlim = 0; idAlim < numeroInterfaces; idAlim++){
-            if (interfaceNiveis[idAlim][2] == 0){ //Para mútliplos níveis, até o momento somente dois
-                int bar_13_8 = interfaceNiveis[idAlim][0];
-                int bar_34_5 = interfaceNiveis[idAlim][1];
-                grafo[bar_34_5].barra->nloads = 0;
-                
-                grafo[bar_34_5].Cur[0] = 0;
-                grafo[bar_34_5].Cur[1] = 0;
-                grafo[bar_34_5].Cur[2] = 0;
-                
-                grafo[bar_34_5].S[0]=0;
-                grafo[bar_34_5].S[1]=0;
-                grafo[bar_34_5].S[2]=0;
-            }
-        }
+    
+    // runs multiple times if there is a tap change on the upper level (34.5)
+    while (tap_modified){
+    tap_modified = false;
         
-        for (idAlim = 0; idAlim < numeroInterfaces; idAlim++){
-            if (interfaceNiveis[idAlim][2] == 0){ //Para mútliplos níveis, até o momento somente dois
-                int bar_13_8 = interfaceNiveis[idAlim][0];
-                int bar_34_5 = interfaceNiveis[idAlim][1];
-                
-                grafo[bar_34_5].barra->nloads++;
-                grafo[bar_34_5].barra->loads[0].lig = YN;
-                
-                grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Pnom[0] = creal(grafo[bar_13_8].V[0]*conj(grafo[bar_13_8].adjacentes[0].Cur[0]));
-                grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Pnom[1] = creal(grafo[bar_13_8].V[1]*conj(grafo[bar_13_8].adjacentes[0].Cur[1]));
-                grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Pnom[2] = creal(grafo[bar_13_8].V[2]*conj(grafo[bar_13_8].adjacentes[0].Cur[2]));
-                grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Qnom[0] = cimag(grafo[bar_13_8].V[0]*conj(grafo[bar_13_8].adjacentes[0].Cur[0]));
-                grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Qnom[1] = cimag(grafo[bar_13_8].V[1]*conj(grafo[bar_13_8].adjacentes[0].Cur[1]));
-                grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Qnom[2] = cimag(grafo[bar_13_8].V[2]*conj(grafo[bar_13_8].adjacentes[0].Cur[2]));
-                
-                grafo[bar_34_5].Cur[0] += grafo[bar_13_8].adjacentes[0].Cur[0];
-                grafo[bar_34_5].Cur[1] += grafo[bar_13_8].adjacentes[0].Cur[1];
-                grafo[bar_34_5].Cur[2] += grafo[bar_13_8].adjacentes[0].Cur[2];                
-                
-                grafo[bar_34_5].S[0] += grafo[bar_13_8].V[0]*conj(grafo[bar_13_8].adjacentes[0].Cur[0]);
-                grafo[bar_34_5].S[1] += grafo[bar_13_8].V[1]*conj(grafo[bar_13_8].adjacentes[0].Cur[1]);
-                grafo[bar_34_5].S[2] += grafo[bar_13_8].V[2]*conj(grafo[bar_13_8].adjacentes[0].Cur[2]);
-            }
-        }
-        
-        // Cálculo do Fluxo de Potência no nível de 34.5 kV
-//        #pragma omp for 
-        for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
+    // Cálculo do Fluxo de Potência no nível de 13.8 kV
+    for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
+        if (runPF_alimentador[idAlim]){
+            // run power flow for feeder if true, selected on list
             tIni = omp_get_wtime();
-            if (grafo[alimentadores[idAlim].noRaiz].Vbase*sqrt(3)/1000 == 34.5)
+            if (grafo[alimentadores[idAlim].noRaiz].Vbase*sqrt(3)/1000 == 13.8){
                 if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
                 else powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_IteracaoUnica(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
+                
+                runPF_alimentador[idAlim] = false;     // finished calculating power flow on the feeder
+            }
+
+            tEnd = omp_get_wtime(); 
+            tempoAUX = tEnd - tIni;
+            fprintf(arquivo,"\n %d \t13.8\t%ld\t%d\t%.12lf\t%lf",i,alimentadores[idAlim].numeroNos,powerflow_result[idAlim].iteracoes,tempoAUX, powerflow_result[idAlim].menorTensao );
             
+        }
+    }//Fim do loop dos alimentadores  
+
+    //Atualiza as Interfaces das SEs de 34.5 kV com a carga calculada em 13.8 kV
+    for (idAlim = 0; idAlim < numeroInterfaces; idAlim++){
+        if (interfaceNiveis[idAlim][2] == 0){ //Para mútliplos níveis, até o momento somente dois
+            int bar_13_8 = interfaceNiveis[idAlim][0];
+            int bar_34_5 = interfaceNiveis[idAlim][1];
+            grafo[bar_34_5].barra->nloads = 0;
+
+            grafo[bar_34_5].Cur[0] = 0;
+            grafo[bar_34_5].Cur[1] = 0;
+            grafo[bar_34_5].Cur[2] = 0;
+
+            grafo[bar_34_5].S[0]=0;
+            grafo[bar_34_5].S[1]=0;
+            grafo[bar_34_5].S[2]=0;
+        }
+    }
+
+    for (idAlim = 0; idAlim < numeroInterfaces; idAlim++){
+        if (interfaceNiveis[idAlim][2] == 0){ //Para mútliplos níveis, até o momento somente dois
+            int bar_13_8 = interfaceNiveis[idAlim][0];
+            int bar_34_5 = interfaceNiveis[idAlim][1];
+
+            grafo[bar_34_5].barra->nloads++;
+            grafo[bar_34_5].barra->loads[0].lig = YN;
+
+
+            //Reflete injeções de potência do 13.8 no 34.5 (Revisar e incluir um trfo YnD e Regulador de tensão)
+            grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Pnom[0] = creal(grafo[bar_13_8].V[0]*conj(grafo[bar_13_8].adjacentes[0].Cur[0]));
+            grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Pnom[1] = creal(grafo[bar_13_8].V[1]*conj(grafo[bar_13_8].adjacentes[0].Cur[1]));
+            grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Pnom[2] = creal(grafo[bar_13_8].V[2]*conj(grafo[bar_13_8].adjacentes[0].Cur[2]));
+            grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Qnom[0] = cimag(grafo[bar_13_8].V[0]*conj(grafo[bar_13_8].adjacentes[0].Cur[0]));
+            grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Qnom[1] = cimag(grafo[bar_13_8].V[1]*conj(grafo[bar_13_8].adjacentes[0].Cur[1]));
+            grafo[bar_34_5].barra->loads[grafo[bar_34_5].barra->nloads - 1].Qnom[2] = cimag(grafo[bar_13_8].V[2]*conj(grafo[bar_13_8].adjacentes[0].Cur[2]));
+
+            grafo[bar_34_5].Cur[0] += grafo[bar_13_8].adjacentes[0].Cur[0];
+            grafo[bar_34_5].Cur[1] += grafo[bar_13_8].adjacentes[0].Cur[1];
+            grafo[bar_34_5].Cur[2] += grafo[bar_13_8].adjacentes[0].Cur[2];                
+
+            grafo[bar_34_5].S[0] += grafo[bar_13_8].V[0]*conj(grafo[bar_13_8].adjacentes[0].Cur[0]);
+            grafo[bar_34_5].S[1] += grafo[bar_13_8].V[1]*conj(grafo[bar_13_8].adjacentes[0].Cur[1]);
+            grafo[bar_34_5].S[2] += grafo[bar_13_8].V[2]*conj(grafo[bar_13_8].adjacentes[0].Cur[2]);
+        }
+    }
+
+    // Cálculo do Fluxo de Potência no nível de 34.5 kV
+    for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
+        if (runPF_alimentador[idAlim]){
+            // run power flow for feeder if true, selected on list
+            tIni = omp_get_wtime();
+            if (grafo[alimentadores[idAlim].noRaiz].Vbase*sqrt(3)/1000 == 34.5){
+                if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
+                else powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_IteracaoUnica(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
+                
+                runPF_alimentador[idAlim] = false;     // finished calculating power flow on the feeder
+                
+                
+            }
             tEnd = omp_get_wtime(); 
             tempoAUX = tEnd - tIni;
             fprintf(arquivo,"\n %d \t34.5\t%ld\t%d\t%.12lf\t%lf",i,alimentadores[idAlim].numeroNos,powerflow_result[idAlim].iteracoes,tempoAUX, powerflow_result[idAlim].menorTensao );
+
             
-            
-        }//Fim do loop dos alimentadores  
-        tEnd = omp_get_wtime();
-//        double tempoBFS = (double)(t2-t1)/CLOCKS_PER_SEC;
-        printf("\nTempo BFS: %lf\n", tEnd - tIni1);
-        fclose(arquivo);
-        
-        //Função Atualiza SEs
-        
+            //-----------------------------------------------------------------------
+            // for tap changing control at upper level   (check only at upper levels)
+            if (powerflow_result[idAlim].tap_change_flag && iteration_multiple_level_OPT){
+                tap_modified = true;
+                
+                printf("\n Mudanca de tap em 34.5 kV (Alimentador %d)- Fluxo de potência será recalculado em 13.8kV\n", idAlim);
+                runPF_alimentador[idAlim] = true;  // will run the power flow another time due to updated tap position
+                
+                // selects also the downstream feeders to run power flow (13.8kV)
+                for (int aux = 0; aux < numeroInterfaces; aux++){
+                    if (interfaceNiveis[aux][2] == 0){ //Para mútliplos níveis, até o momento somente dois
+                        int bar_13_8 = interfaceNiveis[aux][0];
+                        int bar_34_5 = interfaceNiveis[aux][1];
+
+                        if (grafo[bar_34_5].idAlim == idAlim){
+                            runPF_alimentador[grafo[bar_13_8].idAlim] = true;  // will run the power flow another time due to updated tap position
+                            
+                            // root node votlage in 13.8 kV updated according 34.5 kV
+                            grafo[bar_13_8].V[0] = cabs(grafo[bar_34_5].V[0])/cabs(grafo[bar_13_8].V[0])*grafo[bar_13_8].V[0];
+                            grafo[bar_13_8].V[1] = cabs(grafo[bar_34_5].V[1])/cabs(grafo[bar_13_8].V[1])*grafo[bar_13_8].V[1];
+                            grafo[bar_13_8].V[2] = cabs(grafo[bar_34_5].V[2])/cabs(grafo[bar_13_8].V[2])*grafo[bar_13_8].V[2];
+                        }
+                    }
+                }
+            }
+            //-----------------------------------------------------------------------
+        }
+    }//Fim do loop dos alimentadores  
+    tEnd = omp_get_wtime();
+    printf("\nTempo BFS: %lf\n", tEnd - tIni1);
     
-//     } //Final do pragma
+    
+    
+    // Check if the option for multiple iterations is on
+    if (!iteration_multiple_level_OPT){
+        tap_modified = false;
+    }
+    
+    } // end of loop of iterations among different levels (34.5kV and 13.8kV)
+    
+    
+    
+    fclose(arquivo);
+
+    //Função Atualiza SEs
         
          
     
@@ -2135,7 +2195,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
 //    FILE *arq_alim;
 //    arq_alim = fopen("resultadoAlim.csv","a+");
 //    
-//    fprintf(arq_alim,"ID\tNUMERO_NOS\tBARRA\tTENSAO_NOM\tNOS\tITERACOES\tMENOR_TENSAO_A\tMENOR_TENSAO_B\tMENOR_TENSAO_C\tCARREGAMENTO_A\tCARREGAMENTO_B\tCARREGAMENTO_C\tPERDAS\tCARREGAMENTO_REDE\tCARREG_CORRENTE\tMENRO_TENSAO\tQUEDA_MAX\tDESBALANCO_TENSAO\tDESBALANCO_CORRENTE\tDESBALANCO_ALIM\n");
+//    fprintf(arq_alim,"ID\tNUMERO_NOS\tBARRA\tTENSAO_NOM\tNOS\tITERACOES\tMENOR_TENSAO_A\tMENOR_TENSAO_B\tMENOR_TENSAO_C\tCARGA_TOTAL_A\tCARGA_TOTAL_B\tCARGA_TOTAL_C\tPERDAS\tCARREGAMENTO_REDE\tCARREG_CORRENTE\tMENRO_TENSAO\tQUEDA_MAX\tDESBALANCO_TENSAO\tDESBALANCO_CORRENTE\tDESBALANCO_ALIM\n");
     int id_menorV, id_maxCar, id_maxQueda, id_itmax, id_maxDesbalanco, id_maxDesbalancoCorrente, id_maxDesbalancoCorrenteAlim;
     powerflow_result_rede.iteracoes = 0;
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
@@ -2198,7 +2258,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
     
 //    fclose(arq_alim);
     
-    
+    powerflow_result_rede.carregamentoRede = powerflow_result_rede.carregamentoRedeABC[0] + powerflow_result_rede.carregamentoRedeABC[1] + powerflow_result_rede.carregamentoRedeABC[2];
     printf("Numero maximo de iteracoes: %d  (alim: %d  / %ld)\n", powerflow_result_rede.iteracoes, id_itmax,numeroAlimentadores);
     printf("Vmin: %lf p.u. (alim: %d)\n", powerflow_result_rede.menorTensao, id_menorV);
 //    printf("tensão mínima por fase: %.4lf \t %.4lf \t %.4lf kW\n", powerflow_result[18].menorTensaoABC[0] , powerflow_result[18].menorTensaoABC[1], powerflow_result[18].menorTensaoABC[2] );
@@ -2216,19 +2276,15 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
     //Impressão de resultados em arquivos
     int ppt_aux = 0;
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
-        salvaTensoesNodais("stateVT.txt","w+",alimentadores[idAlim],grafo);
-        salvaCorrentesRamos("loadingI.txt", "w+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
-//        if ((idAlim == 18) || (idAlim ==94)){
-//            if (ppt_aux == 0){
-//                salvaTensoesNodais("stateVT.txt","w+",alimentadores[idAlim],grafo);
-//                salvaCorrentesRamos("loadingI.txt", "w+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
-//                ppt_aux=1;
-//            }
-//            else{
-//                salvaTensoesNodais("stateVT.txt","a+",alimentadores[idAlim],grafo);
-//                salvaCorrentesRamos("loadingI.txt", "a+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
-//            }
-//        }
+            if (ppt_aux == 0){
+                salvaTensoesNodais("stateVT.txt","w+",alimentadores[idAlim],grafo);
+                salvaCorrentesRamos("loadingI.txt", "w+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
+                ppt_aux=1;
+            }
+            else{
+                salvaTensoesNodais("stateVT.txt","a+",alimentadores[idAlim],grafo);
+                salvaCorrentesRamos("loadingI.txt", "a+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
+            }
     }
     
 //    arquivo = fopen("resultadoAlimentadores_FaseA.csv","wt");
@@ -2574,7 +2630,9 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica(GRAFO *grafo, long int nu
         //Forward Sweep
         for(k = 0; k < alimentador.numeroNos; k++){
             control_action = forward(&grafo[RNP[k]], grafo);
+            if (control_action) powerflow_result.tap_change_flag = true;
         }
+        
 //        tEnd = omp_get_wtime();
 //        printf("For: %lf\n", tEnd - tIni);
 

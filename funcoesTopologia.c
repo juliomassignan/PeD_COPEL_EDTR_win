@@ -440,24 +440,29 @@ void buscaProfundidadeAlimentadores(GRAFO *grafo, long int numeroBarras, ALIMENT
     }
     
     
-    //    Atualiza a tensão base de acordo com a busca em profundidade
-    for(i=0; i<numeroAlimentadores; i++)
-    {
-        FILABARRAS *barraAtual = &(*alimentadores)[i].rnp[0];
-        double Vbase = grafo[barraAtual->idNo].Vbase;
-        while(barraAtual != NULL)
-        {
-            grafo[barraAtual->idNo].Vbase = Vbase;
-//            if(barraAtual->idNo == 1864) {
-//                printf("\nAlim: %d\n", i);
-//                printf("\nAlim: %d\n", i);
-//                getchar();
-//            }
-            barraAtual = barraAtual->prox;          
-            
-        }
-        
-    }
+//    //    Atualiza a tensão base de acordo com a busca em profundidade
+//    arquivo = fopen("lista_barra_alimentador.dad","w+");
+//    
+//    for(i=0; i<numeroAlimentadores; i++)
+//    {
+//        FILABARRAS *barraAtual = &(*alimentadores)[i].rnp[0];
+//        double Vbase = grafo[barraAtual->idNo].Vbase;
+//        while(barraAtual != NULL)
+//        {
+//            grafo[barraAtual->idNo].Vbase = Vbase;
+////            if(barraAtual->idNo == 1864) {
+////                printf("\nAlim: %d\n", i);
+////                printf("\nAlim: %d\n", i);
+////                getchar();
+////            }
+//            fprintf(arquivo,"\n%ld  \t\t\t%d",grafo[barraAtual->idNo].barra->ID, i);
+//            barraAtual = barraAtual->prox;          
+//            
+//        }
+//        
+//    }
+//    
+//    fclose(arquivo);
     
     
     

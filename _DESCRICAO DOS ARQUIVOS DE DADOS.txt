@@ -118,6 +118,34 @@ PARA - Barra para;
 FASES - Número de fases;
 ESTADO - 0 = aberto / 1 = fechado
 TIPO - 0 = disjuntor / 1 = Seccionadora
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+DSE  - Dados nominais de subestações
+
+ID,ESTADO,TIPO,Vpri,Snom,Ntrafos,RBAS,nome,sigla
+
+ID - Identificação numérica da subestacao;
+ESTADO - 0 = on/ 1 = off
+TIPO - 0 (livre)
+Vpri - Tensao Primaria
+Ntrafos - número de trasnformadores
+RBAS - indicaçao de conexão com a rede básica
+
+-------------------------------------------------------------------------------------------------------------------------------
+DALIM  - Dados nominais de alimentadores
+
+ID,ESTADO,TIPO,Vnom,BARRA_RAIZ,ID_SE,ID_TR,nome,sigla_SE,COD_CH
+
+ID - Identificação numérica da subestacao;
+ESTADO - 0 = on/ 1 = off
+TIPO - 0 (livre)
+Vnom - Tensao Primaria
+BARRA_RAIZ- identificação da barra raiz
+ID_SE - identificação numérica da subestação
+ID_TR - identificação numérica do trafo da subestação
+
+
 -------------------------------------------------------------------------------------------------------------------------------
 DMED - Dados de medidas analógicas:
 
@@ -141,8 +169,9 @@ FASES- Fases do medidor (N = 0; 1=A; 2=B; 3=C; 4=AB; 5=CA; 6=BC; 7=ABC);
 ZMED- Valor medido na unidade indicada acima
 SIGMA- Desvio padrão do medidor na unidade indicada acima
 
+
 -------------------------------------------------------------------------------------------------------------------------------
-DSTATUS - Dados de atualização de estado lógico dos equipamentos (medidas lógicas):
+DSTAT  - Dados de atualização de estado lógico dos equipamentos (medidas lógicas):
 
 DE,PARA,LIGADO,TAP1,TAP2,TAP3
 

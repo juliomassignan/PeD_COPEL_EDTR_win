@@ -416,6 +416,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     else {
         printf("Erro ao abrir arquivo DBAR.csv !!!\n");
+        getchar();
         exit(1);
     }
     // printf("\nDBAR ok\n");
@@ -480,6 +481,23 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     if(arquivo != NULL)
     {
             leituraVinicial(arquivo,barra, numeroBarras);
+            fclose(arquivo);
+    }
+    
+    strcpy(aux,aux2);
+    arquivo = fopen(strcat(aux,"DSE.csv"),"r"); //Le somente se existir o arquivo
+    if(arquivo != NULL)
+    {
+            //leituraAlimentadores
+            fclose(arquivo);
+    }
+    
+    
+    strcpy(aux,aux2);
+    arquivo = fopen(strcat(aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
+    if(arquivo != NULL)
+    {
+            //leituraSubestacoes
             fclose(arquivo);
     }
     
@@ -803,15 +821,13 @@ void leituraDSUBESTACAO(FILE *arquivo, DBAR **barras, long int *numeroBarras){
  * Essa função ...
  * 
  * 
- * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR, onde é retornado as informações dos bancos de capacitores.
- * @param numeroBarras quantidade total de barras
+ * @param ....
  * @return void.
  * @see leituraDados
- * @note As barras já devem ter sido alocadas para associar um banco de capacitor a ela.
+ * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces){
+long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, DBAR **barras, long int *numeroBarras, DRAM **ramos, long int *numeroRamos){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, j, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -819,6 +835,8 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces){
     FILE *arquivo;
     char text_aux[500];
     long int **interfaceNiveis = NULL;
+    
+    extern BOOL includeVR_INTERSE_OPT;
     
     // Leitura dos dados de medidores
     strcpy(text_aux,folder);
@@ -838,9 +856,9 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces){
 
         interfaceNiveis = (long int**)malloc((numLinhas + 1) * sizeof(long int*)); 
         for (i = 0; i < numLinhas; i++){ 
-             interfaceNiveis[i] = (long int*) malloc(3 * sizeof(long int));
-             for (j = 0; j < 3; j++){
-                  interfaceNiveis[i][j] = 0;
+             interfaceNiveis[i] = (long int*) malloc(4 * sizeof(long int));
+             for (j = 0; j < 4; j++){
+                  interfaceNiveis[i][j] = -1;
              }
         }
         numeroInterfaces[0] = numLinhas;
@@ -855,9 +873,54 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces){
             interfaceNiveis[contador][0] = getfield_int(dados,1);
             interfaceNiveis[contador][1] = getfield_int(dados,2);
             interfaceNiveis[contador][2] = getfield_int(dados,4);
+            
+            // para salvar a barra de 34.5 original da interface
+            interfaceNiveis[contador][3] = interfaceNiveis[contador][1];
             contador++;   
         }
         fclose(arquivo);
+        
+        
+        // Incluir um regulador de tensão e um transformador como modelo básico da INTERSE
+        // Falta incluir novo trafo Delta Estrela Aterrado 
+        int aux_bar = numeroBarras[0];
+        if (includeVR_INTERSE_OPT){
+            
+            //Percorre interfaces 34.5 / 13.8 para atualizar o modelo de fronteira com barras fictícias
+            for (int idInter = 0; idInter < contador; idInter++){
+                if (interfaceNiveis[idInter][1] < aux_bar){
+                    //-------------------------------------------
+                    // inclui nova barra de fronteira
+                    includeDBAR(barras, numeroBarras, 34500);
+                    
+                    // inclui regulador entre a barra de fronteira original e a nova barra de fronteira
+                    includeDREG(ramos, numeroRamos, interfaceNiveis[idInter][1], numeroBarras[0] - 1);
+                    
+                    // inclui nova barra de fronteira
+                    includeDBAR(barras, numeroBarras, 13800);
+                    
+                    // inclui transformador Delta Estrela entre a barra de fronteira original e a nova barra de fronteira
+                    includeDTRF(ramos, numeroRamos,  numeroBarras[0] - 2, numeroBarras[0] - 1, 34500, 13800, 1, 2);
+                    
+                    
+                    //-------------------------------------------
+                    //define a nova barra de interface da SE
+                    interfaceNiveis[idInter][1] = numeroBarras[0] - 1;
+                    
+                    // Atualiza novo no de fronteira do alimentador de 34.5 (jusante do regulador) para todas as demais interfaces
+                    for (int i = 0; i < contador; i++){
+                        if (interfaceNiveis[idInter][3] == interfaceNiveis[i][1]) 
+                            interfaceNiveis[i][1] = interfaceNiveis[idInter][1];
+                    }
+                }
+                
+            }
+            
+        }
+        
+        
+        
+        
         return(interfaceNiveis);
     }
     else{
@@ -1437,6 +1500,209 @@ void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras){
     }
 }
 
+
+//------------------------------------------------------------------------------
+//
+// FUNÇÕES DE INSERÇÃO DE NOVOS ELEMENTOS NA REDE ELÉTRICA
+//
+//------------------------------------------------------------------------------
+/**
+ * @brief Função auxiliar para a inserção de nova barra elétrica no final do vetor DBAR.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DBAR a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase){
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    
+    
+    contador = numeroBarras[0];
+    
+    if (((*barras) = (DBAR *)realloc((*barras), (numeroBarras[0] + 1) * sizeof(DBAR)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para barras fictícias !!!!");
+        exit(1); 
+    }
+    
+    (*barras)[contador].ID      = contador;
+    (*barras)[contador].i       = contador;
+    (*barras)[contador].ligacao = YN;
+    (*barras)[contador].fases   = ABC;
+    (*barras)[contador].Vbase   = Vbase/pow(3,0.5);
+    (*barras)[contador].tipo    = 0;
+
+    (*barras)[contador].nloads  = 0;
+    (*barras)[contador].shunts  = NULL;
+    (*barras)[contador].nshunts = 0;
+    (*barras)[contador].gds     = NULL;
+    (*barras)[contador].ngds    = 0;
+
+    (*barras)[contador].Vinicial[0] = 1*(cos(0) + I*sin(0));
+    (*barras)[contador].Vinicial[1] = 1*(cos(-120*PI/180) + I*sin(-120*PI/180));
+    (*barras)[contador].Vinicial[2] = 1*(cos(120*PI/180) + I*sin(120*PI/180));
+
+    (*barras)[contador].loads[0].Pnom[0] = 0;
+    (*barras)[contador].loads[0].Pnom[1] = 0;
+    (*barras)[contador].loads[0].Pnom[2] = 0;
+    (*barras)[contador].loads[0].Qnom[0] = 0;
+    (*barras)[contador].loads[0].Qnom[1] = 0;
+    (*barras)[contador].loads[0].Qnom[2] = 0;   
+    
+    numeroBarras[0]++;
+}
+
+
+/**
+ * @brief Função auxiliar para a inserção de novo regulador de tensão elétrica no final do vetor DRAM.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DREG a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void includeDREG(DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    
+    
+    contador = numeroRamos[0];
+    
+     if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(DRAM)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
+        exit(1); 
+    }
+    
+    (*ramos)[contador].DE = DE;
+    (*ramos)[contador].PARA = PARA;
+    (*ramos)[contador].tipo = 2;
+    (*ramos)[contador].estado = 1;
+    (*ramos)[contador].fases = ABC;
+    (*ramos)[contador].comprimento = 1;
+
+    (*ramos)[contador].k = (*ramos)[contador].DE ;
+    (*ramos)[contador].m = (*ramos)[contador].PARA ;
+
+    //Preencher o (*ramos)[contador].regulador
+    //Valores default
+    (*ramos)[contador].regulador.Vnom = 34500;
+    (*ramos)[contador].regulador.regulacao = 0.10;
+    (*ramos)[contador].regulador.ntaps = 16;
+    (*ramos)[contador].regulador.Snominal = 10000.00;
+    (*ramos)[contador].regulador.R = (0.0063) * pow((*ramos)[contador].regulador.Vnom,2)/((*ramos)[contador].regulador.Snominal*1000)/3;
+    (*ramos)[contador].regulador.X = (0.0063) * pow((*ramos)[contador].regulador.Vnom,2)/((*ramos)[contador].regulador.Snominal*1000)/3;
+    (*ramos)[contador].regulador.lig = 1;
+    (*ramos)[contador].regulador.TP = 65;
+    (*ramos)[contador].regulador.TC = 100;
+    (*ramos)[contador].regulador.deltaV =  0.00833; // 1 / 120 (1 volt na base de 120 volts secundários)
+    (*ramos)[contador].regulador.R1 = 0;
+    (*ramos)[contador].regulador.X1 = 0;
+    (*ramos)[contador].regulador.R2 = 0;
+    (*ramos)[contador].regulador.X2 = 0;
+    (*ramos)[contador].regulador.R3 = 0;
+    (*ramos)[contador].regulador.X3 = 0;
+    (*ramos)[contador].regulador.V1 = 122.6;
+    (*ramos)[contador].regulador.V2 = 122.6;
+    (*ramos)[contador].regulador.V3 = 122.6;
+    (*ramos)[contador].regulador.controle = 99;  //Controle em p.u. em relação a barra imediatamente após o regulador - caso COPEL
+    (*ramos)[contador].regulador.tap[0] = 0;
+    (*ramos)[contador].regulador.tap[1] = 0;
+    (*ramos)[contador].regulador.tap[2] = 0;
+
+    (*ramos)[contador].regulador.tap_ini[0] = 0;
+    (*ramos)[contador].regulador.tap_ini[1] = 0;
+    (*ramos)[contador].regulador.tap_ini[2] = 0;
+
+    numeroRamos[0]++;
+    
+    
+}
+
+
+
+
+/**
+ * @brief Função auxiliar para a inserção de novo transformador de potência no final do vetor DRAM.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DTRF a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec){
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    
+    
+    contador = numeroRamos[0];
+    
+     if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(DRAM)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
+        exit(1); 
+    }
+    
+    (*ramos)[contador].DE = DE;
+    (*ramos)[contador].PARA = PARA;
+    (*ramos)[contador].tipo = 1;
+    (*ramos)[contador].estado = 1;
+    (*ramos)[contador].fases = ABC;
+    (*ramos)[contador].comprimento = 1;
+
+    (*ramos)[contador].k = (*ramos)[contador].DE ;
+    (*ramos)[contador].m = (*ramos)[contador].PARA ;
+
+    //Preencher o (*ramos)[contador].regulador
+    //Valores default
+    (*ramos)[contador].trafo.Vpri = Vpri;
+    (*ramos)[contador].trafo.Vsec = Vsec;
+    (*ramos)[contador].trafo.Snominal = 10000.00;
+    (*ramos)[contador].trafo.R = (0.033) * pow((*ramos)[contador].trafo.Vsec,2)/((*ramos)[contador].trafo.Snominal*1000)/3; //R*(Vpri^2/(S*1000))
+    (*ramos)[contador].trafo.X = (0.063) * pow((*ramos)[contador].trafo.Vsec,2)/((*ramos)[contador].trafo.Snominal*1000)/3;
+    (*ramos)[contador].trafo.lig_pri = lig_pri;
+    (*ramos)[contador].trafo.lig_sec = lig_sec;
+    (*ramos)[contador].trafo.defasamento = 1;
+    (*ramos)[contador].trafo.tap_pri = 1;
+    (*ramos)[contador].trafo.tap_sec = 1;
+
+
+     (*ramos)[contador].trafo.p_imag =0;
+     (*ramos)[contador].trafo.noLoadLosses =0;
+
+    numeroRamos[0]++;
+    
+    
+}
+
+
+
 //------------------------------------------------------------------------------
 //
 // FUNÇÕES DE LEITURA DE DADOS ANALÓGICOS E DISCRETOS DO SISTEMA SUPERVISÓRIO
@@ -1515,8 +1781,8 @@ long int **leituraMedidas(char *folder,char *file, DMED **medidas, DRAM *ramos, 
     
     numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
     for (i = 0; i < 14; i++){ 
-         numeroMedidas[i] = (long int*) malloc(8 * sizeof(long int));
-         for (j = 0; j < 8; j++){
+         numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
+         for (j = 0; j < 20; j++){
               numeroMedidas[i][j] = 0;
          }
     }
@@ -2319,7 +2585,7 @@ void salvaMedidasRedeEletrica(DMED *medidas, long int **numeroMedidas)
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos, int idAlim, double Sbase, BOOL opt_Choice, const char *modo)
+int salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos, int idAlim, double Sbase, BOOL opt_Choice, int id_begin, const char *modo)
 {
     long int i,j, idRam, auxTipo, para;
     FILE *arquivo,*arquivo1,*arquivo2,*arquivo3;
@@ -2334,7 +2600,7 @@ void salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *
     // CRia lista sequencial de barras
     listaBarrasNew = (long int *)malloc( (numeroBarras + 2) * sizeof(long int));
     for (i=0;i<numeroBarras;i++) listaBarrasNew[i] = -1;
-    long int k = 0;
+    long int k = id_begin;
     barraAtual = &alimentadores[idAlim].rnp[0];  
     while(barraAtual != NULL)
     {
@@ -2348,6 +2614,7 @@ void salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *
         }
         barraAtual = barraAtual->prox;
     }
+    id_begin = k;
     
     //--------------------------------------------------------------------------
     // Impressão do Arquivo de Barras
@@ -2717,9 +2984,10 @@ void salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *
     
     fclose(arquivo);   
     
-    free(listaBarrasNew);
+    
+    free(listaBarrasNew);    
+    return (id_begin);
 }
-
 
 
 
