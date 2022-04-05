@@ -573,7 +573,7 @@ void geraGrafo(TF_GRAFO ** grafo, TF_DBAR *barras, long int numeroBarras,TF_DRAM
         for(j=0;j<3;j++) (*grafo)[i].V_aux[j] = 0;
         
         (*grafo)[i].medidores = NULL;
-        (*grafo)[i].medidores = (TF_DMED**)malloc(30 * sizeof(TF_DMED));
+        (*grafo)[i].medidores = (TF_DMED**)malloc(30 * sizeof(TF_DMED *));
         for (j=0;j<30;j++)(*grafo)[i].medidores[j] = NULL;
         for(j=0;j<3;j++){
             for(k=0;k<3;k++){
