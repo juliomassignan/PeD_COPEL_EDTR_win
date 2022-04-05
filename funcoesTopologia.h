@@ -17,7 +17,7 @@
 /**
  * @brief Função auxiliar para alocar novo nó em lista encadeada do tipo FILABARRAS
  *
- * Essa função realiza a alocação de um novo nó na última posíção da lista encadeada do tipo FILABARRAS @p **setor com a respectiva identificação 
+ * Essa função realiza a alocação de um novo nó na última posíção da lista encadeada do tipo TF_FILABARRAS @p **setor com a respectiva identificação 
  * @p idNo para o novo nó.
  * A função retorna @c void .
  * 
@@ -28,12 +28,12 @@
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void adicionaNo(FILABARRAS **setor, long int idNo);
+void adicionaNo(TF_FILABARRAS **setor, long int idNo);
 
 /**
  * @brief Função auxiliar para alocar novo nó em lista encadeada do tipo FILABARRAS
  *
- * Essa função realiza a alocação de um novo nó na última posíção da lista encadeada do tipo FILABARRAS @p **fila com a respectiva identificação 
+ * Essa função realiza a alocação de um novo nó na última posíção da lista encadeada do tipo TF_FILABARRAS @p **fila com a respectiva identificação 
  * @p idNo para o novo nó.
  * A função retorna @c void .
  * 
@@ -44,12 +44,12 @@ void adicionaNo(FILABARRAS **setor, long int idNo);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void adicionaNoNaFila(FILABARRAS ** fila, long int idNo);
+void adicionaNoNaFila(TF_FILABARRAS ** fila, long int idNo);
 
 /**
  * @brief Função auxiliar para apontar para o próximo nó em lista encadeada do tipo FILABARRAS
  *
- * Essa função altera a posição do ponteiro FILABARRAS @p **fila para o próximo nó da lista encadeada até que NULL seja encontrado.
+ * Essa função altera a posição do ponteiro TF_FILABARRAS @p **fila para o próximo nó da lista encadeada até que NULL seja encontrado.
  * A função retorna @c void .
  * 
  * @param **fila ponteiro para ponteiro com o próximo elemento da lista encadeada
@@ -58,12 +58,12 @@ void adicionaNoNaFila(FILABARRAS ** fila, long int idNo);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void apontaProxNoNaFila(FILABARRAS ** fila);
+void apontaProxNoNaFila(TF_FILABARRAS ** fila);
 
 /**
  * @brief Função auxiliar para retira o primeiro nó em lista encadeada do tipo FILABARRAS
  *
- * Essa função retira a primeira a posição do ponteiro FILABARRAS @p **fila e aponta para o próximo nó da lista encadeada até que NULL seja encontrado.
+ * Essa função retira a primeira a posição do ponteiro TF_FILABARRAS @p **fila e aponta para o próximo nó da lista encadeada até que NULL seja encontrado.
  * A função retorna @c int .
  * 
  * @param **fila ponteiro para ponteiro com o próximo elemento da lista encadeada
@@ -72,12 +72,12 @@ void apontaProxNoNaFila(FILABARRAS ** fila);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-int retiraNoDaFila(FILABARRAS ** fila);
+int retiraNoDaFila(TF_FILABARRAS ** fila);
 
 /**
  * @brief Função auxiliar para testar se a lista encadeada está vazia
  *
- * Essa função testa se a posição atual do ponteiro FILABARRAS @p **fila é NULL.
+ * Essa função testa se a posição atual do ponteiro TF_FILABARRAS @p **fila é NULL.
  * A função retorna @c BOOL .
  * 
  * @param **fila ponteiro com o nó atual da lista encadeada
@@ -86,7 +86,7 @@ int retiraNoDaFila(FILABARRAS ** fila);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL filaNaoVazia(FILABARRAS * fila);
+BOOL filaNaoVazia(TF_FILABARRAS * fila);
 
 /**
  * @brief Função auxiliar para testar se a lista encadeada contém nó especificado
@@ -101,7 +101,7 @@ BOOL filaNaoVazia(FILABARRAS * fila);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL estaLista(FILABARRAS *setor, int idNo);
+BOOL estaLista(TF_FILABARRAS *setor, int idNo);
 
 /**
  * @brief Função auxiliar para testar se o nó adjacente está conectado ao atual por ramo em estado fechado (ligado ou energizado)
@@ -109,13 +109,13 @@ BOOL estaLista(FILABARRAS *setor, int idNo);
  * Essa função testa se o nó adjacente @p adjancete está concetado por um ramo no grafo cujo estado é fechado (ligado ou energizado).
  * A função retorna @c BOOL .
  * 
- * @param adjacente estrutura do tipo NOADJACENTE para testar se possui ramo fechado
+ * @param adjacente estrutura do tipo TF_NOADJACENTE para testar se possui ramo fechado
  * @return BOOL
  * @see
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL ramoLigado(NOADJACENTE adjacente);
+BOOL ramoLigado(TF_NOADJACENTE adjacente);
 
 /**
  * @brief Função auxiliar para testar se dois nós estão conexos dentro da topologia do grafo
@@ -131,7 +131,7 @@ BOOL ramoLigado(NOADJACENTE adjacente);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL estaListaAdjacencias(GRAFO *grafo, long int idNoRaiz, long int idNoAdj);
+BOOL estaListaAdjacencias(TF_GRAFO *grafo, long int idNoRaiz, long int idNoAdj);
 
 //------------------------------------------------------------------------------
 //
@@ -160,7 +160,7 @@ BOOL estaListaAdjacencias(GRAFO *grafo, long int idNoRaiz, long int idNoAdj);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void buscaProfundidade(FILABARRAS *barraAtual, long int idNo, int profundidade,  BOOL *visitado, GRAFO * grafo, long int idAlim, long int *nos_alim);
+void buscaProfundidade(TF_FILABARRAS *barraAtual, long int idNo, int profundidade,  BOOL *visitado, TF_GRAFO * grafo, long int idAlim, long int *nos_alim);
 
 /**
  * @brief Função para realizar busca em largura no grafo da rede elétrica
@@ -181,7 +181,7 @@ void buscaProfundidade(FILABARRAS *barraAtual, long int idNo, int profundidade, 
  * @note Implementada para testes e validações, mas o código utiliza a busca em profundidade para obter a representação via RNP.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void buscaLargura(GRAFO * grafo, ALIMENTADOR *alimentador, long int idAlim, long int idNoRaiz, BOOL * visitado);
+void buscaLargura(TF_GRAFO * grafo, TF_ALIMENTADOR *alimentador, long int idAlim, long int idNoRaiz, BOOL * visitado);
 
 
 /**
@@ -198,9 +198,9 @@ void buscaLargura(GRAFO * grafo, ALIMENTADOR *alimentador, long int idAlim, long
  * long int numeroRamos = 0;
  * char *folder = NULL;
  * DBAR *barraExemplo = NULL;
- * DRAM *ramoExemplo = NULL; 
- * GRAFO *grafoExemplo = NULL;
- * ALIMENTADOR *alimentadorExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
+ * TF_ALIMENTADOR *alimentadorExemplo = NULL;
  * 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
@@ -218,7 +218,7 @@ void buscaLargura(GRAFO * grafo, ALIMENTADOR *alimentador, long int idAlim, long
  * @note 
  * @warning 
  */
-void buscaProfundidadeAlimentadores(GRAFO *grafo, long int numeroBarras, ALIMENTADOR **alimentadores, long int numeroAlimentadores);
+void buscaProfundidadeAlimentadores(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR **alimentadores, long int numeroAlimentadores);
 
 /**
  * @brief Função principal que cria estrutura de dados para representar o grafo da rede elétrica e armazenar as condições topológicas e operacionais 
@@ -228,8 +228,8 @@ void buscaProfundidadeAlimentadores(GRAFO *grafo, long int numeroBarras, ALIMENT
  * da rede elerica. Recebe como parâmetros de entrada as barras @p barras com informações do nós, cargas, bancos de capacitores e geradores 
  * distribuídos que compõem os nós do grafo da rede elétrica, e os ramos @p ramos com informações de circuitos, transformadores, reguladores de 
  * tensão e chaves que compõem os ramos do grafo da rede eletrica, definindo assim a conectividade e adjacência do grafo. Recebe como parâmetros 
- * de entrada e saída a estrutura de dados do tipo GRAFO @p grafo com todas as informações a respeito da rede elétrica a aloca os nós e adjacências 
- * do grafo com estrutura interna do tipo NOADJACENTE que apontam para as barras e ramos inicialmente definidos.
+ * de entrada e saída a estrutura de dados do tipo TF_GRAFO @p grafo com todas as informações a respeito da rede elétrica a aloca os nós e adjacências 
+ * do grafo com estrutura interna do tipo TF_NOADJACENTE que apontam para as barras e ramos inicialmente definidos.
  * A função retorna @c void .
  * 
  * Para utilizar a função:
@@ -239,8 +239,8 @@ void buscaProfundidadeAlimentadores(GRAFO *grafo, long int numeroBarras, ALIMENT
  * long int numeroRamos = 0;
  * char *folder = NULL;
  * DBAR *barraExemplo = NULL;
- * DRAM *ramoExemplo = NULL; 
- * GRAFO *grafoExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
  * 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
@@ -258,7 +258,7 @@ void buscaProfundidadeAlimentadores(GRAFO *grafo, long int numeroBarras, ALIMENT
  * @note 
  * @warning
  */
-void geraGrafo(GRAFO ** grafo, DBAR *barras, long int numeroBarras,DRAM *ramos,long int numeroRamos);
+void geraGrafo(TF_GRAFO ** grafo, TF_DBAR *barras, long int numeroBarras,TF_DRAM *ramos,long int numeroRamos);
 
 /**
  * @brief Função auxiliar para salvar topologia de alimentador obtida pela busca em profundidade em arquivo externo
@@ -278,7 +278,7 @@ void geraGrafo(GRAFO ** grafo, DBAR *barras, long int numeroBarras,DRAM *ramos,l
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void imprimeAlimentador(FILE *arquivo,GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int idAlim);
+void imprimeAlimentador(FILE *arquivo,TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int idAlim);
 
 //------------------------------------------------------------------------------
 //
@@ -290,7 +290,7 @@ void imprimeAlimentador(FILE *arquivo,GRAFO *grafo, long int numeroBarras, ALIME
  * @brief Função auxiliar para montar o quadripólo de admitância trifásico de circuitos (ramais ou linhas de distribuição)
  *
  * Essa função monta o quadripólo de admitâncias trifásicas matricial para ramos da rede elétrica cujos componentes são circuitos trifásicos.
- * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo DRAM @p ramo que armazena as informações matriciais do quadripólo de
+ * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo TF_DRAM @p ramo que armazena as informações matriciais do quadripólo de
  * admitâncias de um ramo respectivo, e como parâmetro de entrada os dados detalhados do circuito trifásico @p linha com o parâmetros deste componente.
  * A função retorna @c void .
  * 
@@ -301,13 +301,13 @@ void imprimeAlimentador(FILE *arquivo,GRAFO *grafo, long int numeroBarras, ALIME
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void montaQuadripoloLinha(DRAM *ramo, DLIN *linha);
+void montaQuadripoloLinha(TF_DRAM *ramo, TF_DLIN *linha);
 
 /**
  * @brief Função auxiliar para montar o quadripólo de admitância trifásico de transformadores de potência
  * 
  * Essa função monta o quadripólo de admitâncias trifásicas matricial para ramos da rede elétrica cujos componentes são transformadores de potência.
- * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo DRAM @p ramo que armazena as informações matriciais do quadripólo de
+ * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo TF_DRAM @p ramo que armazena as informações matriciais do quadripólo de
  * admitâncias de um ramo respectivo, e como parâmetro de entrada os dados detalhados do transformador @p trafo com o parâmetros deste componente.
  * A função retorna @c void .
  * 
@@ -318,13 +318,13 @@ void montaQuadripoloLinha(DRAM *ramo, DLIN *linha);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void montaQuadripoloTrafo(DRAM *ramo, DTRF *trafo);
+void montaQuadripoloTrafo(TF_DRAM *ramo, TF_DTRF *trafo);
 
 /**
  * @brief Função auxiliar para montar o quadripólo de admitância trifásico de reguladores de tensão
  * 
  * Essa função monta o quadripólo de admitâncias trifásicas matricial para ramos da rede elétrica cujos componentes são reguladores de tensão.
- * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo DRAM @p ramo que armazena as informações matriciais do quadripólo de
+ * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo TF_DRAM @p ramo que armazena as informações matriciais do quadripólo de
  * admitâncias de um ramo respectivo, e como parâmetro de entrada os dados detalhados do reguladores @p reg com o parâmetros deste componente.
  * A função retorna @c void .
  * 
@@ -335,13 +335,13 @@ void montaQuadripoloTrafo(DRAM *ramo, DTRF *trafo);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void montaQuadripoloRegulador(DRAM *ramo, DREG *reg);
+void montaQuadripoloRegulador(TF_DRAM *ramo, TF_DREG *reg);
 
 /**
  * @brief Função auxiliar para montar o quadripólo de admitância trifásico de bancos de capacitores
  * 
  * Essa função monta o quadripólo de admitâncias trifásicas matricial para ramos da rede elétrica cujos componentes são transformadores de potência.
- * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo GRAFO @p no que armazena as informações matriciais do quadripólo de
+ * Esta função recebe como parâmetro de entrada e saída uma estrutura do tipo TF_GRAFO @p no que armazena as informações matriciais do quadripólo de
  * admitâncias de um nó respectivo, e como parâmetro de entrada os dados detalhados do banco de capacitor @p shunt com o parâmetros deste componente.
  * A função retorna @c void .
  * 
@@ -352,7 +352,7 @@ void montaQuadripoloRegulador(DRAM *ramo, DREG *reg);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void montaQuadripoloShunt(GRAFO *no, DSHNT *shunt);
+void montaQuadripoloShunt(TF_GRAFO *no, TF_DSHNT *shunt);
 
 /**
  * @brief Função principal que realiza a transformação das grandezas elétricas em pu (por unidade)
@@ -373,8 +373,8 @@ void montaQuadripoloShunt(GRAFO *no, DSHNT *shunt);
  * double Sbase = 10000;
  * char *folder = NULL;
  * DBAR *barraExemplo = NULL;
- * DRAM *ramoExemplo = NULL; 
- * GRAFO *grafoExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
  * 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
@@ -396,7 +396,7 @@ void montaQuadripoloShunt(GRAFO *no, DSHNT *shunt);
  * @note 
  * @warning
  */
-void calculaPU(GRAFO *grafo, long int numeroBarras, DRAM *ramos, long int numeroRamos, double Sbase);
+void calculaPU(TF_GRAFO *grafo, long int numeroBarras, TF_DRAM *ramos, long int numeroRamos, double Sbase);
 
 /**
  * @brief Função principal que realiza a atualização dos valores de taps nas matrizes do quadripólo de admitâncias trifásico de reguladores e transformadores
@@ -414,8 +414,8 @@ void calculaPU(GRAFO *grafo, long int numeroBarras, DRAM *ramos, long int numero
  * double Sbase = 10000;
  * char *folder = NULL;
  * DBAR *barraExemplo = NULL;
- * DRAM *ramoExemplo = NULL; 
- * GRAFO *grafoExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
  * 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
@@ -433,12 +433,12 @@ void calculaPU(GRAFO *grafo, long int numeroBarras, DRAM *ramos, long int numero
  * @note 
  * @warning
  */
-void atualizaTaps(DRAM *ramos, long int numeroRamos);
+void atualizaTaps(TF_DRAM *ramos, long int numeroRamos);
 
 
 
 
-void atualizaEstadoChaves(const char *folder, const char *filename, GRAFO *grafo, long int numeroBarras);
+void atualizaEstadoChaves(const char *folder, const char *filename, TF_GRAFO *grafo, long int numeroBarras);
 
 #endif	/* FUNCOESTOPOLOGIA_H */
 

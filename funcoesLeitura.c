@@ -161,7 +161,7 @@ double getfield_double(char* lin, int num){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-char* charLigacao(LIGACAO num){
+char* charLigacao(TF_LIGACAO num){
     char *tok = (char*) malloc (2*sizeof(char));
     switch(num){
         case O:
@@ -205,7 +205,7 @@ char* charLigacao(LIGACAO num){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-char* charFases(FASES num){
+char* charFases(TF_FASES num){
     char *tok = (char*) malloc (3*sizeof(char));
     switch(num){
         case N:
@@ -357,7 +357,7 @@ char* charMedidor(long int num){
  * long int numeroRamos = 0;
  * char *folder = NULL;
  * DBAR *barra = NULL;
- * DRAM *ramo = NULL; 
+ * TF_DRAM *ramo = NULL; 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
  *      printf("leitura concluida\n");
@@ -381,7 +381,7 @@ char* charMedidor(long int num){
  * @note
  * @warning .
  */
-char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *numeroRamos, long int *numeroAlimentadores)
+char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long int *numeroRamos, long int *numeroAlimentadores)
 {
     FILE *arquivo = NULL;
     char linha[1000],*pasta,*folder,aux[1000],aux2[1000];
@@ -401,13 +401,17 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     fgets(linha, 1000, config);
     folder = getfield(linha,1);
-    printf("Main directory: %s \n", folder);
+    fgets(linha, 1000, config);
+    pasta=  getfield(linha,1);
+    printf("Main directory: \n %s \n", folder);
+    printf("Data sub-folder: \n %s \n", pasta);
     fclose(config);
-    strcpy(aux,folder);
+    strcpy(aux,pasta);
     strcpy(aux2,folder);
 
     
     // Leitura dos dados de barras
+    
     arquivo = fopen(strcat(aux,"DBAR.csv"),"r");
     if(arquivo != NULL)
     {
@@ -421,7 +425,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     // printf("\nDBAR ok\n");
 
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DSHNT.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -430,7 +434,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }    
     // printf("DSHNT ok\n");
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DGD.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -440,7 +444,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     // printf("DGDS ok\n");   
     // Leitura dos dados de ramos
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DLIN.csv"),"r");//Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -449,7 +453,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     // printf("DLIN ok\n");
 
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DTRF.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -458,7 +462,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     // printf("DTRF ok\n");
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DREG.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -467,7 +471,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     // printf("DREG ok\n");
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DSWTC.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -476,7 +480,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     // printf("DSWTC ok\n");
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"Vinicial.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -484,7 +488,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
             fclose(arquivo);
     }
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DSE.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -493,7 +497,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
     }
     
     
-    strcpy(aux,aux2);
+    strcpy(aux,pasta);
     arquivo = fopen(strcat(aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -528,7 +532,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
  * quantidade de alimentadores da rede para posteriormente serem associadas a alguma subestação.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDBAR(FILE *arquivo, DBAR **barras, long int *numeroBarras, long int *numeroAlimentadores)
+void leituraDBAR(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras, long int *numeroAlimentadores)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -545,7 +549,7 @@ void leituraDBAR(FILE *arquivo, DBAR **barras, long int *numeroBarras, long int 
     }
     rewind(arquivo);
 
-    if (((*barras) = (DBAR *)malloc( (numLinhas + 1) * sizeof(DBAR)))==NULL)
+    if (((*barras) = (TF_DBAR *)malloc( (numLinhas + 1) * sizeof(TF_DBAR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as barras !!!!");
         exit(1); 
@@ -721,7 +725,7 @@ void leituraDBAR(FILE *arquivo, DBAR **barras, long int *numeroBarras, long int 
  * @note As barras já devem ter sido alocadas para associar um banco de capacitor a ela.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDSHNT(FILE *arquivo, DBAR **barras, long int *numeroBarras){
+void leituraDSHNT(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -740,7 +744,7 @@ void leituraDSHNT(FILE *arquivo, DBAR **barras, long int *numeroBarras){
         aux = (getfield_int(dados,1));
         if(aux != -1){
             (*barras)[aux].nshunts++;
-            if (((*barras)[aux].shunts = (DSHNT *)realloc((*barras)[aux].shunts, (*barras)[aux].nshunts  * sizeof(DSHNT)))==NULL)
+            if (((*barras)[aux].shunts = (TF_DSHNT *)realloc((*barras)[aux].shunts, (*barras)[aux].nshunts  * sizeof(TF_DSHNT)))==NULL)
             {
                 printf("Erro -- Nao foi possivel alocar espaco de memoria para shunts !!!!");
                 exit(1); 
@@ -777,14 +781,14 @@ void leituraDSHNT(FILE *arquivo, DBAR **barras, long int *numeroBarras){
  * 
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR, onde é retornado as informações dos bancos de capacitores.
+ * @param barras é um ponteiro para o ponteiro da estrutura do tipo do TF_DBAR, onde é retornado as informações dos bancos de capacitores.
  * @param numeroBarras quantidade total de barras
  * @return void.
  * @see leituraDados
  * @note As barras já devem ter sido alocadas para associar um banco de capacitor a ela.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDSUBESTACAO(FILE *arquivo, DBAR **barras, long int *numeroBarras){
+void leituraDSUBESTACAO(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -799,7 +803,7 @@ void leituraDSUBESTACAO(FILE *arquivo, DBAR **barras, long int *numeroBarras){
         aux = (getfield_int(dados,1));
         if(aux != -1){
             (*barras)[aux].nshunts++;
-            if (((*barras)[aux].shunts = (DSHNT *)realloc((*barras)[aux].shunts, (*barras)[aux].nshunts  * sizeof(DSHNT)))==NULL)
+            if (((*barras)[aux].shunts = (TF_DSHNT *)realloc((*barras)[aux].shunts, (*barras)[aux].nshunts  * sizeof(TF_DSHNT)))==NULL)
             {
                 printf("Erro -- Nao foi possivel alocar espaco de memoria para shunts !!!!");
                 exit(1); 
@@ -827,7 +831,7 @@ void leituraDSUBESTACAO(FILE *arquivo, DBAR **barras, long int *numeroBarras){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, DBAR **barras, long int *numeroBarras, DRAM **ramos, long int *numeroRamos){
+long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, TF_DBAR **barras, long int *numeroBarras, TF_DRAM **ramos, long int *numeroRamos){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, j, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -947,7 +951,7 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
  * @note As barras já devem ter sido alocadas para associar um gerador distribuído a ela.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDGD(FILE *arquivo, DBAR **barras, long int *numeroBarras){
+void leituraDGD(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -965,7 +969,7 @@ void leituraDGD(FILE *arquivo, DBAR **barras, long int *numeroBarras){
         }
         if(aux != -1){
             (*barras)[aux].ngds++;
-            if (((*barras)[aux].gds = (DGD *)realloc((*barras)[aux].gds, (*barras)[aux].ngds * sizeof(DGD)))==NULL)
+            if (((*barras)[aux].gds = (TF_DGD *)realloc((*barras)[aux].gds, (*barras)[aux].ngds * sizeof(TF_DGD)))==NULL)
             {
                 printf("Erro -- Nao foi possivel alocar espaco de memoria para gds !!!!");
                 exit(1); 
@@ -1006,26 +1010,26 @@ void leituraDGD(FILE *arquivo, DBAR **barras, long int *numeroBarras){
  * @brief Função auxiliar para a leitura do arquivo DLIN.csv, referente às informações de circuitos trifásicos (ramais). 
  *
  * Essa função realiza a leitura do arquivo DLIN.csv que contém os dados relativos aos ciruitos trifásico do sistema. Armazena estes dados
- * dentro da estrutura de dados do tipo DLIM, como um parâmetro interno de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * dentro da estrutura de dados do tipo DLIM, como um parâmetro interno de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos circuitos e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de circuitos trifásicos
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de circuitos trifásicos
  * internamente numa estrutura de dados do tipo DLIM, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
- * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo TF_DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os circuitos são armazenados internamente em um tipo DLIN
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os circuitos são armazenados internamente em um tipo DLIN
  * @param numeroRamos retorna a quantidade total de ramos
- * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
+ * @param barras é um ponteiro para o ponteiro da estrutura do tipo do TF_DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
  * @return void.
  * @see leituraDados
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDLIN(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras)
+void leituraDLIN(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -1039,7 +1043,7 @@ void leituraDLIN(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
         numLinhas++;
     }
     rewind(arquivo);
-    if (((*ramos) = (DRAM *)malloc( (numLinhas + 1) * sizeof(DRAM)))==NULL)
+    if (((*ramos) = (TF_DRAM *)malloc( (numLinhas + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as linhas !!!!");
         exit(1); 
@@ -1145,26 +1149,26 @@ void leituraDLIN(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @brief Função auxiliar para a leitura do arquivo DTRF.csv, referente às informações de transormadores de potência. 
  *
  * Essa função realiza a leitura do arquivo DTRF.csv que contém os dados relativos aos trasnformadores de potência do sistema. Armazena estes dados
- * dentro da estrutura de dados do tipo DTRF, como um parâmetro interno de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * dentro da estrutura de dados do tipo DTRF, como um parâmetro interno de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos trnasofrmadores e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de transformadores
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de transformadores
  * internamente numa estrutura de dados do tipo DTRF, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
- * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo TF_DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os transformadores são armazenados internamente em um tipo DTRF
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os transformadores são armazenados internamente em um tipo DTRF
  * @param numeroRamos retorna a quantidade total de ramos
- * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
+ * @param barras é um ponteiro para o ponteiro da estrutura do tipo do TF_DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
  * @return void.
  * @see leituraDados
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDTRF(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras)
+void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -1179,7 +1183,7 @@ void leituraDTRF(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
     }
     rewind(arquivo);
     
-    if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + numLinhas + 1) * sizeof(DRAM)))==NULL)
+    if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + numLinhas + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os trafos !!!!");
         exit(1); 
@@ -1243,26 +1247,26 @@ void leituraDTRF(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @brief Função auxiliar para a leitura do arquivo DREG.csv, referente às informações de reguladores de tensão. 
  *
  * Essa função realiza a leitura do arquivo DREG.csv que contém os dados relativos aos reguladores de tensão do sistema. Armazena estes dados
- * dentro da estrutura de dados do tipo DREG, como um parâmetro interno de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * dentro da estrutura de dados do tipo DREG, como um parâmetro interno de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos reguladores e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de reguladores de tensão
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de reguladores de tensão
  * internamente numa estrutura de dados do tipo DTRF, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
- * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo TF_DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função os reguladores são armazenados internamente em um tipo DREG
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função os reguladores são armazenados internamente em um tipo DREG
  * @param numeroRamos retorna a quantidade total de ramos
- * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
+ * @param barras é um ponteiro para o ponteiro da estrutura do tipo do TF_DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
  * @return void.
  * @see leituraDados
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDREG(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras)
+void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -1276,7 +1280,7 @@ void leituraDREG(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
         numLinhas++;
     }
     rewind(arquivo);
-    if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + numLinhas + 1) * sizeof(DRAM)))==NULL)
+    if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + numLinhas + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão !!!!");
         exit(1); 
@@ -1362,17 +1366,17 @@ void leituraDREG(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @brief Função auxiliar para a leitura do arquivo DREG.csv, referente às informações de chaves e elementos seccionadores. 
  *
  * Essa função realiza a leitura do arquivo DSWTC.csv que contém os dados relativos às chaves e elementos seccionadores do sistema. 
- * Armazena estes dados dentro da estrutura de dados de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * Armazena estes dados dentro da estrutura de dados de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos reguladores e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de chaves e seccionadores
- * na estrutura de dados do tipo DRAM, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de chaves e seccionadores
+ * na estrutura de dados do tipo TF_DRAM, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
  * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função as chaves e seccionadoreas são armazenados diretamente na estrutura DRAM
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função as chaves e seccionadoreas são armazenados diretamente na estrutura TF_DRAM
  * @param numeroRamos retorna a quantidade total de ramos
  * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
@@ -1381,7 +1385,7 @@ void leituraDREG(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDSWTC(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras)
+void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -1396,7 +1400,7 @@ void leituraDSWTC(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **bar
     }
     rewind(arquivo);
     
-    if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + numLinhas + 1 ) * sizeof(DRAM)))==NULL)
+    if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + numLinhas + 1 ) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as chaves !!!!");
         exit(1); 
@@ -1459,7 +1463,7 @@ void leituraDSWTC(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **bar
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras){
+void leituraVinicial(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -1507,13 +1511,13 @@ void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras){
 //
 //------------------------------------------------------------------------------
 /**
- * @brief Função auxiliar para a inserção de nova barra elétrica no final do vetor DBAR.
+ * @brief Função auxiliar para a inserção de nova barra elétrica no final do vetor TF_DBAR.
  * Função auxiliar para criação de barras fictícias no modelo
  *
  * 
  * A função retorna @c void.
  * 
- * @param **barras: vetor de DBAR a ser incrementado com uma nova barra
+ * @param **barras: vetor de TF_DBAR a ser incrementado com uma nova barra
  * @param *numeroBarras: número total de barras a ser incrementado
  * @param Vbase: tensão base a ser associada com a barra adicionada
  * @return void.
@@ -1521,7 +1525,7 @@ void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase){
+void includeDBAR(TF_DBAR **barras, long int *numeroBarras,  double Vbase){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -1529,7 +1533,7 @@ void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase){
     
     contador = numeroBarras[0];
     
-    if (((*barras) = (DBAR *)realloc((*barras), (numeroBarras[0] + 1) * sizeof(DBAR)))==NULL)
+    if (((*barras) = (TF_DBAR *)realloc((*barras), (numeroBarras[0] + 1) * sizeof(TF_DBAR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para barras fictícias !!!!");
         exit(1); 
@@ -1564,7 +1568,7 @@ void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase){
 
 
 /**
- * @brief Função auxiliar para a inserção de novo regulador de tensão elétrica no final do vetor DRAM.
+ * @brief Função auxiliar para a inserção de novo regulador de tensão elétrica no final do vetor TF_DRAM.
  * Função auxiliar para criação de barras fictícias no modelo
  *
  * 
@@ -1578,7 +1582,7 @@ void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void includeDREG(DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
+void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -1586,7 +1590,7 @@ void includeDREG(DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
     
     contador = numeroRamos[0];
     
-     if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(DRAM)))==NULL)
+     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
         exit(1); 
@@ -1641,7 +1645,7 @@ void includeDREG(DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
 
 
 /**
- * @brief Função auxiliar para a inserção de novo transformador de potência no final do vetor DRAM.
+ * @brief Função auxiliar para a inserção de novo transformador de potência no final do vetor TF_DRAM.
  * Função auxiliar para criação de barras fictícias no modelo
  *
  * 
@@ -1655,7 +1659,7 @@ void includeDREG(DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec){
+void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -1663,7 +1667,7 @@ void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double 
     
     contador = numeroRamos[0];
     
-     if (((*ramos) = (DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(DRAM)))==NULL)
+     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
         exit(1); 
@@ -1714,9 +1718,9 @@ void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double 
  * Essa função realiza a leitura  de arquivo com dados de medidas analógicas do sistema supervisório dentro da pasta com os dados da rede elétrica.
  * O local da pasta é recebido como parâmetro @p folder assim como o nome do arquivo no parâmetro @p file. Além disso o arquivo possui como 
  * separação dos dados os marcadores especificados. Realiza alocação de memória para armazenar os dados de medidas trifásicas da rede elétrica.
- * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo DMED @p **medidas que armazena dados das medidas da rede elétrica, e também
- * uma estrutura de dados GRAFO @p grafo para associar os medidores à topologia da rede elétrica. 
- * Recebe como parâmetros de entrada um ponteiro do tipo DBAR @p *barras e um ponterio do tipo DRAM @p ramos que armazenam dados das barras e ramos da 
+ * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo TF_DMED@p **medidas que armazena dados das medidas da rede elétrica, e também
+ * uma estrutura de dados TF_GRAFO @p grafo para associar os medidores à topologia da rede elétrica. 
+ * Recebe como parâmetros de entrada um ponteiro do tipo DBAR @p *barras e um ponterio do tipo TF_DRAM @p ramos que armazenam dados das barras e ramos da 
  * rede elétrica para serem associadas com os medidore, e respectivas quantidades totais nos parâmetros @p numeroBarras e @p numeroRamos. Além disto recebe 
  * como parâmetro de entrada a Potência Base da rede elétrica para realizar os cálculos em pu.
  * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
@@ -1730,9 +1734,9 @@ void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double 
  * char *folder = NULL;
  * long int **numeroMedidas = NULL;
  * DBAR *barraExemplo = NULL;
- * DRAM *ramoExemplo = NULL; 
- * GRAFO *grafoExemplo = NULL;
- * DMED *medidaExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
+ * TF_DMED*medidaExemplo = NULL;
  * 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
@@ -1756,7 +1760,7 @@ void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double 
  * @note Dados da rede elétrica e um grafo da rede elétrica devem ser criados antes de se chamar esta função. 
  * @warning .
  */
-long int **leituraMedidas(char *folder,char *file, DMED **medidas, DRAM *ramos, long int numeroRamos, DBAR *barras, long int numeroBarras, GRAFO *grafo, double Sbase)
+long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -1793,7 +1797,7 @@ long int **leituraMedidas(char *folder,char *file, DMED **medidas, DRAM *ramos, 
         numLinhas++;
     }
     rewind(arquivo);
-    if (((*medidas) = (DMED *)malloc( (numLinhas) * sizeof(DMED)))==NULL)
+    if (((*medidas) = (TF_DMED *)malloc((numLinhas) * sizeof(TF_DMED))==NULL))
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as medidas !!!!");
         exit(1); 
@@ -2430,7 +2434,7 @@ long int **leituraMedidas(char *folder,char *file, DMED **medidas, DRAM *ramos, 
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void salvaDadosRedeEletrica(DBAR *barras, long int numeroBarras, DRAM *ramos, long int numeroRamos, DMED *medidas, long int **numeroMedidas)
+void salvaDadosRedeEletrica(TF_DBAR *barras, long int numeroBarras, TF_DRAM *ramos, long int numeroRamos, TF_DMED*medidas, long int **numeroMedidas)
 {
     long int i,j,nmed;
     FILE *arquivo;
@@ -2526,7 +2530,7 @@ void salvaDadosRedeEletrica(DBAR *barras, long int numeroBarras, DRAM *ramos, lo
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void salvaMedidasRedeEletrica(DMED *medidas, long int **numeroMedidas)
+void salvaMedidasRedeEletrica(TF_DMED*medidas, long int **numeroMedidas)
 {
     long int i,j;
     FILE *arquivo;
@@ -2585,13 +2589,13 @@ void salvaMedidasRedeEletrica(DMED *medidas, long int **numeroMedidas)
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-int salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos, int idAlim, double Sbase, BOOL opt_Choice, int id_begin, const char *modo)
+int salvaArquivosAlimentador(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos, int idAlim, double Sbase, BOOL opt_Choice, int id_begin, const char *modo)
 {
     long int i,j, idRam, auxTipo, para;
     FILE *arquivo,*arquivo1,*arquivo2,*arquivo3;
     long int *listaBarrasNew;
     BOOL visitado[numeroBarras];
-    FILABARRAS *barraAtual;
+    TF_FILABARRAS *barraAtual;
     double Vbase, comp, Zbase,prec;
     
     
@@ -3013,7 +3017,7 @@ int salvaArquivosAlimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *a
  * @note 
  * @warning
  */
-void free_BARRA(DBAR *barra, long int numeroBarras){
+void free_BARRA(TF_DBAR *barra, long int numeroBarras){
     int i, j;
 
     for (i=0;i<numeroBarras;i++){
@@ -3023,21 +3027,21 @@ void free_BARRA(DBAR *barra, long int numeroBarras){
     free(barra);
 }
 
-//Libera memória alocada na estrutrura DRAM
+//Libera memória alocada na estrutrura TF_DRAM
 /**
- * @brief Função auxiliar para liberar memória da estrutura DRAM
+ * @brief Função auxiliar para liberar memória da estrutura TF_DRAM
  *
- * Essa função realiza a liberação de memória de forma apropriada para a estrutura DRAM.
+ * Essa função realiza a liberação de memória de forma apropriada para a estrutura TF_DRAM.
  * A função retorna @c void .
  * 
- * @param ramos ponteiro para DRAM a ser liberado o espaço de memória
+ * @param ramos ponteiro para TF_DRAM a ser liberado o espaço de memória
  * @param numeroRamos quantidade total de ramos
  * @return void
  * @see
  * @note 
  * @warning
  */
-void free_DRAM(DRAM *ramos, long int numeroRamos){
+void free_DRAM(TF_DRAM *ramos, long int numeroRamos){
     int i, j;
 
     for (i=0;i<numeroRamos;i++){
@@ -3066,21 +3070,21 @@ void free_DRAM(DRAM *ramos, long int numeroRamos){
     free(ramos);
 }
 
-//Libera memória alocada na estrutrura GRAFO
+//Libera memória alocada na estrutrura TF_GRAFO
 /**
- * @brief Função auxiliar para liberar memória da estrutura GRAFO
+ * @brief Função auxiliar para liberar memória da estrutura TF_GRAFO
  *
- * Essa função realiza a liberação de memória de forma apropriada para a estrutura GRAFO.
+ * Essa função realiza a liberação de memória de forma apropriada para a estrutura TF_GRAFO.
  * A função retorna @c void .
  * 
- * @param grafo ponteiro para GRAFO a ser liberado o espaço de memória
+ * @param grafo ponteiro para TF_GRAFO a ser liberado o espaço de memória
  * @param numeroBarras quantidade total de barras
  * @return void
  * @see
  * @note 
  * @warning
  */
-void free_GRAFO(GRAFO *grafo, long int numeroBarras){
+void free_GRAFO(TF_GRAFO *grafo, long int numeroBarras){
     int i, j;
 
     for (i=0;i<numeroBarras;i++){
@@ -3094,24 +3098,24 @@ void free_GRAFO(GRAFO *grafo, long int numeroBarras){
 
 //Libera memória alocada na estrutrura ALIMENTADORES e RNPS
 /**
- * @brief Função auxiliar para liberar memória da estrutura ALIMENTADOR e RNPs
+ * @brief Função auxiliar para liberar memória da estrutura TF_ALIMENTADOR e RNPs
  *
- * Essa função realiza a liberação de memória de forma apropriada para a estrutura ALIMENTADOR e RNPs.
+ * Essa função realiza a liberação de memória de forma apropriada para a estrutura TF_ALIMENTADOR e RNPs.
  * A função retorna @c void .
  * 
- * @param alimentador ponteiro para ALIMENTADOR a ser liberado o espaço de memória
+ * @param alimentador ponteiro para TF_ALIMENTADOR a ser liberado o espaço de memória
  * @param numeroAlimentadores quantidade total de alimentadores
  * @return void
  * @see
  * @note 
  * @warning
  */
-void free_ALIMENTADOR(ALIMENTADOR *alimentadores, long int numeroAlimentadores){
+void free_ALIMENTADOR(TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores){
     int i, j, nmed = 0;
 
     for(i=0;i<numeroAlimentadores;i++){
-        FILABARRAS *barraAtual = &alimentadores[i].rnp[0];
-        FILABARRAS *barraProx;
+        TF_FILABARRAS *barraAtual = &alimentadores[i].rnp[0];
+        TF_FILABARRAS *barraProx;
         barraAtual = barraAtual->prox;
         while(barraAtual != NULL)
         {
@@ -3132,7 +3136,7 @@ void free_ALIMENTADOR(ALIMENTADOR *alimentadores, long int numeroAlimentadores){
 
 // -------------------------- Funçoes Auxiliares de Testes de Validação - Fora da biblioteca base -
 
-void leituraDMED_fp_CARGAS(char *folder,char *file, GRAFO *grafo, long int numeroBarras, double Sbase){
+void leituraDMED_fp_CARGAS(char *folder,char *file, TF_GRAFO *grafo, long int numeroBarras, double Sbase){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k, idNo,fase; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */

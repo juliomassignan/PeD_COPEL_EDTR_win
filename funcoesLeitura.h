@@ -92,7 +92,7 @@ double getfield_double(char* lin, int num);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-char* charLigacao(LIGACAO num);
+char* charLigacao(TF_LIGACAO num);
 
 /**
  * @brief Função auxiliar retornar string referente ao número de fases
@@ -107,7 +107,7 @@ char* charLigacao(LIGACAO num);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-char* charFases(FASES num);
+char* charFases(TF_FASES num);
 
 /**
  * @brief Função auxiliar retornar string referente ao tipo de grandeza elétrica mensurada
@@ -159,7 +159,7 @@ char* charMedidor(long int num);
  * long int numeroRamos = 0;
  * char *folder = NULL;
  * DBAR *barra = NULL;
- * DRAM *ramo = NULL; 
+ * TF_DRAM *ramo = NULL; 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
  *      printf("leitura concluida\n");
@@ -183,7 +183,7 @@ char* charMedidor(long int num);
  * @note
  * @warning .
  */
-char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *numeroRamos, long int *numeroAlimentadores);
+char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long int *numeroRamos, long int *numeroAlimentadores);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DBAR.csv, referente às informações das barras e cargas. 
@@ -204,7 +204,7 @@ char *leituraDados(DBAR **barra, DRAM **ramo, long int *numeroBarras, long int *
  * quantidade de alimentadores da rede para posteriormente serem associadas a alguma subestação.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDBAR(FILE *arquivo, DBAR **barras, long int *numeroBarras, long int *numeroAlimentadores);
+void leituraDBAR(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras, long int *numeroAlimentadores);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DSHNT.csv, referente às informações dos bancos de capacitores. 
@@ -223,7 +223,7 @@ void leituraDBAR(FILE *arquivo, DBAR **barras, long int *numeroBarras, long int 
  * @note As barras já devem ter sido alocadas para associar um banco de capacitor a ela.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDSHNT(FILE *arquivo, DBAR **barras, long int *numeroBarras);
+void leituraDSHNT(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DGD.csv, referente às informações dos geradores distribuídos. 
@@ -242,23 +242,23 @@ void leituraDSHNT(FILE *arquivo, DBAR **barras, long int *numeroBarras);
  * @note As barras já devem ter sido alocadas para associar um gerador distribuído a ela.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDGD(FILE *arquivo, DBAR **barras, long int *numeroBarras);
+void leituraDGD(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DLIN.csv, referente às informações de circuitos trifásicos (ramais). 
  *
  * Essa função realiza a leitura do arquivo DLIN.csv que contém os dados relativos aos ciruitos trifásico do sistema. Armazena estes dados
- * dentro da estrutura de dados do tipo DLIM, como um parâmetro interno de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * dentro da estrutura de dados do tipo DLIM, como um parâmetro interno de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos circuitos e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de circuitos trifásicos
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de circuitos trifásicos
  * internamente numa estrutura de dados do tipo DLIM, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
  * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os circuitos são armazenados internamente em um tipo DLIN
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os circuitos são armazenados internamente em um tipo DLIN
  * @param numeroRamos retorna a quantidade total de ramos
  * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
@@ -267,23 +267,23 @@ void leituraDGD(FILE *arquivo, DBAR **barras, long int *numeroBarras);
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDLIN(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras);
+void leituraDLIN(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DTRF.csv, referente às informações de transormadores de potência. 
  *
  * Essa função realiza a leitura do arquivo DTRF.csv que contém os dados relativos aos trasnformadores de potência do sistema. Armazena estes dados
- * dentro da estrutura de dados do tipo DTRF, como um parâmetro interno de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * dentro da estrutura de dados do tipo DTRF, como um parâmetro interno de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos trnasofrmadores e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de transformadores
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de transformadores
  * internamente numa estrutura de dados do tipo DTRF, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
  * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os transformadores são armazenados internamente em um tipo DTRF
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informções dos ramos da rede elétrica, nesta função os transformadores são armazenados internamente em um tipo DTRF
  * @param numeroRamos retorna a quantidade total de ramos
  * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
@@ -292,23 +292,23 @@ void leituraDLIN(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDTRF(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras);
+void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DREG.csv, referente às informações de reguladores de tensão. 
  *
  * Essa função realiza a leitura do arquivo DREG.csv que contém os dados relativos aos reguladores de tensão do sistema. Armazena estes dados
- * dentro da estrutura de dados do tipo DREG, como um parâmetro interno de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * dentro da estrutura de dados do tipo DREG, como um parâmetro interno de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos reguladores e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de reguladores de tensão
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de reguladores de tensão
  * internamente numa estrutura de dados do tipo DTRF, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
  * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função os reguladores são armazenados internamente em um tipo DREG
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função os reguladores são armazenados internamente em um tipo DREG
  * @param numeroRamos retorna a quantidade total de ramos
  * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
@@ -317,23 +317,23 @@ void leituraDTRF(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDREG(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras);
+void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo DREG.csv, referente às informações de chaves e elementos seccionadores. 
  *
  * Essa função realiza a leitura do arquivo DSWTC.csv que contém os dados relativos às chaves e elementos seccionadores do sistema. 
- * Armazena estes dados dentro da estrutura de dados de um determinado elemento DRAM (que indica um ramo da rede elétrica).
+ * Armazena estes dados dentro da estrutura de dados de um determinado elemento TF_DRAM (que indica um ramo da rede elétrica).
  * Também é responsável pela alocação de memória necessária para armazenar as ramos referentes aos reguladores e a quantidade total de ramos da 
  * rede elétrica.
- * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo DRAM, @p **ramos onde são armazenados dados de chaves e seccionadores
- * na estrutura de dados do tipo DRAM, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DRAM, @p **ramos onde são armazenados dados de chaves e seccionadores
+ * na estrutura de dados do tipo TF_DRAM, um parâmetro de entrada e saída @p numeroRamos para indicar a quantidade total de ramos, e
  * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DBAR, @p **barras para associar os
  * terminais de determinado ramo com as barras da rede elétrica e um parâmetro indicando o número total de barras.
  * A função retorna @c void.
  * 
  * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
- * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função as chaves e seccionadoreas são armazenados diretamente na estrutura DRAM
+ * @param ramos é um ponteiro para o ponteiro da estrutura do tipo do TF_DRAM, onde é retornada as informações dos ramos da rede elétrica, nesta função as chaves e seccionadoreas são armazenados diretamente na estrutura TF_DRAM
  * @param numeroRamos retorna a quantidade total de ramos
  * @param barras é um ponteiro para o ponteiro da estrutura do tipo do DBAR para associar a conectividade dos ramos às barras da rede elétrica.
  * @param numeroBarras quantidade total de barras
@@ -342,7 +342,7 @@ void leituraDREG(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barr
  * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraDSWTC(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **barras, long int *numeroBarras);
+void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função auxiliar para a leitura do arquivo Vinicial.csv, referente às informações de inicialização do cálculo de fluxo de potência.
@@ -361,7 +361,7 @@ void leituraDSWTC(FILE *arquivo, DRAM **ramos, long int *numeroRamos, DBAR **bar
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras);
+void leituraVinicial(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras);
 
 /**
  * @brief Função principal para a leitura de arquivo com dados de medidas analógicas do sistema supervisório
@@ -369,9 +369,9 @@ void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras);
  * Essa função realiza a leitura  de arquivo com dados de medidas analógicas do sistema supervisório dentro da pasta com os dados da rede elétrica.
  * O local da pasta é recebido como parâmetro @p folder assim como o nome do arquivo no parâmetro @p file. Além disso o arquivo possui como 
  * separação dos dados os marcadores especificados. Realiza alocação de memória para armazenar os dados de medidas trifásicas da rede elétrica.
- * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo DMED @p **medidas que armazena dados das medidas da rede elétrica, e também
- * uma estrutura de dados GRAFO @p grafo para associar os medidores à topologia da rede elétrica. 
- * Recebe como parâmetros de entrada um ponteiro do tipo DBAR @p *barras e um ponterio do tipo DRAM @p ramos que armazenam dados das barras e ramos da 
+ * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo TF_DMED@p **medidas que armazena dados das medidas da rede elétrica, e também
+ * uma estrutura de dados TF_GRAFO @p grafo para associar os medidores à topologia da rede elétrica. 
+ * Recebe como parâmetros de entrada um ponteiro do tipo DBAR @p *barras e um ponterio do tipo TF_DRAM @p ramos que armazenam dados das barras e ramos da 
  * rede elétrica para serem associadas com os medidore, e respectivas quantidades totais nos parâmetros @p numeroBarras e @p numeroRamos. Além disto recebe 
  * como parâmetro de entrada a Potência Base da rede elétrica para realizar os cálculos em pu.
  * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
@@ -385,9 +385,9 @@ void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras);
  * char *folder = NULL;
  * long int **numeroMedidas = NULL;
  * DBAR *barraExemplo = NULL;
- * DRAM *ramoExemplo = NULL; 
- * GRAFO *grafoExemplo = NULL;
- * DMED *medidaExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
+ * TF_DMED*medidaExemplo = NULL;
  * 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
@@ -411,7 +411,7 @@ void leituraVinicial(FILE *arquivo, DBAR **barras, long int *numeroBarras);
  * @note Dados da rede elétrica e um grafo da rede elétrica devem ser criados antes de se chamar esta função. 
  * @warning .
  */
-long int **leituraMedidas(char *folder,char *file, DMED **medidas, DRAM *ramos, long int numeroRamos, DBAR *barras, long int numeroBarras, GRAFO *grafo, double Sbase);
+long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase);
 
 
 //------------------------------------------------------------------------------
@@ -437,7 +437,7 @@ long int **leituraMedidas(char *folder,char *file, DMED **medidas, DRAM *ramos, 
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void salvaDadosRedeEletrica(DBAR *barras, long int numeroBarras, DRAM *ramos, long int numeroRamos, DMED *medidas, long int **numeroMedidas);
+void salvaDadosRedeEletrica(TF_DBAR *barras, long int numeroBarras, TF_DRAM *ramos, long int numeroRamos, TF_DMED*medidas, long int **numeroMedidas);
 
 /**
  * @brief Função auxiliar para salvar dados da rede elétrica em arquivo externo "dadosRedeEletrica.dad"
@@ -453,7 +453,7 @@ void salvaDadosRedeEletrica(DBAR *barras, long int numeroBarras, DRAM *ramos, lo
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void salvaMedidasRedeEletrica(DMED *medidas, long int **numeroMedidas);
+void salvaMedidasRedeEletrica(TF_DMED*medidas, long int **numeroMedidas);
 
 /**
  * @brief Função auxiliar para liberar memória da estrutura DBAR
@@ -468,61 +468,61 @@ void salvaMedidasRedeEletrica(DMED *medidas, long int **numeroMedidas);
  * @note 
  * @warning
  */
-void free_BARRA(DBAR *barra, long int numeroBarras);
+void free_BARRA(TF_DBAR *barra, long int numeroBarras);
 
 /**
- * @brief Função auxiliar para liberar memória da estrutura DRAM
+ * @brief Função auxiliar para liberar memória da estrutura TF_DRAM
  *
- * Essa função realiza a liberação de memória de forma apropriada para a estrutura DRAM.
+ * Essa função realiza a liberação de memória de forma apropriada para a estrutura TF_DRAM.
  * A função retorna @c void .
  * 
- * @param ramos ponteiro para DRAM a ser liberado o espaço de memória
+ * @param ramos ponteiro para TF_DRAM a ser liberado o espaço de memória
  * @param numeroRamos quantidade total de ramos
  * @return void
  * @see
  * @note 
  * @warning
  */
-void free_DRAM(DRAM *ramos, long int numeroRamos);
+void free_DRAM(TF_DRAM *ramos, long int numeroRamos);
 
 /**
- * @brief Função auxiliar para liberar memória da estrutura GRAFO
+ * @brief Função auxiliar para liberar memória da estrutura TF_GRAFO
  *
- * Essa função realiza a liberação de memória de forma apropriada para a estrutura GRAFO.
+ * Essa função realiza a liberação de memória de forma apropriada para a estrutura TF_GRAFO.
  * A função retorna @c void .
  * 
- * @param grafo ponteiro para GRAFO a ser liberado o espaço de memória
+ * @param grafo ponteiro para TF_GRAFO a ser liberado o espaço de memória
  * @param numeroBarras quantidade total de barras
  * @return void
  * @see
  * @note 
  * @warning
  */
-void free_GRAFO(GRAFO *grafo, long int numeroBarras);
+void free_GRAFO(TF_GRAFO *grafo, long int numeroBarras);
 
 /**
- * @brief Função auxiliar para liberar memória da estrutura ALIMENTADOR e RNPs
+ * @brief Função auxiliar para liberar memória da estrutura TF_ALIMENTADOR e RNPs
  *
- * Essa função realiza a liberação de memória de forma apropriada para a estrutura ALIMENTADOR e RNPs.
+ * Essa função realiza a liberação de memória de forma apropriada para a estrutura TF_ALIMENTADOR e RNPs.
  * A função retorna @c void .
  * 
- * @param alimentador ponteiro para ALIMENTADOR a ser liberado o espaço de memória
+ * @param alimentador ponteiro para TF_ALIMENTADOR a ser liberado o espaço de memória
  * @param numeroAlimentadores quantidade total de alimentadores
  * @return void
  * @see
  * @note 
  * @warning
  */
-void free_ALIMENTADOR(ALIMENTADOR *alimentadores, long int numeroAlimentadores);
+void free_ALIMENTADOR(TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores);
 
 
 
 
 
-long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, DBAR **barras, long int *numeroBarras, DRAM **ramos, long int *numeroRamos);
-void includeDREG(DRAM **ramos, long int *numeroRamos, int DE, int PARA);
-void includeDBAR(DBAR **barras, long int *numeroBarras,  double Vbase);
-void includeDTRF(DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec);
+long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, TF_DBAR **barras, long int *numeroBarras, TF_DRAM **ramos, long int *numeroRamos);
+void includeDREG(TF_DRAM **ramos, long int *numeroRamos, int DE, int PARA);
+void includeDBAR(TF_DBAR **barras, long int *numeroBarras,  double Vbase);
+void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec);
 
 #endif	/* funcoesLeitura_H */
 

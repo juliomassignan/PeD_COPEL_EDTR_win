@@ -23,38 +23,38 @@ extern "C" {
 
 //------------------------------------------------------------------------------
 // Leitura do arquivo de Curvas de Carga, Tabela CNAE e Tabelas
-void leituraTabelaConsumidores(DADOS_CONSUMIDOR **consumidores);
+void leituraTabelaConsumidores(TF_DADOS_CONSUMIDOR **consumidores);
 
 //------------------------------------------------------------------------------
 // Leitura do arquivo de Curvas de Carga
-void leituraCurvasCarga(FILE *arquivo, CURVA_CARGA **curvas);
+void leituraCurvasCarga(FILE *arquivo, TF_CURVA_CARGA **curvas);
 
 //------------------------------------------------------------------------------
 // Leitura da Tabela dos dados CNAE
-void leituraDadosCNAE(FILE *arquivo, DADOS_CNAE **cnae);
+void leituraDadosCNAE(FILE *arquivo, TF_DADOS_CNAE **cnae);
 
 //------------------------------------------------------------------------------
 // Leitura da Curvas Agregadas quando não for executar funçoes de agregação
-void leituraCurvasAgregadas(char *folder, CURVA_TRAFO **curvasTrafos, DBAR *barras, long int numeroBarrasParam);
+void leituraCurvasAgregadas(char *folder, TF_CURVA_TRAFO **curvasTrafos, TF_DBAR *barras, long int numeroBarrasParam);
 
 //------------------------------------------------------------------------------
 // Leitura da Tabela de Consumidores
-void leituraConsumidores(FILE *arquivo, DADOS_CONSUMIDOR **consumidores, CURVA_CARGA *curvas, DADOS_CNAE *cnae);
+void leituraConsumidores(FILE *arquivo, TF_DADOS_CONSUMIDOR **consumidores, TF_CURVA_CARGA *curvas, TF_DADOS_CNAE *cnae);
 
 //------------------------------------------------------------------------------
 // Executa a agregação de cargas
-void agregacaoCargas(CURVA_TRAFO **curvasTrafos, long int numeroBarrasParam, DADOS_CONSUMIDOR *consumidores);
+void agregacaoCargas(TF_CURVA_TRAFO **curvasTrafos, long int numeroBarrasParam, TF_DADOS_CONSUMIDOR *consumidores);
 
 //------------------------------------------------------------------------------
 // Atualiza os valores de P e Q para o valor agregado na estampa de tempo
-void inicializaPQcurvas(DBAR *barras, CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam,  long int estampa_tempo, TIPO_AGREGACAO_CARGAS tipo, double Sbase);
+void inicializaPQcurvas(TF_DBAR *barras, TF_CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam,  long int estampa_tempo, TF_TIPO_AGREGACAO_CARGAS tipo, double Sbase);
 
 //------------------------------------------------------------------------------
 //FUNÇÕES PARA IMPRESSÃO DE DADOS
-void imprimeConsumidores(DADOS_CONSUMIDOR *consumidores);
-void imprimeCurvasAgregadas(CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam);
-void imprimeAMs(AREA_MEDICAO *areasAM);
-void imprimePQ_AMs(AREA_MEDICAO *areasAM,GRAFO *grafoSDRParam,long int numeroBarras, long int estampa_tempo,const char *modo);
+void imprimeConsumidores(TF_DADOS_CONSUMIDOR *consumidores);
+void imprimeCurvasAgregadas(TF_CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam);
+void imprimeAMs(TF_AREA_MEDICAO *areasAM);
+void imprimePQ_AMs(TF_AREA_MEDICAO *areasAM,TF_GRAFO *grafoSDRParam,long int numeroBarras, long int estampa_tempo,const char *modo);
 
 #endif	/* FUNCOESMODCARGA_H */
 

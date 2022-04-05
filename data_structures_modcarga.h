@@ -51,7 +51,7 @@ typedef enum  {
         MAJORANTE_QUANTIL,
         EQUILIBRADO_MAXIMO,
         DESBALANCEADO_INPUT_DBAR
-} TIPO_AGREGACAO_CARGAS;
+} TF_TIPO_AGREGACAO_CARGAS;
 
 /**
  * @brief Armazena as informações de curvas de carga típicas
@@ -65,7 +65,7 @@ typedef struct {
   double maximo; /**< Valor do tipo double indicando o valor máximo de consumo. */
   double *media; /**< Valor do tipo double indicando o valor médio da curva de carga. */
   double *std_dev; /**< Valor do tipo double indicando o desvio padrão da curva de carga. */
-} CURVA_CARGA;
+} TF_CURVA_CARGA;
 
 /**
  * @brief Armazena as informações de curvas de carga agregadas
@@ -93,7 +93,7 @@ typedef struct {
   double *QC; /**< Valor do tipo double indicando o valor médio da curva de carga agregada. */
   double *stdQC; /**< Valor do tipo double indicando o desvio padrão da curva de carga agregada. */
 
-} CURVA_TRAFO;
+} TF_CURVA_TRAFO;
 
 /**
  * @brief Armazena as informações de classificação de consumidores de acordo com o CNAE e respectiva curva de carga.
@@ -105,7 +105,7 @@ typedef struct {
   char cod_ativ[7]; /**< Código Atividade. */
   char desc_ativ[61]; /**< Descrição da classificação CNAE. */
   char curva_carga[21]; /**< Curva de carga para a classificação CNAE. */
-} DADOS_CNAE;
+} TF_DADOS_CNAE;
 
 /**
  * @brief Armazena as informações de consumidores.
@@ -122,7 +122,7 @@ typedef struct {
   char cod_nivel_tensao_uc[3]; /**< Grupo de Tensão. */ 
   char cod_ativ_cnae_uc[8]; /**< Classificação CNAE do consumidor. */  
   
-  CURVA_CARGA curva_carga; /**< Curva de carga do consumidor. */
+  TF_CURVA_CARGA curva_carga; /**< Curva de carga do consumidor. */
   
   long int no;
   double Pbase;
@@ -132,7 +132,7 @@ typedef struct {
   double Q;
   double std_P;
   double std_Q;
-} DADOS_CONSUMIDOR;
+} TF_DADOS_CONSUMIDOR;
 
 /**
  * @brief Armazena as informações de consumidores.
@@ -162,7 +162,7 @@ typedef struct {
     __complex__ double Icalc;
     __complex__ double Vcalc;
     
-} DADOS_MEDIDOR;
+} TF_DADOS_MEDIDOR;
 
 /**
  * @brief Armazena as informações de consumidores.
@@ -176,8 +176,8 @@ typedef struct {
     long int idAdj; //índice do adjacente no grafo (para acessar o NOADJACENTE)
     long int descarte;
     
-    DMED *medidor; //Ponteiro para o medidor
-    FASES fase;
+    TF_DMED *medidor; //Ponteiro para o medidor
+    TF_FASES fase;
     long int *med_adjacentes; /**< Areas de medição adjacentes. */
     long int montante;
     long int numeroNosAM;
@@ -213,7 +213,7 @@ typedef struct {
     __complex__ double Icalc;
     __complex__ double Vcalc;
     
-} AREA_MEDICAO;
+} TF_AREA_MEDICAO;
 
 #endif	/* DATA_STRUCTURES_MODCARGA_H */
 

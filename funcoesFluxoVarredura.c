@@ -27,9 +27,9 @@
 //------------------------------------------------------------------------------
 
 // Função para impressão de tensões nodais em arquivos
-void salvaTensoesNodais(const char *filename, const char *modo, ALIMENTADOR alimentador, GRAFO *grafo){
+void salvaTensoesNodais(const char *filename, const char *modo, TF_ALIMENTADOR alimentador, TF_GRAFO *grafo){
     int i, k;
-    FILABARRAS *barraAtual;
+    TF_FILABARRAS *barraAtual;
     
     FILE *arquivo;
     arquivo = fopen(filename,modo);
@@ -70,10 +70,10 @@ void salvaTensoesNodais(const char *filename, const char *modo, ALIMENTADOR alim
 }
 
 // Função para impressão de correntes nos ramos, ampacidade e carregamento em arquivos
-void salvaCorrentesRamos(const char *filename, const char *modo, ALIMENTADOR alimentador, GRAFO *grafo, long int numeroBarras, double Sbase){
+void salvaCorrentesRamos(const char *filename, const char *modo, TF_ALIMENTADOR alimentador, TF_GRAFO *grafo, long int numeroBarras, double Sbase){
     int i, k;
     long int adj;
-    FILABARRAS *barraAtual;
+    TF_FILABARRAS *barraAtual;
     BOOL visitado[numeroBarras];
     double Ibase;
     
@@ -151,7 +151,7 @@ void salvaCorrentesRamos(const char *filename, const char *modo, ALIMENTADOR ali
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void imprimeTensoesNodais(GRAFO *grafo){
+void imprimeTensoesNodais(TF_GRAFO *grafo){
     int i;
     
 //    printf("Vbase:%.3lf\t",grafo->Vbase);
@@ -195,7 +195,7 @@ void imprimeTensoesNodais(GRAFO *grafo){
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void imprimeTaps(GRAFO *grafo){
+void imprimeTaps(TF_GRAFO *grafo){
     int i;
     for (i=0;i < grafo->numeroAdjacentes;i++){
         if((grafo->adjacentes[i].tipo  == regulador) && (grafo->adjacentes[i].ramo->k == grafo->idNo)){
@@ -220,7 +220,7 @@ void imprimeTaps(GRAFO *grafo){
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void imprimeiInjecoesCorrentes(GRAFO *grafo){
+void imprimeiInjecoesCorrentes(TF_GRAFO *grafo){
     int i;
     
 //    printf("Vbase:%.3lf\t",grafo->Vbase);
@@ -264,7 +264,7 @@ void imprimeiInjecoesCorrentes(GRAFO *grafo){
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void imprimeCorrentes(NOADJACENTE *noAdj){
+void imprimeCorrentes(TF_NOADJACENTE *noAdj){
    int i;
    
 //    printf("Vbase:%.3lf\t",grafo->Vbase);
@@ -361,7 +361,7 @@ double desbalancoFasorialSeq(__complex__ double *Fasor){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void incializaTensoesRaiz(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores){ 
+void incializaTensoesRaiz(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores){ 
     int i, k, fase;
     BOOL visitado[numeroBarras];
     __complex__ double V0[3], **Yaux;
@@ -379,7 +379,7 @@ void incializaTensoesRaiz(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alim
         V0[1] = grafo[alimentadores[i].noRaiz].barra->Vinicial[1];//1.0*(cos(-120*PI/180) + I*sin(-120*PI/180));
         V0[2] = grafo[alimentadores[i].noRaiz].barra->Vinicial[2];//1.0*(cos(120*PI/180) + I*sin(120*PI/180));
         
-        FILABARRAS *barraAtual = &alimentadores[i].rnp[0];
+        TF_FILABARRAS *barraAtual = &alimentadores[i].rnp[0];
         while(barraAtual != NULL)
         {
             grafo[barraAtual->idNo].V[0] = V0[0];
@@ -413,13 +413,13 @@ void incializaTensoesRaiz(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alim
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void incializaTensoesVarredura(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores){ 
+void incializaTensoesVarredura(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores){ 
     int i, k, fase;
     int de,para,n_adj;
     BOOL visitado[numeroBarras];
     __complex__ double V0[3], **Yaux;
     extern BOOL control_REG_OPT;
-    FILABARRAS *barraAtual;
+    TF_FILABARRAS *barraAtual;
 
     Yaux = c_matAloca(3);
 
@@ -533,7 +533,7 @@ void incializaTensoesVarredura(GRAFO *grafo, long int numeroBarras, ALIMENTADOR 
  * @note 
  * @warning
  */
-void atualizaTapRegulador(DRAM *ramo){
+void atualizaTapRegulador(TF_DRAM *ramo){
     if (ramo->tipo == 2){
         // Tira efeito dos antigos valores do tap nas matrizes de quadripolo
             ramo->Ypp[0][0] = 1/pow(ramo->tap_pri[0],2)*ramo->Ypp[0][0];
@@ -594,7 +594,7 @@ void atualizaTapRegulador(DRAM *ramo){
  * @note
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void atualizaInjecoes(GRAFO *no){
+void atualizaInjecoes(TF_GRAFO *no){
     int i, j;
     __complex__ double Saux[3], Iaux[3], IauxDelta[3], Vl[3], V0;
 
@@ -774,7 +774,7 @@ void atualizaInjecoes(GRAFO *no){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void calculaTensaoJusante(complex double *Vp, complex double *Vs, complex double *Ips, DRAM *ramo){
+void calculaTensaoJusante(complex double *Vp, complex double *Vs, complex double *Ips, TF_DRAM *ramo){
     int i,j;
     complex double Vaux[3], Aux[3], **Y, **Yp, **Ys, Iaux[3], V0;
     BOOL singular1 = false, singular2 = false;
@@ -953,7 +953,7 @@ void calculaTensaoJusante(complex double *Vp, complex double *Vs, complex double
  * @note Esta função é específica para ser utilizada em conjunto com uma varredura inversa (backward) para calcular as perdas em alimentadores específicos
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-double calculaPerdas(GRAFO *noP, GRAFO *grafo){
+double calculaPerdas(TF_GRAFO *noP, TF_GRAFO *grafo){
     long int i,j,noAdj,noMont = -1, auxNoMont = -1;
     complex double Smk[3], Perdas[3], Skm[3];
     double losses;
@@ -1020,7 +1020,7 @@ double calculaPerdas(GRAFO *noP, GRAFO *grafo){
  * @note Esta função é específica para ser utilizada em conjunto com uma varredura inversa (backward) para calcular o carregamento da rede em alimentadores específicos
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-double calculaCarregamento(GRAFO *noP, GRAFO *grafo, double Sbase){
+double calculaCarregamento(TF_GRAFO *noP, TF_GRAFO *grafo, double Sbase){
     long int i,j,noAdj,noMont = -1, auxNoMont = -1;
     complex double Smk[3], Perdas[3], Skm[3], Ikm[3];
     double loading;
@@ -1117,7 +1117,7 @@ double calculaCarregamento(GRAFO *noP, GRAFO *grafo, double Sbase){
  * @note Esta função é específica para ser utilizada em conjunto com uma varredura inversa (backward) 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void backward(GRAFO *noP, GRAFO *grafo){
+void backward(TF_GRAFO *noP, TF_GRAFO *grafo){
     long int i,j,noAdj,noMont = -1, auxNoMont = -1;
     complex double Iacc[3], Iaux[3], Vaux[3], **Yaux;
     BOOL singular = false;
@@ -1295,7 +1295,7 @@ void backward(GRAFO *noP, GRAFO *grafo){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL controleReguladorTensao_LDC(double Vbase, double Ibase, complex double *Vp, complex double *Vs, complex double *Ips, complex double *Isp, DRAM *ramo){
+BOOL controleReguladorTensao_LDC(double Vbase, double Ibase, complex double *Vp, complex double *Vs, complex double *Ips, complex double *Isp, TF_DRAM *ramo){
     int i;
     complex double   Zcont[3], Zcont_r[3];
     BOOL ctr_act;
@@ -1514,7 +1514,7 @@ BOOL controleReguladorTensao_LDC(double Vbase, double Ibase, complex double *Vp,
  * Essa função efetua os cálculos elétricos da etapa Forward (varredura direta) no cálculo do fluxo de potência. Atualiza a tensão complexa nodal nos nós 
  * a jusante de um determinado nó da rede elétrica @p noP . É utilizada em conjunto com uma varredura Forward para calcular as tensões complexas trifásica
  * dos ramos em um alimentador completo utilizando informações das barras a jusante obtida pelo grafo @p grafo da rede elétrica. 
- * Atualiza atraveś da estrutrua de dados NOADJCAENTE do grafo os valores de tensão complexa armazenados no GRAFO @p grafo . Retorna um booleano
+ * Atualiza atraveś da estrutrua de dados NOADJCAENTE do grafo os valores de tensão complexa armazenados no TF_GRAFO @p grafo . Retorna um booleano
  * indicando se houve alteração de controladores, no caso de reguladores de tensão com tap automático.
  * A função retorna @c BOOL.
  * 
@@ -1525,7 +1525,7 @@ BOOL controleReguladorTensao_LDC(double Vbase, double Ibase, complex double *Vp,
  * @note Esta função é específica para ser utilizada em conjunto com uma varredura direta (forward) 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL forward(GRAFO *noP, GRAFO *grafo){
+BOOL forward(TF_GRAFO *noP, TF_GRAFO *grafo){
     int i, noAdj, idx;
     complex double Vaux[3];
     BOOL control_action = 0; //variável para indicar se houve transição por parte dos controladores
@@ -1592,19 +1592,19 @@ BOOL forward(GRAFO *noP, GRAFO *grafo){
  * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa
  * 
  * Essa função efetua
- * A função retorna @c PFSOLUTION.
+ * A função retorna @c TF_PFSOLUTION.
  * 
  * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
  * @param numeroBarras
  * @param alimentador
  * @param ramos
  * @param Sbase
- * @return PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
+ * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
  * @see fluxoPotencia_BFS_Multiplos
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, ALIMENTADOR alimentador, DRAM *ramos,double Sbase){
+TF_PFSOLUTION fluxoPotencia_BFS_Alimentador(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase){
     int it, nvar, k = 0,i, conv = 0;
     double *DV, nDV = 0, loading = 0, cargaAtivaTotal = 0 ;
     long int *RNP = NULL;
@@ -1612,10 +1612,10 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, AL
     double fatorDesbalanco;
     double tempoBFS;
 
-    FILABARRAS *barraAtual = NULL, *barraProx = NULL;
-    NOADJACENTE *ramoAdj = NULL;
+    TF_FILABARRAS *barraAtual = NULL, *barraProx = NULL;
+    TF_NOADJACENTE *ramoAdj = NULL;
 
-    PFSOLUTION powerflow_result;
+    TF_PFSOLUTION powerflow_result;
 
     //----------------------------------------------------------------------
     //RNP no formato de vetor
@@ -1824,14 +1824,14 @@ PFSOLUTION fluxoPotencia_BFS_Alimentador(GRAFO *grafo, long int numeroBarras, AL
  * @note
  * @warning .
  */
-void fluxoPotencia_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos,double Sbase){
+void fluxoPotencia_BFS_Multiplos(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase){
     long int nmed,nvar,nmedTotal;
     int i,j, idAlim, it, n_threads = 2;
-    FILABARRAS *barraAtual = NULL;
-    GRAFO *no  = NULL;
+    TF_FILABARRAS *barraAtual = NULL;
+    TF_GRAFO *no  = NULL;
 
-    PFSOLUTION powerflow_result[numeroAlimentadores];
-    PFSOLUTION powerflow_result_rede;
+    TF_PFSOLUTION powerflow_result[numeroAlimentadores];
+    TF_PFSOLUTION powerflow_result_rede;
 
     powerflow_result_rede.convergencia = 0;
     powerflow_result_rede.maiorCarregamentoCorrente = 0;
@@ -2014,19 +2014,19 @@ void fluxoPotencia_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALIMENTADO
  * @note
  * @warning .
  */
-void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow){
+void fluxoPotencia_Niveis_BFS_Multiplos(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow){
     long int nmed,nvar,nmedTotal;
     int i,j, idAlim, it, n_threads;
-    FILABARRAS *barraAtual = NULL;
-    GRAFO *no  = NULL;
+    TF_FILABARRAS *barraAtual = NULL;
+    TF_GRAFO *no  = NULL;
     extern BOOL iteration_multiple_level_OPT;
     
     BOOL tap_modified = true;      // variable that checks if there is a change on tap position on the upper level of power flow
     BOOL runPF_alimentador[numeroAlimentadores];
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++) runPF_alimentador[idAlim] = true;
     
-    PFSOLUTION powerflow_result[numeroAlimentadores];
-    PFSOLUTION powerflow_result_rede;
+    TF_PFSOLUTION powerflow_result[numeroAlimentadores];
+    TF_PFSOLUTION powerflow_result_rede;
 
     powerflow_result_rede.convergencia = 0;
     powerflow_result_rede.maiorCarregamentoCorrente = 0;
@@ -2358,14 +2358,14 @@ void fluxoPotencia_Niveis_BFS_Multiplos(GRAFO *grafo, long int numeroBarras, ALI
 
 
 
-void fluxoPotencia_Alimentador_BFS_call(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos, int idAlim, double Sbase){
+void fluxoPotencia_Alimentador_BFS_call(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos, int idAlim, double Sbase){
     long int nmed,nvar,nmedTotal;
     int i,j, it, n_threads;
-    FILABARRAS *barraAtual = NULL;
-    GRAFO *no  = NULL;
+    TF_FILABARRAS *barraAtual = NULL;
+    TF_GRAFO *no  = NULL;
 
-    PFSOLUTION powerflow_result[numeroAlimentadores];
-    PFSOLUTION powerflow_result_rede;
+    TF_PFSOLUTION powerflow_result[numeroAlimentadores];
+    TF_PFSOLUTION powerflow_result_rede;
 
     powerflow_result_rede.convergencia = 0;
     powerflow_result_rede.maiorCarregamentoCorrente = 0;
@@ -2460,11 +2460,11 @@ void fluxoPotencia_Alimentador_BFS_call(GRAFO *grafo, long int numeroBarras, ALI
 }
 
 
-void amostragemVariacaoCarga(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, double percentual){ 
+void amostragemVariacaoCarga(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, double percentual){ 
     int i, k, fase;
     int de,para,n_adj;
     double rnd;
-    FILABARRAS *barraAtual;
+    TF_FILABARRAS *barraAtual;
     __complex__ double Saux[3], Iaux[3], V0[3];
 
 
@@ -2530,29 +2530,29 @@ void amostragemVariacaoCarga(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *a
  * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa
  * 
  * Essa função efetua
- * A função retorna @c PFSOLUTION.
+ * A função retorna @c TF_PFSOLUTION.
  * 
  * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
  * @param numeroBarras
  * @param alimentador
  * @param ramos
  * @param Sbase
- * @return PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
+ * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
  * @see fluxoPotencia_BFS_Multiplos
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica(GRAFO *grafo, long int numeroBarras, ALIMENTADOR alimentador, DRAM *ramos,double Sbase){
+TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase){
     int it, nvar, k = 0,i, conv = 0;
     double *DV, nDV = 0, loading = 0, cargaAtivaTotal = 0 ;
     long int *RNP = NULL;
     BOOL control_action = 0;
     double fatorDesbalanco;
 
-    FILABARRAS *barraAtual = NULL, *barraProx = NULL;
-    NOADJACENTE *ramoAdj = NULL;
+    TF_FILABARRAS *barraAtual = NULL, *barraProx = NULL;
+    TF_NOADJACENTE *ramoAdj = NULL;
 
-    PFSOLUTION powerflow_result;
+    TF_PFSOLUTION powerflow_result;
 
     //----------------------------------------------------------------------
     //RNP no formato de vetor

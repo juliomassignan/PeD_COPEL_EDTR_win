@@ -13,12 +13,12 @@
 #include "funcoesModCarga.h"
 
 
-BOOL ligadoPorMedidor(NOADJACENTE adjacente) {
+BOOL ligadoPorMedidor(TF_NOADJACENTE adjacente) {
     if(adjacente.nmed > 0) return true;
     return false;
 }
 
-BOOL barraMedClasseA(GRAFO no) {
+BOOL barraMedClasseA(TF_GRAFO no) {
     if(no.nmedPQ >0) return true;    
     return false;
 }
@@ -28,11 +28,11 @@ BOOL barraMedClasseA(GRAFO no) {
 
 //------------------------------------------------------------------------------
 // Leitura das tabelas de dados
-void leituraTabelaConsumidores(DADOS_CONSUMIDOR **consumidores)
+void leituraTabelaConsumidores(TF_DADOS_CONSUMIDOR **consumidores)
 {
     FILE *arquivo;
-    CURVA_CARGA *curvasCarga;
-    DADOS_CNAE *dadosCNAE;
+    TF_CURVA_CARGA *curvasCarga;
+    TF_DADOS_CNAE *dadosCNAE;
     
     
     // Leitura da tabela de curvas de carga típicas
@@ -69,7 +69,7 @@ void leituraTabelaConsumidores(DADOS_CONSUMIDOR **consumidores)
 
 //------------------------------------------------------------------------------
 // Leitura da Tabela de Curvas de Carga Típicas
-void leituraCurvasCarga(FILE *arquivo, CURVA_CARGA **curvas)
+void leituraCurvasCarga(FILE *arquivo, TF_CURVA_CARGA **curvas)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -83,7 +83,7 @@ void leituraCurvasCarga(FILE *arquivo, CURVA_CARGA **curvas)
         numLinhas++;
     }
     rewind(arquivo);
-    if (((*curvas) = (CURVA_CARGA *)malloc( (numLinhas) * sizeof(CURVA_CARGA)))==NULL)
+    if (((*curvas) = (TF_CURVA_CARGA *)malloc( (numLinhas) * sizeof(TF_CURVA_CARGA)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as curvas de carga !!!!");
         exit(1); 
@@ -119,7 +119,7 @@ void leituraCurvasCarga(FILE *arquivo, CURVA_CARGA **curvas)
 
 //------------------------------------------------------------------------------
 // Leitura da Tabela dos dados CNAE
-void leituraDadosCNAE(FILE *arquivo, DADOS_CNAE **cnae)
+void leituraDadosCNAE(FILE *arquivo, TF_DADOS_CNAE **cnae)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -132,7 +132,7 @@ void leituraDadosCNAE(FILE *arquivo, DADOS_CNAE **cnae)
         numLinhas++;
     }
     rewind(arquivo);
-    if (((*cnae) = (DADOS_CNAE *)malloc( (numLinhas) * sizeof(DADOS_CNAE)))==NULL)
+    if (((*cnae) = (TF_DADOS_CNAE *)malloc( (numLinhas) * sizeof(TF_DADOS_CNAE)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os dados CNAE!!!!");
         exit(1); 
@@ -160,7 +160,7 @@ void leituraDadosCNAE(FILE *arquivo, DADOS_CNAE **cnae)
 
 //------------------------------------------------------------------------------
 // Leitura da Tabela de Consumidores
-void leituraConsumidores(FILE *arquivo, DADOS_CONSUMIDOR **consumidores, CURVA_CARGA *curvas, DADOS_CNAE *cnae)
+void leituraConsumidores(FILE *arquivo, TF_DADOS_CONSUMIDOR **consumidores, TF_CURVA_CARGA *curvas, TF_DADOS_CNAE *cnae)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
@@ -176,7 +176,7 @@ void leituraConsumidores(FILE *arquivo, DADOS_CONSUMIDOR **consumidores, CURVA_C
     
     
     rewind(arquivo);
-    if (((*consumidores) = (DADOS_CONSUMIDOR *)malloc( (numLinhas+1) * sizeof(DADOS_CONSUMIDOR)))==NULL)
+    if (((*consumidores) = (TF_DADOS_CONSUMIDOR *)malloc( (numLinhas+1) * sizeof(TF_DADOS_CONSUMIDOR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os dados de consumidores !!!!");
         exit(1); 
@@ -325,7 +325,7 @@ void leituraConsumidores(FILE *arquivo, DADOS_CONSUMIDOR **consumidores, CURVA_C
 
 //------------------------------------------------------------------------------
 // Leitura da Curvas Agregadas quando não for executar funçoes de agregação
-void leituraCurvasAgregadas(char *folder, CURVA_TRAFO **curvasTrafos, DBAR *barras, long int numeroBarrasParam)
+void leituraCurvasAgregadas(char *folder, TF_CURVA_TRAFO **curvasTrafos, TF_DBAR *barras, long int numeroBarrasParam)
 {
     int contador = 0,tempo,npts,no,k, i;
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
@@ -340,7 +340,7 @@ void leituraCurvasAgregadas(char *folder, CURVA_TRAFO **curvasTrafos, DBAR *barr
     contador = 0;
     
     //Aloca na memória espaço para as curvas de carga
-    (*curvasTrafos) = (CURVA_TRAFO *) malloc((numeroBarrasParam+1)*sizeof(CURVA_TRAFO));
+    (*curvasTrafos) = (TF_CURVA_TRAFO *) malloc((numeroBarrasParam+1)*sizeof(TF_CURVA_TRAFO));
     npts = NPTS_CURVA;
     while (contador < numeroBarrasParam+1){
         (*curvasTrafos)[contador].id = -1;
@@ -469,7 +469,7 @@ void leituraCurvasAgregadas(char *folder, CURVA_TRAFO **curvasTrafos, DBAR *barr
 
 //------------------------------------------------------------------------------
 // Atualiza os valores de P e Q para o valor agregado na estampa de tempo
-void inicializaPQcurvas(DBAR *barras, CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam,  long int estampa_tempo, TIPO_AGREGACAO_CARGAS tipo, double Sbase)
+void inicializaPQcurvas(TF_DBAR *barras, TF_CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam,  long int estampa_tempo, TF_TIPO_AGREGACAO_CARGAS tipo, double Sbase)
 {
     int contador, i, k;
     double fat_desb_P[3],fat_desb_Q[3], somaP, somaQ;
@@ -565,11 +565,11 @@ void inicializaPQcurvas(DBAR *barras, CURVA_TRAFO *curvasTrafos, long int numero
 
 //------------------------------------------------------------------------------
 // Executa a agregação de cargas
-void agregacaoCargas(CURVA_TRAFO **curvasTrafos, long int numeroBarrasParam, DADOS_CONSUMIDOR *consumidores)
+void agregacaoCargas(TF_CURVA_TRAFO **curvasTrafos, long int numeroBarrasParam, TF_DADOS_CONSUMIDOR *consumidores)
 {
     int contador,tempo,npts,no;
     
-    (*curvasTrafos) = (CURVA_TRAFO *) malloc((numeroBarrasParam+1)*sizeof(CURVA_TRAFO));
+    (*curvasTrafos) = (TF_CURVA_TRAFO *) malloc((numeroBarrasParam+1)*sizeof(TF_CURVA_TRAFO));
     
     //--------------------------------------------------------------------------
     // Inicializa as potências as curvas de carga agregadas
@@ -701,7 +701,7 @@ void agregacaoCargas(CURVA_TRAFO **curvasTrafos, long int numeroBarrasParam, DAD
     
 }
 
-void imprimeConsumidores(DADOS_CONSUMIDOR *consumidores){
+void imprimeConsumidores(TF_DADOS_CONSUMIDOR *consumidores){
     int i, j;
     
     FILE *saida;
@@ -720,7 +720,7 @@ void imprimeConsumidores(DADOS_CONSUMIDOR *consumidores){
     fclose(saida);
 }
 
-void imprimeCurvasAgregadas(CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam){
+void imprimeCurvasAgregadas(TF_CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam){
     int i,j;
     
     FILE *saida;
@@ -764,13 +764,13 @@ void imprimeCurvasAgregadas(CURVA_TRAFO *curvasTrafos, long int numeroBarrasPara
 
 //------------------------------------------------------------------------------
 // Busca AMs adjacentes e Elenca os nós da AM
-void buscaAM(long int idNo, int idAM,  BOOL *visitado, GRAFO * grafo, AREA_MEDICAO *areasAM, int fase){
+void buscaAM(long int idNo, int idAM,  BOOL *visitado, TF_GRAFO * grafo, TF_AREA_MEDICAO *areasAM, int fase){
     //Depth-Search Algorithm - busca no e a sua profundidade (gera RNP))
     long int barraAdj,i = 0, idAM_jus;
     int nmed;
     
     visitado[idNo] = true;
-    GRAFO * no = &grafo[idNo];
+    TF_GRAFO * no = &grafo[idNo];
     for(i = 0; i < no->numeroAdjacentes; i++)
     {   
         barraAdj = no->adjacentes[i].idNo;
@@ -835,12 +835,12 @@ void buscaAM(long int idNo, int idAM,  BOOL *visitado, GRAFO * grafo, AREA_MEDIC
 
 //------------------------------------------------------------------------------
 // Monta AMs
-void buscaAMs(GRAFO * grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DMED *medidas, long int **numeroMedidasTabela, AREA_MEDICAO **areasAM) {
+void buscaAMs(TF_GRAFO * grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DMED*medidas, long int **numeroMedidasTabela, TF_AREA_MEDICAO **areasAM) {
     int i, j, idAlim, contador, par;
     long int numeroMedidas;
     BOOL visitado[(numeroBarras+1)];
            
-    FILABARRAS *barraAtual;
+    TF_FILABARRAS *barraAtual;
     //Soma número de medidas na tabela de entrada
     numeroMedidas=0;
     for (i = 0; i < 14; i++){ 
@@ -850,7 +850,7 @@ void buscaAMs(GRAFO * grafo, long int numeroBarras, ALIMENTADOR *alimentadores, 
     }
     
     // Aloca Áreas de Medição
-    if (((*areasAM) = (AREA_MEDICAO *)malloc( (numeroMedidas+1) * sizeof(AREA_MEDICAO)))==NULL)
+    if (((*areasAM) = (TF_AREA_MEDICAO *)malloc( (numeroMedidas+1) * sizeof(TF_AREA_MEDICAO)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os dados de areas de medição!!!!");
         exit(1); 
@@ -979,10 +979,10 @@ void buscaAMs(GRAFO * grafo, long int numeroBarras, ALIMENTADOR *alimentadores, 
 
 //------------------------------------------------------------------------------
 // Percorre AMs em profundidade atualizando o fator de potência de acordo com a AM raiz
-void atualizaFP_AMs(AREA_MEDICAO *areasAM) {
+void atualizaFP_AMs(TF_AREA_MEDICAO *areasAM) {
     
     long int i, id,idAM;    
-    FILABARRAS * filaTrecho = NULL;
+    TF_FILABARRAS * filaTrecho = NULL;
     double fp;
     
     for (idAM = 0; idAM < areasAM[0].total; idAM++) {
@@ -1026,7 +1026,7 @@ void atualizaFP_AMs(AREA_MEDICAO *areasAM) {
 
 //------------------------------------------------------------------------------
 // Filtra as medidas através dos testes de consistência
-void filtraAMs(AREA_MEDICAO *areasAM, ALIMENTADOR *alimentadores) {
+void filtraAMs(TF_AREA_MEDICAO *areasAM, TF_ALIMENTADOR *alimentadores) {
     int i, j, idMont,aux;
     FILE *saida;
     
@@ -1216,7 +1216,7 @@ void filtraAMs(AREA_MEDICAO *areasAM, ALIMENTADOR *alimentadores) {
 
 //------------------------------------------------------------------------------
 // Imprime valores das AMs para conferência
-void imprimeAMs(AREA_MEDICAO *areasAM){
+void imprimeAMs(TF_AREA_MEDICAO *areasAM){
     int i, j;
     FILE *saida;
     saida = fopen("AMS_out.dad","w");
@@ -1248,7 +1248,7 @@ void imprimeAMs(AREA_MEDICAO *areasAM){
 
 //------------------------------------------------------------------------------
 // Atualiza os Valores Calculados nas Medidas e Verifica a Convergência
-long int atualizaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos,BOOL *conv_alim, long int it)
+long int atualizaAM(TF_AREA_MEDICAO *areaAM, TF_GRAFO *grafo, long int numeroNos,BOOL *conv_alim, long int it)
 {
     int i, j, de, para, min, fase,idAdj;
     
@@ -1314,7 +1314,7 @@ long int atualizaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos,BOOL 
 
             if (areaAM[i].numeroAdj > 0){
                 for (j=0;j<areaAM[i].numeroAdj;j++){
-                    DADOS_MEDIDOR *medAdj = &areaAM[areaAM[i].med_adjacentes[j]].medidor;
+                    TF_DADOS_MEDIDOR *medAdj = &areaAM[areaAM[i].med_adjacentes[j]].medidor;
                     areaAM[i].DeltaP = areaAM[i].DeltaP - (medAdj->Pmed - medAdj->Pcalc);
                     areaAM[i].DeltaQ = areaAM[i].DeltaQ - (medAdj->Qmed - medAdj->Qcalc);
                 }
@@ -1372,7 +1372,7 @@ long int atualizaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos,BOOL 
 
 //------------------------------------------------------------------------------
 // Ajusta as cargas dentro de uma AM
-void ajustaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos){
+void ajustaAM(TF_AREA_MEDICAO *areaAM, TF_GRAFO *grafo, long int numeroNos){
     int i, j, noN, fase, de;
         
     // Percorre as barras na estrutura CONFIGURACAO e aplica os fatores de ajuste
@@ -1412,7 +1412,7 @@ void ajustaAM(AREA_MEDICAO *areaAM, GRAFO *grafo, long int numeroNos){
 
 
 //Atualiza as Injeções de Corrente nos grafos
-void atualizaCorrenteNoGrafo(GRAFO *no){
+void atualizaCorrenteNoGrafo(TF_GRAFO *no){
     int i, j;
     __complex__ double Saux[3], Iaux[3], IauxDelta[3], Vl[3], V0;
     
@@ -1446,7 +1446,7 @@ void atualizaCorrenteNoGrafo(GRAFO *no){
  * long int numeroRamos = 0;
  * char *folder = NULL;
  * DBAR *barra = NULL;
- * DRAM *ramo = NULL; 
+ * TF_DRAM *ramo = NULL; 
  * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
  * if (folder !=NULL)
  *      printf("leitura concluida\n");
@@ -1470,11 +1470,11 @@ void atualizaCorrenteNoGrafo(GRAFO *no){
  * @note
  * @warning .
  */
-void estimadorDemandaTrifasico(GRAFO *grafo, long int numeroBarras, ALIMENTADOR *alimentadores, long int numeroAlimentadores, DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, AREA_MEDICAO *areasAM){
+void estimadorDemandaTrifasico(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, TF_AREA_MEDICAO *areasAM){
     long int nmed,nvar,nmedTotal;
     int i,j, idAlim, it, n_threads;
-    FILABARRAS *barraAtual = NULL;
-    GRAFO *no  = NULL;
+    TF_FILABARRAS *barraAtual = NULL;
+    TF_GRAFO *no  = NULL;
     int conv_ECTR = 0, itECTR = 0;
     
     BOOL convECTR_alim[numeroAlimentadores];

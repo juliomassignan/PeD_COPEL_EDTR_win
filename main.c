@@ -50,19 +50,19 @@ int main(int argc, char** argv) {
     
     
     // Estruturas de dados da rede elétrica
-    DBAR *barra = NULL;
-    DRAM *ramo = NULL;
-    DSUBESTACAO *subestacoes = NULL;
-    DALIM *static_alimentador = NULL;     // salva dados estáticos para relacionar alimentadores com subestações
-    GRAFO *grafo = NULL;
-    DMED *medida = NULL;
-    ALIMENTADOR *alimentador = NULL, *areas = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
+    TF_DBAR *barra = NULL;
+    TF_DRAM *ramo = NULL;
+    TF_DSUBESTACAO *subestacoes = NULL;
+    TF_DALIM *static_alimentador = NULL;     // salva dados estáticos para relacionar alimentadores com subestações
+    TF_GRAFO *grafo = NULL;
+    TF_DMED *medida = NULL;
+    TF_ALIMENTADOR *alimentador = NULL, *areas = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
     
-    AREA_MEDICAO *areasMedicao = NULL;
+    TF_AREA_MEDICAO *areasMedicao = NULL;
     
 
     // Para estimação de demanda e simulações com séries temporais
-    CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
+    TF_CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
     long int flag_mod = 0;                  //FLAG para rodar a modelagem de cargas
 
     // --------------------------------------------------------------------------------

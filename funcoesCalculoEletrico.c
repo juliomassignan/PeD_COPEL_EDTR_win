@@ -53,7 +53,7 @@ void tensaoDelta(__complex__ double *Vf, __complex__ double *Vl){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void Skm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S){
+void Skm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *S){
     int i,k;
     __complex__ double Vp[3], Vs[3];
     
@@ -114,7 +114,7 @@ void Skm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void Smk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S){
+void Smk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *S){
     int i,k;
     __complex__ double Vp[3], Vs[3];
         
@@ -172,7 +172,7 @@ void Smk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void Sk(GRAFO *grafo, long int k, __complex__ double *S){
+void Sk(TF_GRAFO *grafo, long int k, __complex__ double *S){
     int i,j;
     
     __complex__ double *Saux;
@@ -202,7 +202,7 @@ void Sk(GRAFO *grafo, long int k, __complex__ double *S){
 }
 
 //Função Ikm
-void Ikm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *Ikm){
+void Ikm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *Ikm){
     int i,k;
     __complex__ double Vp[3], Vs[3];
     
@@ -222,7 +222,7 @@ void Ikm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *Ikm){
 }
 
 //Função Ikm
-void Imk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *Imk){
+void Imk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *Imk){
     int i,k;
     __complex__ double Vp[3], Vs[3];
     
@@ -253,7 +253,7 @@ void Imk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *Imk){
 //opt = 1 angulo noP
 //opt = 2 tensão noS
 //opt = 3 angulo noS em relação à fase "i"
-void dSkm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
+void dSkm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
     int j,k;
     __complex__ double *Vp, *Vs, **J = NULL, P1,P2,P3;
     
@@ -329,7 +329,7 @@ void dSkm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int o
 }
 
 //void dSmk
-void dSmk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
+void dSmk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
     int j,k;
     __complex__ double *Vp, *Vs, **J = NULL;
     
@@ -407,7 +407,7 @@ void dSmk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int o
 
 //opt = 0 tensão
 //opt = 1 angulo em relação à fase "i" da barra 
-void dSk(GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase){
+void dSk(TF_GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase){
     int i,j, opt1;
     double **J = NULL;
     
@@ -491,7 +491,7 @@ void dSk(GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long in
 // Coordenadas Retangulares
 //
 //------------------------------------------------------------------------------
-void dSkm_ret(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
+void dSkm_ret(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
     int j,k;
     __complex__ double Vp[3], Vs[3], **J = NULL;
     
@@ -543,7 +543,7 @@ void dSkm_ret(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long i
 }
 
 //void dSmk
-void dSmk_ret(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
+void dSmk_ret(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i){ //fase i
     int j,k;
     __complex__ double Vp[3], Vs[3], **J = NULL;
     
@@ -597,7 +597,7 @@ void dSmk_ret(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long i
 
 //opt = 0 tensão
 //opt = 1 angulo em relação à fase "i" da barra 
-void dSk_ret(GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase){
+void dSk_ret(TF_GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase){
     int i,j, opt1;
     
     __complex__ double *dSaux;
@@ -676,7 +676,7 @@ void dSk_ret(GRAFO *grafo, long int k, __complex__ double *dS, long int opt, lon
 //opt = 1 angulo noP
 //opt = 2 tensão noS
 //opt = 3 angulo noS em relação à fase "i"
-void dIkm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dI, long int opt, long int i){ //fase i
+void dIkm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dI, long int opt, long int i){ //fase i
     int j,k;
     __complex__ double Vp[3], Vs[3], **J = NULL, P1,P2,P3;
     __complex__ double dS[3];
@@ -756,7 +756,7 @@ void dIkm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dI, long int o
 //opt = 1 angulo noP
 //opt = 2 tensão noS
 //opt = 3 angulo noS em relação à fase "i"
-void dImk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dI, long int opt, long int i){ //fase i
+void dImk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dI, long int opt, long int i){ //fase i
     int j,k;
     __complex__ double Vp[3], Vs[3], **J = NULL, P1,P2,P3;
     __complex__ double dS[3];

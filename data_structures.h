@@ -48,7 +48,7 @@ typedef enum  {
 	trafo, // transformador de potência
     regulador, //regulador de tensão
     chave //chave
-} RAMO;
+} TF_RAMO;
 
 /*Estado do ramo*/
 /**
@@ -59,7 +59,7 @@ typedef enum  {
 typedef enum  {
 	aberto, 
     fechado
-} ESTADO;
+} TF_ESTADO;
 
 /*Tipo de ligação trifásica*/
 /**
@@ -75,7 +75,7 @@ typedef enum  {
         OY, //Estrela aberto
         OD, //Delta aberto
         MTC //Monofásico com tap central no secundário
-} LIGACAO;
+} TF_LIGACAO;
 
 /*Tipo de conexão das fases ligação trifásica*/
 /**
@@ -93,7 +93,7 @@ typedef enum  {
         BC, //Fase bc
         ABC //Fase abc
                 
-} FASES;
+} TF_FASES;
 
 //------------------------------------------------------------------------------
 //
@@ -108,15 +108,15 @@ typedef enum  {
  */
 typedef struct {
     long int ID;    //Identificação numérica da barra
-    FASES fases;    //Número de fase
-    LIGACAO lig;    //Tipo de ligação da carga
+    TF_FASES fases;    //Número de fase
+    TF_LIGACAO lig;    //Tipo de ligação da carga
     double Vbase;   //Tensão nominal da carga
     
     double Pnom[3]; // valor de potência ativa trifásica
     double Qnom[3]; // valor de potência reativa trifásica
     double ZIP;     // modelo dependente de tensão
     
-} DLOAD;
+} TF_DLOAD;
 
 // 
 /*Dados das shunts de barra*/
@@ -127,8 +127,8 @@ typedef struct {
  */
 typedef struct {
     long int ID;        //Identificação numérica da barra
-    FASES fases;        //Número de fase
-    LIGACAO lig;        //Tipo de ligação do banco shunt
+    TF_FASES fases;        //Número de fase
+    TF_LIGACAO lig;        //Tipo de ligação do banco shunt
     double Vbase;       //Tensão nominal do banco shunt
     
     double Qnom[3];     //Potência reativa do shunt trifásico em kVAr (Negativo para capacitor)
@@ -136,7 +136,7 @@ typedef struct {
     long int num;       //número de bancos shunt (para shunts chaveados automaticamente)
     double DV;          //Intevralo de tensão de controle (em pu)
     double Vset[3];     //setpoint de tensão (em pu)
-} DSHNT;
+} TF_DSHNT;
 
 // 
 /*Dados de geradores distribuídos*/
@@ -147,8 +147,8 @@ typedef struct {
  */
 typedef struct {
     long int ID;        //Identificação numérica da barra
-    FASES fases;        //Número de fase
-    LIGACAO lig;        //Tipo de ligação do GD
+    TF_FASES fases;        //Número de fase
+    TF_LIGACAO lig;        //Tipo de ligação do GD
     double Vbase;       //Tensão nominal do gerador distribuido
     double Snominal;    //Potência nominal
     
@@ -160,7 +160,7 @@ typedef struct {
     double Qmax;        //Limites máximo de geração de potência reativa
     double Vset[3];     //Setpoint de tensão para máquina operando como PV constante
     long int controlePV;//0 = Sequência positiva / 2 = por fase
-} DGD;
+} TF_DGD;
 
 // 
 /*Dados de barras da rede elétrica*/
@@ -172,22 +172,22 @@ typedef struct {
 typedef struct {
     long int ID;        //Identificação numérica da barra
     long int i;         //Identificação sequencial da barra
-    FASES fases;        //Número de fase
-    LIGACAO ligacao;    //Tipo de ligação do GD
+    TF_FASES fases;        //Número de fase
+    TF_LIGACAO ligacao;    //Tipo de ligação do GD
     double Vbase;       //Tensão nominal da barra
     long int tipo;      // Barra  0 - PQ; 1 - PV; 2 - Ref
     
     __complex__ double Vref[3];         //Tensão de referência para controles
     __complex__ double Vinicial[3];     //recebe de arquivo de entrada a tensão inicial
     
-    DLOAD loads[10];    //cargas conectadas à barra - limite de 10 cargas por barra para não ter que trabalhar na alocação dinâmica dentro do array de struct
+    TF_DLOAD loads[10];    //cargas conectadas à barra - limite de 10 cargas por barra para não ter que trabalhar na alocação dinâmica dentro do array de struct
     long int nloads;    //contador do número total de cargas
-    DSHNT *shunts;      //shunts conectadas à barra
+    TF_DSHNT *shunts;      //shunts conectadas à barra
     long int nshunts;   //contador do número total de shunts
-    DGD *gds;           //geradores distribuídos conectadas à barra
+    TF_DGD *gds;           //geradores distribuídos conectadas à barra
     long int ngds;      //contador do número total de gds
     
-} DBAR;
+} TF_DBAR;
 
 // 
 /*Dados de circuitos elétricos de distribuição (linhas ou ramais)*/
@@ -199,13 +199,13 @@ typedef struct {
  * 
  */
 typedef struct {
-    FASES fases;                    //Número de fase
+    TF_FASES fases;                    //Número de fase
     double comprimento;             //Comprimento do circuito
     __complex__ double Zaa, Zab, Zac, Zbb, Zbc, Zcc;    //Impedância série do circuito de distribuição (parâmetros prórprios e mútuos)
     double Baa, Bab, Bac, Bbb, Bbc, Bcc;                //Suscpetância shunt do circuito de distribuição (parâmetros prórprios e mútuos)
 double ampacidade;                                      //Ampacidade do cabo
   
-} DLIN;
+} TF_DLIN;
 
 // 
 /*Dados de transformadores de potência*/
@@ -217,12 +217,12 @@ double ampacidade;                                      //Ampacidade do cabo
  * 
  */
 typedef struct {
-  FASES fases;      //Número de fases
+  TF_FASES fases;      //Número de fases
   double Vpri;      //Tensão nominal do enrolamento primário
   double Vsec;      //Tensão nominal do enrolamento secundário
   double Snominal;  //Potência nominal do transformador
   double R, X;      //Parâmetros de resistência do enrolamento e reatância de dispersão do transformador
-  LIGACAO lig_pri, lig_sec; //Tipo de ligação do primário e secundário (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto / 6 - Monofásico com tap central no secundário)
+  TF_LIGACAO lig_pri, lig_sec; //Tipo de ligação do primário e secundário (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto / 6 - Monofásico com tap central no secundário)
   long int defasamento;     //Defasamento angular construtivo (Ex: Valor numérico na notação ANSI DYn0 ou DYn1) 
   double tap_pri, tap_sec;  //Posição e tap fora da nominal no primário e secundário (tap fixo sem comutação)
 
@@ -230,7 +230,7 @@ typedef struct {
   double p_imag;            //Corrente de magnetização
   double noLoadLosses;      //Perdas sem cargas
   double r_mutua, x_mutua;           //Impedância mútua entre enrolamentos para modelo de trafo monofásico com tap central no secundário  
-} DTRF;
+} TF_DTRF;
 
 // 
 /*Dados de reguladores de tensão*/
@@ -242,13 +242,13 @@ typedef struct {
  * 
  */
 typedef struct {
-  FASES fases;      //Número de fases
+  TF_FASES fases;      //Número de fases
   double Vnom;      //Tensão nominal do regulador de tensão
   double regulacao; //Capacidade total de regulação de tensão do regulador
   double Snominal;  //Capacidade nominal do regulador
   double R, X;      //Parâmetros de resistência do enrolamento e reatância de dispersão do regulador
   long int ntaps;   //Número total de taps
-  LIGACAO lig;      //Tipo de ligação trifásica do regulador
+  TF_LIGACAO lig;      //Tipo de ligação trifásica do regulador
   
   //Parametros do controlador de comutação automática
   double TP;        //Relação de transformação do TP do regulador para mensurar a tensão de controle
@@ -262,7 +262,7 @@ typedef struct {
   double deltaVr;           //Banda de tensão para determinar o intervalo de atuação ao redor do setpoint de tensão  no sentido reverso
   double R1r,X1r,R2r,X2r,R3r,X3r, V1r,V2r,V3r; //Parâmetros do Line Drop COmpensator trifaśicos para controle remoto pelo regulador no sentido reverso
   
-} DREG;
+} TF_DREG;
 
 // 
 /*Dados dos ramos da topologia da rede*/
@@ -278,17 +278,17 @@ typedef struct {
     long int PARA;      //Identificação numérica da barra no terminal final do ramo
     long int k;         //Identificação sequencial da barra no terminal inicial do ramo
     long int m;         //Identificação sequencial da barra no terminal final do ramo
-    FASES fases;        //Número de fases
-    RAMO tipo;          //Tipo de componente do ramo: 0= linha  1= trafo  2= regulador  3= chave
-    ESTADO estado;      //Condição topológica do ramo
+    TF_FASES fases;        //Número de fases
+    TF_RAMO tipo;          //Tipo de componente do ramo: 0= linha  1= trafo  2= regulador  3= chave
+    TF_ESTADO estado;      //Condição topológica do ramo
     double ampacidade;  // ampacidade do ramo
     double Snominal;    // capacidade de potência nominal do ramo
     double comprimento;    // comprimento do ramo em metros
     
     //Dados detalhados do componente associado ao ramo
-    DLIN linha;
-    DTRF trafo;
-    DREG regulador;
+    TF_DLIN linha;
+    TF_DTRF trafo;
+    TF_DREG regulador;
    
     //Matrizes para modelo de linha
     __complex__ double **Z;     //Matriz de Impedância série para representar ramais
@@ -301,7 +301,7 @@ typedef struct {
     __complex__ double **Yss;   //Submatriz de quadripólo trifásico para represnetar trafos e reguladores
     double tap_pri[3];          //Valores de tap do ramo
     double tap_sec[3];          //Valores de tap do ramo    
-} DRAM;
+} TF_DRAM;
 
 // 
 /*Dados dos ramos dos medidores da rede elétrica*/
@@ -319,7 +319,7 @@ typedef struct {
     long int k;         //Identificação sequencial da barra no terminal inicial do medidor (barra onde o medidor está instalado)
     long int m;         //Identificação sequencial da barra no terminal final do medidor (barra que define o sentido de para medidas de fluxo em ramos)
     long int ramo;      //Identificador sequencial do ramo onde o medidor esá instalado
-    FASES fases;        //Identificador da fase sendo mensurada
+    TF_FASES fases;        //Identificador da fase sendo mensurada
     long int tipo;      /*Tipo de medidor:
                                         0: Fluxo de Potência Ativa - kW
                                         1: Fluxo de Potência Reativa - kVAr
@@ -332,7 +332,7 @@ typedef struct {
                                         8: Injeção Magnitude de Corrente - A
                                         9: Injeção Ângulo de Corrente) - graus
                                         */
-    ESTADO ligado;      //Condição do canal de comunicação da medida
+    TF_ESTADO ligado;      //Condição do canal de comunicação da medida
     
     double zmed;        //Valor medido
     double sigma;       //Desvio padrão da medida
@@ -350,7 +350,7 @@ typedef struct {
     double *reguaH;     //Índice das variáveis de estado relacionadas com a medida
     double *H;          //Gradiente calculado do modelo de medição em relação às variáveis de estado
     
-} DMED;
+} TF_DMED;
 
 
 
@@ -368,7 +368,7 @@ typedef struct Fila {
     long int idAdj; //Identificador sequencial de adjacenência
     long int profundidade;  //Profundidade na representação por RNP
     struct Fila * prox;     //Ponteiro para o próximo nó na lista
-} FILABARRAS;
+} TF_FILABARRAS; 
 
 
 /**
@@ -380,8 +380,8 @@ typedef struct {
     long int idRaiz;    //Identificação sequencial do nó raiz ou início do alimentador
     long int idAlim;    //Identificação sequencial do alimentador
     long int numeroNos; //Quantidade de nós do alimentador
-    FILABARRAS rnp[1];  //Ponteiro para o início da lista encadeada (RNP) da topologia do alimentador
-} ALIMENTADOR;
+    TF_FILABARRAS rnp[1];  //Ponteiro para o início da lista encadeada (RNP) da topologia do alimentador
+} TF_ALIMENTADOR;
 
 /**
  * @brief Estrutura de dados para representar nós adjacentes e características elétrica em determinada topologia da rede
@@ -389,15 +389,15 @@ typedef struct {
  */
 typedef struct {
   long int idNo;    //Inteiro que identifica cada nó da rede elétrica.
-  ESTADO estado;    //Estado do ramo na topologia atual 0 = desligado e 1 = ligado
-  RAMO tipo;        //Tipo de ramo (linha, trafo, regulador ou chave)
+  TF_ESTADO estado;    //Estado do ramo na topologia atual 0 = desligado e 1 = ligado
+  TF_RAMO tipo;        //Tipo de ramo (linha, trafo, regulador ou chave)
   double relacao;   //Relacao de transformação no caso de transformadores
-  DRAM *ramo;       //Ponteiro para as informações do ramo
+  TF_DRAM *ramo;       //Ponteiro para as informações do ramo
   long int idram;   //Identificador sequencial do ramo
   
   //Medidores
   long int nmed;    //Número de medidores associados ao ramo na topologia da rede
-  DMED **medidores; //Poneteiro para os medidores associados ao ramo
+  TF_DMED**medidores; //Poneteiro para os medidores associados ao ramo
   
   //Grandezas elétricas que caracterizam o ramo
   __complex__ double S[3];      //Fluxo de potência elétrica complexa trifásica para o ramo adjacente
@@ -409,7 +409,7 @@ typedef struct {
   // Para o estimador de demanda trifásico
   long int idAM;     // Indica o índica da área de medição que a barra pertence
    
-} NOADJACENTE;
+} TF_NOADJACENTE;
 
 /**
  * @brief Estrutura de dados para representar nós de um grafo e adjacências (representa o grafo completo da rede elétrica)
@@ -421,20 +421,20 @@ typedef struct {
   long int idAlim;          //Identificador do Alimentador
   long int idSubestacao;    //Identificador da Subestação Associada
 
-  FASES fases;          //Número de fases da barra
+  TF_FASES fases;          //Número de fases da barra
   double Vbase;         //Tensão nominal da barra
   long int tipo;        //Tipo de Barra no cálculo de fluxo de potência  0 - PQ; 1 - PV; 2 - Ref
-  DBAR *barra;          //Ponteiro para dados completos de barras
+  TF_DBAR *barra;          //Ponteiro para dados completos de barras
   
   double distanciaSE_acc;         //Distância acumulada até a barra
 
   long int numeroAdjacentes; /**< Indica o tamanho da lista de adjacentes do nó. */
-  NOADJACENTE adjacentes[15]; /**< Lista dos nós adjacentes. Limite de 15 para evitar alocação dinamica*/
+  TF_NOADJACENTE adjacentes[15]; /**< Lista dos nós adjacentes. Limite de 15 para evitar alocação dinamica*/
   
   //Medidores
   long int nmed;        //Número de medidores associados ao nó na topologia da rede
   long int nmedPQ;        //Número de medidores de potência ativa e reativa associados ao nó na topologia da rede (para medidores Classe A)
-  DMED **medidores;     //Poneteiro para os medidores associados ao nó
+  TF_DMED **medidores;     //Poneteiro para os medidores associados ao nó
   
   //Impedância Shunt Totoal
   __complex__ Ysh[3][3];    //Matriz de admitância trifásica complexa para agregar todos os elementos shunt conectados à barra
@@ -458,7 +458,7 @@ typedef struct {
 //   __complex__ double V_est[3];
 //   __complex__ double V_coord[3];
 //   int estimado;
-} GRAFO;
+} TF_GRAFO;
 
 //-----------------------------------------------------
 //ESTRUTURAS DE DADOS PARA ARMAZENAR RESULTADOS DE INTERESSE E INTERFACES COM OUTRAS FUNCIONALIDADES
@@ -494,7 +494,7 @@ typedef struct {
     
     
     
-} PFSOLUTION;
+} TF_PFSOLUTION;
 
 
 
@@ -512,13 +512,13 @@ typedef struct {
 /**
  * @brief Define dados 
  *  
- * Representação individual das informações de subestações (um elemento DSUBESTACAO para cada transformador individual da subestação)
+ * Representação individual das informações de subestações (um elemento TF_DSUBESTACAO para cada transformador individual da subestação)
  * 
  *  
  */
 typedef struct {
     long int ID; //Identificador da subestação
-    ESTADO estado;  // Estado do alimentador (energizada ou não)
+    TF_ESTADO estado;  // Estado do alimentador (energizada ou não)
     int tipo;       // livre
     double Snominal; // Potência nominal do trafo do alimentador
     double Vpri;     // Tensão no nível primário do alimentador
@@ -526,26 +526,26 @@ typedef struct {
     char nome[40];   //nome do alimentador    
     char sigla_SE[7];   //sigla da subestação
 
-    ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
+    TF_ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
     int ID_SE;       // identificador da subestação
     int ID_TR;       // identificador do trafo da Se
     
     // Sumário de cálculo
-    PFSOLUTION *powerflow_summary;
-} DALIM;
+    TF_PFSOLUTION *powerflow_summary;
+} TF_DALIM;
 
 // 
 /*Dados estáticos de subestações do sistema de distribuição*/
 /**
  * @brief Define dados subestações do sistema de distribuição como agregador de alimentadores em determinado nível de tensão da rede elétrica
  *  
- * Representação individual das informações de subestações (um elemento DSUBESTACAO para cada transformador individual da subestação)
+ * Representação individual das informações de subestações (um elemento TF_DSUBESTACAO para cada transformador individual da subestação)
  * 
  *  
  */
 typedef struct {
     long int ID; //Identificador da subestação
-    ESTADO estado;  // Estado da subestação (energizada ou não)
+    TF_ESTADO estado;  // Estado da subestação (energizada ou não)
     int tipo;       // livre
     double Snominal; // Potência nominal do trafo da subestação
     double Vpri;     // Tensão no nível primário da subestação   
@@ -553,17 +553,17 @@ typedef struct {
     char nome[40];   //nome da subestação
     char sigla[7];   //sigla da subestação
 
-    DALIM alimentadores[50];  //Lista de identificadores sequenciais de alimentadores atribuídos a cada subestação (Agregador de alimentadores) limitado em 50
+    TF_DALIM alimentadores[50];  //Lista de identificadores sequenciais de alimentadores atribuídos a cada subestação (Agregador de alimentadores) limitado em 50
     int numeroAlimentadores;    //Contador do número de alimentadores
-    DTRF trafo[10];         // dados de transformador de subestação
+    TF_DTRF trafo[10];         // dados de transformador de subestação
     int numeroTrafos;       // número total de trafos
     
     // Sumário de cálculo
-    PFSOLUTION *powerflow_summary;
+    TF_PFSOLUTION *powerflow_summary;
 
     //Dados para equivalentes de curto circuito (futuro)
     double Pcc3F;
     
-} DSUBESTACAO;
+} TF_DSUBESTACAO;
 
 #endif	/* DATA_STRUCTURES_H */

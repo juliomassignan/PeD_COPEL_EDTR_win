@@ -49,7 +49,7 @@ void tensaoDelta(__complex__ double *Vf, __complex__ double *Vl);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void Skm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S);
+void Skm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *S);
 
 /**
  * @brief Função auxiliar para cálculo do fluxo de potência complexa em determinado ramo da rede elétrica no sentido da barra m para a barra k  (m -> k)
@@ -67,7 +67,7 @@ void Skm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void Smk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S);
+void Smk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *S);
 
 /**
  * @brief Função auxiliar para cálculo da injeção de potência complexa em determinado nó da rede elétrica
@@ -84,23 +84,23 @@ void Smk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *S);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void Sk(GRAFO *grafo, long int k, __complex__ double *S);
+void Sk(TF_GRAFO *grafo, long int k, __complex__ double *S);
 
 
-void Ikm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *Ikm);
+void Ikm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *Ikm);
 
 
-void Imk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *Imk);
+void Imk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *Imk);
 
 //------------------------------------------------------------------------------
 //Funções das derivadas
-void dSkm(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i);
-void dSmk(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i);
-void dSk(GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase);
+void dSkm(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i);
+void dSmk(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i);
+void dSk(TF_GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase);
 
-void dSkm_ret(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i);
-void dSmk_ret(GRAFO *noP, GRAFO *noS, DRAM *ramo, __complex__ double *dS, long int opt, long int i);
-void dSk_ret(GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase);
+void dSkm_ret(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i);
+void dSmk_ret(TF_GRAFO *noP, TF_GRAFO *noS, TF_DRAM *ramo, __complex__ double *dS, long int opt, long int i);
+void dSk_ret(TF_GRAFO *grafo, long int k, __complex__ double *dS, long int opt, long int barra, long int fase);
 
 
 #endif	/* funcoesCalculoEletrico_H */

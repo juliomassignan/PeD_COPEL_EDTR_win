@@ -19,7 +19,7 @@
 #include "funcoesFluxoVarredura.h"
 #include "funcoesCalculoEletrico.h"
 #include "funcoesMatematicas.h"
-
+#include "data_structures_modcarga.h"
 
 //
 /**
