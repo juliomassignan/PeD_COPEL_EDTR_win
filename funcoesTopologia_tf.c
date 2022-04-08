@@ -13,9 +13,8 @@
 #include <math.h>
 #include <complex.h>
 
-#include "data_structures.h"
-#include "funcoesTopologia.h"
-#include "funcoesMatematicas.h"
+#include "data_structures_tf.h"
+#include "funcoesMatematicas_tf.h"
 //------------------------------------------------------------------------------
 //
 // ROTINAS AUXILIARES

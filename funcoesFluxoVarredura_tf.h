@@ -1,13 +1,13 @@
 /**
- * @file funcoesTopologia.h
+ * @file funcoesTopologia_tf.h
  * @author Julio Augusto Druzina Massignan
  * @date 31 jul 2020
  * @brief Cabeçalho da biblioteca para o cálculo de fluxo de potência trifásico por Varredura Direta/Inversa por soma de correntes.
  * As funções definidas na biblioteca estão implemetadas em funcoesFluxoVarredura.c
  *
  */
-#ifndef FUNCOESFLUXOVARREDURA_H
-#define	FUNCOESFLUXOVARREDURA_H
+#ifndef FUNCOESFLUXOVARREDURA_TF_H
+#define	FUNCOESFLUXOVARREDURA_TF_H
 
 //------------------------------------------------------------------------------
 //

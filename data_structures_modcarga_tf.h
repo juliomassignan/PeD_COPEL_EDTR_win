@@ -1,5 +1,5 @@
 /* 
- * File:   data_structures_modcarga.h
+ * File:   data_structures_modcarga_tf.h
  * Author: Julio
  *
  * Created on 9 de Janeiro de 2015, 14:07
@@ -12,8 +12,8 @@
  * @see http://lcrserver.icmc.usp.br/projects/codes/wiki
  */
 
-#ifndef DATA_STRUCTURES_MODCARGA_H
-#define	DATA_STRUCTURES_MODCARGA_H
+#ifndef DATA_STRUCTURES_MODCARGA__TF_H
+#define	DATA_STRUCTURES_MODCARGA__TF_H
 
 /**
  Define o fator de potência típico para as cargas sem informação de kVAr

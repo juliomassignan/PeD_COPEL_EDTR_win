@@ -1,13 +1,13 @@
 /**
- * @file funcoesTopologia.h
+ * @file funcoesTopologia_tf.h
  * @author Julio Augusto Druzina Massignan
  * @date 31 jul 2020
  * @brief Cabeçalho da biblioteca para leitura de dados trifásico para análise estática de redes de distribuição
  * As funções definidas na biblioteca estão implemetadas em funcoesLeitura.c
  *
  */
-#ifndef funcoesLeitura_H
-#define	funcoesLeitura_H
+#ifndef funcoesLeitura_TF_H
+#define	funcoesLeitura_TF_H
 
 
 //------------------------------------------------------------------------------

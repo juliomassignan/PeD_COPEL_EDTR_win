@@ -13,13 +13,13 @@
 #include <complex.h>
 #include <time.h>
 
-#include "data_structures.h"
-#include "funcoesLeitura.h"
-#include "funcoesTopologia.h"
-#include "funcoesFluxoVarredura.h"
+#include "data_structures_tf.h"
+#include "funcoesLeitura_tf.h"
+#include "funcoesTopologia_tf.h"
+#include "funcoesFluxoVarredura_tf.h"
 
-#include "data_structures_modcarga.h"
-#include "funcoesModCarga.h"
+#include "data_structures_modcarga_tf.h"
+#include "funcoesModCarga_tf.h"
 
 // Variáveis globais de modelo trifásico
 BOOL symetric_OPT = 0; //Variável global para assumir transposição de linhas
@@ -118,6 +118,14 @@ int main(int argc, char** argv) {
     //--------------------------------------------------------------------------
     // Compatibilização com MRAN
     
+    /*
+        funcao monta grafo SDR 
+        passar grafo trifásico passar grafo SDR 
+        e dados alimentadores SDR
+        colocartf em tudo
+        colocar as coisas MR dentro do codigo
+    */
+
     //resultadoLeitura = leituraBarrasLinhasTrafos(&grafoSDR, &dadosTrafoSDR, &numeroBarras, &numeroTrafos, &numeroChaves);
     //resultadoLeitura =  leituraDadosAlimentadores(&dadosAlimentadorSDR);
     //resultadoLeitura =  leituraDadosReguladoresTensao(&dadosReguladorSDR);

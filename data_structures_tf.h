@@ -1,12 +1,12 @@
 /**
- * @file data_structures.h
+ * @file data_structures_tf.h
  * @author Julio Augusto Druzina Massignan
  * @date 31 jul 2020
  * @brief Contém as estruturas de dados utilizadas para representação de redes elétricas trifásicas.
  *
  */
-#ifndef DATA_STRUCTURES_H
-#define	DATA_STRUCTURES_H
+#ifndef DATA_STRUCTURES_TF_H
+#define	DATA_STRUCTURES_TF_H
 
 //------------------------------------------------------------------------------
 //

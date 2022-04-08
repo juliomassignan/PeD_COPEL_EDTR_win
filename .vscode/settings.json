@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "funcoesmatematicas.h": "c",
-        "data_structures_modcarga.h": "c"
+        "data_structures_modcarga.h": "c",
+        "data_structures_tf.h": "c",
+        "funcoescalculoeletrico.h": "c",
+        "funcoescalculoeletrico_tf.h": "c",
+        "funcoesmatematicas_tf.h": "c",
+        "funcoesmodcarga_tf.h": "c"
     }
 }

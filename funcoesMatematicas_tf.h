@@ -5,8 +5,8 @@
  * Created on 19 de Julho de 2017, 17:20
  */
 
-#ifndef FUNCOESMATEMATICAS_H
-#define	FUNCOESMATEMATICAS_H
+#ifndef FUNCOESMATEMATICAS__TF_H
+#define	FUNCOESMATEMATICAS_TF_H
 
 //Funções com matrizes complexas
 __complex__ double *c_vetAloca(int n);

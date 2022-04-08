@@ -5,8 +5,8 @@
 #include <math.h>
 #include <complex.h>
 
-#include "data_structures.h"
-#include "funcoesMatematicas.h"
+#include "data_structures_tf.h"
+#include "funcoesMatematicas_tf.h"
 
 long int maxIT = 10000;
 

@@ -6,8 +6,8 @@
  * As funções definidas na biblioteca estão implemetadas em funcoesTopologia.c
  *
  */
-#ifndef FUNCOESTOPOLOGIA_H
-#define	FUNCOESTOPOLOGIA_H
+#ifndef FUNCOESTOPOLOGIA_TF_H
+#define	FUNCOESTOPOLOGIA_TF_H
 
 //------------------------------------------------------------------------------
 //

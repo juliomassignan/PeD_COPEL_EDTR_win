@@ -14,8 +14,8 @@
 #include <complex.h>
 #include <ctype.h>
 
-#include "data_structures.h"
-#include "funcoesLeitura.h"
+#include "data_structures_tf.h"
+#include "funcoesLeitura_tf.h"
 
 //------------------------------------------------------------------------------
 //

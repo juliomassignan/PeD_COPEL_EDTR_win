@@ -5,10 +5,10 @@
  * Created on 9 de Janeiro de 2015, 16:03
  */
 
-#ifndef FUNCOESMODCARGA_H
-#define	FUNCOESMODCARGA_H
-#include "data_structures_modcarga.h"
-#include "data_structures.h"
+#ifndef FUNCOESMODCARGA_TF_H
+#define	FUNCOESMODCARGA_TF_H
+#include "data_structures_modcarga_tf.h"
+#include "data_structures_tf.h"
 
 #ifdef	__cplusplus
 extern "C" {

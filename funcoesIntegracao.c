@@ -14,12 +14,12 @@
 #include <complex.h>
 #include <omp.h> 
 
-#include "data_structures.h"
+#include "data_structures_tf.h"
 #include "funcoesTopologia.h"
-#include "funcoesFluxoVarredura.h"
-#include "funcoesCalculoEletrico.h"
+#include "funcoesFluxoVarredura_tf.h"
+#include "funcoesCalculoEletrico_tf.h"
 #include "funcoesMatematicas.h"
-#include "data_structures_modcarga.h"
+#include "data_structures_modcarga_tf.h"
 
 //
 /**

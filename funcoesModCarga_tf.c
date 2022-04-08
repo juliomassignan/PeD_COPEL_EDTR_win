@@ -6,11 +6,10 @@
 #include <time.h>
 
 
-#include "data_structures.h"
-#include "data_structures_modcarga.h"
-#include "funcoesLeitura.h"
-#include "funcoesTopologia.h"
-#include "funcoesModCarga.h"
+#include "data_structures_tf.h"
+#include "data_structures_modcarga_tf.h"
+#include "funcoesLeitura_tf.h"
+#include "funcoesTopologia_tf.h"
 
 
 BOOL ligadoPorMedidor(TF_NOADJACENTE adjacente) {

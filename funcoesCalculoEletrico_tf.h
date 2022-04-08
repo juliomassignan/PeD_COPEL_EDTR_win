@@ -5,8 +5,8 @@
  * Created on 24 de Fevereiro de 2017, 14:03
  */
 
-#ifndef funcoesCalculoEletrico_H
-#define	funcoesCalculoEletrico_H
+#ifndef funcoesCalculoEletrico_TF_H
+#define	funcoesCalculoEletrico_TF_H
 
 //------------------------------------------------------------------------------
 //Funções auxiliares
