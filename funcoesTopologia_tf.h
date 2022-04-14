@@ -28,7 +28,7 @@
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void adicionaNo(TF_FILABARRAS **setor, long int idNo);
+void adicionaNo_tf(TF_FILABARRAS **setor, long int idNo);
 
 /**
  * @brief Função auxiliar para alocar novo nó em lista encadeada do tipo FILABARRAS
@@ -44,7 +44,7 @@ void adicionaNo(TF_FILABARRAS **setor, long int idNo);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void adicionaNoNaFila(TF_FILABARRAS ** fila, long int idNo);
+void adicionaNoNaFila_tf(TF_FILABARRAS ** fila, long int idNo);
 
 /**
  * @brief Função auxiliar para apontar para o próximo nó em lista encadeada do tipo FILABARRAS
@@ -72,7 +72,7 @@ void apontaProxNoNaFila(TF_FILABARRAS ** fila);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-int retiraNoDaFila(TF_FILABARRAS ** fila);
+int retiraNoDaFila_tf(TF_FILABARRAS ** fila);
 
 /**
  * @brief Função auxiliar para testar se a lista encadeada está vazia
@@ -86,7 +86,7 @@ int retiraNoDaFila(TF_FILABARRAS ** fila);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL filaNaoVazia(TF_FILABARRAS * fila);
+BOOL filaNaoVazia_tf(TF_FILABARRAS * fila);
 
 /**
  * @brief Função auxiliar para testar se a lista encadeada contém nó especificado
@@ -131,7 +131,7 @@ BOOL ramoLigado(TF_NOADJACENTE adjacente);
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL estaListaAdjacencias(TF_GRAFO *grafo, long int idNoRaiz, long int idNoAdj);
+BOOL estaListaAdjacencias_tf(TF_GRAFO *grafo, long int idNoRaiz, long int idNoAdj);
 
 //------------------------------------------------------------------------------
 //
@@ -438,7 +438,7 @@ void atualizaTaps(TF_DRAM *ramos, long int numeroRamos);
 
 
 
-void atualizaEstadoChaves(const char *folder, const char *filename, TF_GRAFO *grafo, long int numeroBarras);
+void atualizaEstadoChaves_tf(const char *folder, const char *filename, TF_GRAFO *grafo, long int numeroBarras);
 
 #endif	/* FUNCOESTOPOLOGIA_H */
 

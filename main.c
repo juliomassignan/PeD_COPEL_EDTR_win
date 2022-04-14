@@ -13,13 +13,22 @@
 #include <complex.h>
 #include <time.h>
 
+
 #include "data_structures_tf.h"
 #include "funcoesLeitura_tf.h"
 #include "funcoesTopologia_tf.h"
 #include "funcoesFluxoVarredura_tf.h"
 
+
 #include "data_structures_modcarga_tf.h"
 #include "funcoesModCarga_tf.h"
+
+#include "data_structures.h"
+#include "funcoesInicializacao.h"
+#include "funcoesSetor.h"
+#include "funcoesAuxiliares.h"
+#include "funcoesRNP.h"
+
 
 // Variáveis globais de modelo trifásico
 BOOL symetric_OPT = 0; //Variável global para assumir transposição de linhas

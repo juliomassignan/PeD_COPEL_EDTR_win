@@ -34,7 +34,7 @@
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void adicionaNo(TF_FILABARRAS **setor, long int idNo)
+void adicionaNo_tf(TF_FILABARRAS **setor, long int idNo)
 {
     TF_FILABARRAS *novoSetor;
     TF_FILABARRAS *aux = NULL;
@@ -66,7 +66,7 @@ void adicionaNo(TF_FILABARRAS **setor, long int idNo)
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void adicionaNoNaFila(TF_FILABARRAS ** fila, long int idNo) {
+void adicionaNoNaFila_tf(TF_FILABARRAS ** fila, long int idNo) {
     TF_FILABARRAS *novoVertice = NULL;
     TF_FILABARRAS *aux = NULL;
  
@@ -101,7 +101,7 @@ void adicionaNoNaFila(TF_FILABARRAS ** fila, long int idNo) {
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void apontaProxNoNaFila(TF_FILABARRAS ** fila) {
+void apontaProxNoNaFila_tf(TF_FILABARRAS ** fila) {
     TF_FILABARRAS *novoVertice = NULL;
     TF_FILABARRAS *aux = NULL;
     
@@ -123,7 +123,7 @@ void apontaProxNoNaFila(TF_FILABARRAS ** fila) {
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-int retiraNoDaFila(TF_FILABARRAS ** fila) {
+int retiraNoDaFila_tf(TF_FILABARRAS ** fila) {
     TF_FILABARRAS *aux = NULL;
     
     int idNo = -1;
@@ -151,7 +151,7 @@ int retiraNoDaFila(TF_FILABARRAS ** fila) {
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL filaNaoVazia(TF_FILABARRAS * fila) {
+BOOL filaNaoVazia_tf(TF_FILABARRAS * fila) {
      if(fila == NULL)
          return false;
      return true;
@@ -170,7 +170,7 @@ BOOL filaNaoVazia(TF_FILABARRAS * fila) {
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL estaLista(TF_FILABARRAS *setor, int idNo) {
+BOOL estaLista_tf(TF_FILABARRAS *setor, int idNo) {
     TF_FILABARRAS *p;
     p = setor;
     while(p != NULL && p->idNo != idNo)
@@ -214,7 +214,7 @@ BOOL ramoLigado(TF_NOADJACENTE adjacente) {
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-BOOL estaListaAdjacencias(TF_GRAFO *grafo, long int idNoRaiz, long int idNoAdj)
+BOOL estaListaAdjacencias_tf(TF_GRAFO *grafo, long int idNoRaiz, long int idNoAdj)
 {
     int contador;
     for(contador =0; contador < grafo[idNoRaiz].numeroAdjacentes; contador++)
@@ -278,9 +278,9 @@ void buscaProfundidade(TF_FILABARRAS *barraAtual, long int idNo, int profundidad
                 
                 grafo[barraAdj].distanciaSE_acc = grafo[idNo].distanciaSE_acc  + no->adjacentes[i].ramo->comprimento;
                 idNo= barraAdj;
-                //adicionaNo(&barraAtual, idNo);
-                adicionaNoNaFila(&barraAtual, idNo);
-                apontaProxNoNaFila(&barraAtual);
+                //adicionaNo_tf(&barraAtual, idNo);
+                adicionaNoNaFila_tf(&barraAtual, idNo);
+                apontaProxNoNaFila_tf(&barraAtual);
                 buscaProfundidade(barraAtual, idNo, profundidade, visitado, grafo, idAlim,nos_alim);
             } 
     }
@@ -313,18 +313,18 @@ void buscaLargura(TF_GRAFO * grafo, TF_ALIMENTADOR *alimentador, long int idAlim
     TF_FILABARRAS *filaProf = NULL;
     TF_FILABARRAS *filaBarras = NULL;
     
-    //adicionaNo(&alimentador[idAlim].rnp, idNoRaiz);
+    //adicionaNo_tf(&alimentador[idAlim].rnp, idNoRaiz);
     barraAtual = &alimentador[idAlim].rnp[0];
-    adicionaNoNaFila(&filaBarras, idNoRaiz);
-    adicionaNoNaFila(&filaProf, profundidade);
+    adicionaNoNaFila_tf(&filaBarras, idNoRaiz);
+    adicionaNoNaFila_tf(&filaProf, profundidade);
     
-    while(filaNaoVazia(filaBarras))
+    while(filaNaoVazia_tf(filaBarras))
     {
-        idNo = retiraNoDaFila(&filaBarras);
+        idNo = retiraNoDaFila_tf(&filaBarras);
         if (idNo != idNoRaiz){
-            adicionaNo(&barraAtual, idNo);
+            adicionaNo_tf(&barraAtual, idNo);
         }
-        profundidade = retiraNoDaFila(&filaProf);
+        profundidade = retiraNoDaFila_tf(&filaProf);
         barraAtual->profundidade = profundidade;
         TF_GRAFO * no = &grafo[idNo];
         grafo[idNo].idAlim = idAlim;
@@ -341,8 +341,8 @@ void buscaLargura(TF_GRAFO * grafo, TF_ALIMENTADOR *alimentador, long int idAlim
                     {*/
 
 
-                    adicionaNoNaFila(&filaBarras, barraAdj);
-                    adicionaNoNaFila(&filaProf, profundidade + 1);
+                    adicionaNoNaFila_tf(&filaBarras, barraAdj);
+                    adicionaNoNaFila_tf(&filaProf, profundidade + 1);
                     alimentador[idAlim].numeroNos++;
 
                     //}
@@ -1704,7 +1704,7 @@ void atualizaTaps(TF_DRAM *ramos, long int numeroRamos){
  * @note 
  * @warning
  */
-void atualizaEstadoChaves(const char *folder, const char *filename, TF_GRAFO *grafo, long int numeroBarras)
+void atualizaEstadoChaves_tf(const char *folder, const char *filename, TF_GRAFO *grafo, long int numeroBarras)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados,*dados1; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */

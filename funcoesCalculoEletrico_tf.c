@@ -8,7 +8,7 @@
 #include "data_structures_tf.h"
 #include "funcoesCalculoEletrico_tf.h"
 #include "funcoesMatematicas_tf.h"
-
+//#include "data_structures.h"
 //------------------------------------------------------------------------------
 //
 // FUNÇÕES DE CÁLCULO ELETRICO - FLUXOS DE POTÊNCIA, CORRENTE ETC..

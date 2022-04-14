@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "funcoesSetor.h"
+#include "funcoesInicializacao.h"
 
 long int idSetor = 0; /*< Variável global que calcula o id dos setores **/
 int numeroSetoresAdj; /*< Variável global para cálculo do número de adjacentes **/
@@ -11,6 +12,7 @@ long int numeroConsumidoresEspeciais; /*< Variável global para cálculo do núm
 int numeroSetoresAlimentador; /*< Variável global para cálculo do número de setores do alimentador **/
 int numeroSetores;
 extern long int numeroAlimentadores;
+
 void adicionaNo(BARRASETOR **setor, long int idNo)
 {
     BARRASETOR *novoSetor;

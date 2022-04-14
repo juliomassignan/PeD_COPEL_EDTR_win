@@ -993,19 +993,19 @@ void atualizaFP_AMs(TF_AREA_MEDICAO *areasAM) {
     
     for (idAM=0;idAM<areasAM[0].total;idAM++){
         if ((areasAM[idAM].montante == -1) && (areasAM[idAM].numeroAdj > 0)){
-            adicionaNoNaFila(&filaTrecho, idAM);
+            adicionaNoNaFila_tf(&filaTrecho, idAM);
             if (areasAM[idAM].medidor->tipo == 1)
                 areasAM[idAM].fp = areasAM[idAM].Pmed/sqrt(pow(areasAM[idAM].Pmed,2)+pow(areasAM[idAM].Qmed,2));
             else
                 areasAM[idAM].fp = areasAM[idAM].Pcalc/sqrt(pow(areasAM[idAM].Pcalc,2)+pow(areasAM[idAM].Qcalc,2));
             fp = areasAM[idAM].fp;
             
-            while(filaNaoVazia(filaTrecho)){
-                id = retiraNoDaFila(&filaTrecho);
+            while(retiraNoDaFila_tf(filaTrecho)){
+                id = retiraNoDaFila_tf(&filaTrecho);
                 
                 if (areasAM[idAM].descarte == 0){
                     for(i = 0; i<areasAM[id].numeroAdj; i++){
-                        adicionaNoNaFila(&filaTrecho, areasAM[id].med_adjacentes[i]);
+                        adicionaNoNaFila_tf(&filaTrecho, areasAM[id].med_adjacentes[i]);
                         areasAM[areasAM[id].med_adjacentes[i]].fp = fp;            
                     }
                 }

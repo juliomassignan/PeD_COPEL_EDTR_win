@@ -6,6 +6,10 @@
         "funcoescalculoeletrico.h": "c",
         "funcoescalculoeletrico_tf.h": "c",
         "funcoesmatematicas_tf.h": "c",
-        "funcoesmodcarga_tf.h": "c"
+        "funcoesmodcarga_tf.h": "c",
+        "time.h": "c",
+        "funcoesinicializacao.h": "c",
+        "data_structures.h": "c",
+        "funcoessetor.h": "c"
     }
 }

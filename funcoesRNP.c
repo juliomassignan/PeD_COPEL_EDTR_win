@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "funcoesRNP.h"
+#include "funcoesSetor.h"
 #include "funcoesAuxiliares.h"
 
 int maximoTentativas = 5; //define o número máximo de tentativas na escolha dos nós para os operadores PAO e CAO

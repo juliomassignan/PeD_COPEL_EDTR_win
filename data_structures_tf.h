@@ -18,7 +18,7 @@
 #define EPS 1E-9            //Tolerância numérica de cálculo
 #define MAXIT 100           //Numero maximo de iterções nos calculos elétricos
 
-
+#include "data_structures.h"
 
 //------------------------------------------------------------------------------
 //
@@ -31,11 +31,7 @@
  * @brief Variável Booleana.
  *
  */
-enum BOOLEAN {
-	true = 1, /**< Valor verdadeiro para os testes booleanos. */
-	false = 0 /**< Valor falso para os testes booleanos. */
-};
-typedef enum BOOLEAN BOOL;
+
 
 /*Tipo de ramo*/
 /**
@@ -363,11 +359,11 @@ typedef struct {
  * @brief Estrutura de dados auxiliar para representar filas (listas encadeadas)
  *  
  */
-typedef struct Fila {
+typedef struct Fila_tf {
     long int idNo;  //Identificador do nó
     long int idAdj; //Identificador sequencial de adjacenência
     long int profundidade;  //Profundidade na representação por RNP
-    struct Fila * prox;     //Ponteiro para o próximo nó na lista
+    struct Fila_tf * prox;     //Ponteiro para o próximo nó na lista
 } TF_FILABARRAS; 
 
 
