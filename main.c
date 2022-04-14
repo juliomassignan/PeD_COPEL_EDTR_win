@@ -24,10 +24,9 @@
 #include "funcoesModCarga_tf.h"
 
 #include "data_structures.h"
-#include "funcoesInicializacao.h"
-#include "funcoesSetor.h"
+#include "funcoesLeituraDados.h"
 #include "funcoesAuxiliares.h"
-#include "funcoesRNP.h"
+
 
 
 // Variáveis globais de modelo trifásico

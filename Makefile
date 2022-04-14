@@ -1,13 +1,48 @@
-CC=gcc
-CFLAGS= -o -g
-LDFLAGS= -lcholmod -lspqr -lsuitesparseconfig -lm -lstdc++ -fopenmp
-OBJFILES = main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesSetor.o funcoesAuxiliares.o funcoesInicializacao.o funcoesRNP.o
-TARGET = fp
+all: fp 
+    fp: main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o
+	gcc -g -o fp main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o -lcholmod -lspqr -lsuitesparseconfig -lm -lstdc++ -fopenmp
+	
+    funcoesCalculoEletrico_tf.o: funcoesCalculoEletrico_tf.c data_structures_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h
+	gcc -g -c funcoesCalculoEletrico_tf.c
 
-all: $(TARGET)
+    funcoesFluxoVarredura_tf.o: funcoesFluxoVarredura_tf.c data_structures_tf.h funcoesTopologia_tf.h funcoesFluxoVarredura_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h
+	gcc -g -c funcoesFluxoVarredura_tf.c
+	
+    funcoesLeitura_tf.o: funcoesLeitura_tf.c data_structures_tf.h funcoesLeitura_tf.h
+	gcc -g -c funcoesLeitura_tf.c 
+ 
+    funcoesModCarga_tf.o: funcoesModCarga_tf.c data_structures_tf.h data_structures_modcarga_tf.h funcoesLeitura_tf.h funcoesTopologia_tf.h
+	gcc -g -c funcoesModCarga_tf.c
 
-$(TARGET): $(OBJFILES)
-		$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) $(LDFLAGS)
+    funcoesTopologia_tf.o: funcoesTopologia_tf.c data_structures_tf.h funcoesMatematicas_tf.h 
+	gcc -g -c funcoesTopologia_tf.c
+ 
+    funcoesMatematicas_tf.o: funcoesMatematicas_tf.c data_structures_tf.h funcoesMatematicas_tf.h
+	gcc -g -c funcoesMatematicas_tf.c
+	
+    funcoesRNP.o: funcoesRNP.c data_structures.h funcoesRNP.h funcoesAuxiliares.h
+	gcc -g -c funcoesRNP.c
 
-clean:
-	rm -f $(OBJFILES) $(TARGET) *~ 
+    funcoesInicializacao.o: funcoesInicializacao.c data_structures.h funcoesInicializacao.h funcoesSetor.h
+	gcc -g -c funcoesInicializacao.c
+	
+    funcoesSetor.o: funcoesSetor.c funcoesSetor.h data_structures.h funcoesInicializacao.h
+	gcc -g -c funcoesSetor.c 
+ 
+    funcoesLeituraDados.o: data_structures.h funcoesLeituraDados.h funcoesLeituraDados.c
+	gcc -g -c funcoesLeituraDados.c
+
+    funcoesAuxiliares.o: funcoesAuxiliares.h funcoesAuxiliares.c
+	gcc -g -c funcoesAuxiliares.c
+ 
+    funcoesModCarga.o: funcoesModCarga.c data_structures_modcarga.h funcoesModCarga.h funcoesSetor.h
+	gcc -g -c funcoesModCarga.c
+	
+    funcoesProblema.o: funcoesProblema.c data_structures.h funcoesProblema.h funcoesAuxiliares.h funcoesRNP.h funcoesInicializacao.h
+	gcc -g -c funcoesProblema.c
+	
+    main.o: main.c data_structures_tf.h funcoesLeitura_tf.h  funcoesTopologia_tf.h funcoesFluxoVarredura_tf.h  data_structures_modcarga_tf.h funcoesModCarga_tf.h
+	gcc -g -c main.c 
+ 
+clean: 
+	$(RM) count *.o *~
