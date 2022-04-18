@@ -9,7 +9,7 @@
 #define	FUNCOESINICIALIZACAO_H
 #include "funcoesRNP.h"
 
-int numeroSetores; /**< Variável global para armazenar o número de setores do SDR. */
+//int numeroSetores; /**< Variável global para armazenar o número de setores do SDR. */ duplicada
 extern long int numeroAlimentadores; /**< Variável global para armazenar o número de alimentadores do SDR. */
 
 /**

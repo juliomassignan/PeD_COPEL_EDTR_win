@@ -13,19 +13,19 @@
 #include <complex.h>
 #include <time.h>
 
-
+#include "data_structures.h"
 #include "data_structures_tf.h"
 #include "funcoesLeitura_tf.h"
 #include "funcoesTopologia_tf.h"
 #include "funcoesFluxoVarredura_tf.h"
-
+#include "funcoesIntegracao_tf.h"
 
 #include "data_structures_modcarga_tf.h"
 #include "funcoesModCarga_tf.h"
 
-#include "data_structures.h"
-#include "funcoesLeituraDados.h"
-#include "funcoesAuxiliares.h"
+
+
+
 
 
 

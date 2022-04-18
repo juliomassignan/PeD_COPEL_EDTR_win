@@ -18,7 +18,10 @@
 #define EPS 1E-9            //Tolerância numérica de cálculo
 #define MAXIT 100           //Numero maximo de iterções nos calculos elétricos
 
+//TROCAR BOOL por TF_BOOL
 #include "data_structures.h"
+
+
 
 //------------------------------------------------------------------------------
 //

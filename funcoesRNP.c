@@ -442,11 +442,11 @@ void desalocaConfiguracao(CONFIGURACAO configuracaoParam) {
  * @param matrizPIParam
  * @param numeroMaximoColunasParam
  */
-void inicializaMatrizPI(GRAFOSETORES *grafoSetoresParam, MATRIZPI ** matrizPIParam, int numeroMaximoColunasParam) 
+void inicializaMatrizPI(GRAFOSETORES *grafoSetoresParam, MATRIZPI ** matrizPIParam, int numeroMaximoColunasParam, int numeroSetores) 
 {
     long int indiceColuna;
     long int indice;
-    
+        
     //aloca o vetor de de matriz Pi    
     if(((*matrizPIParam) = (MATRIZPI *) malloc((numeroSetores+1) * sizeof(MATRIZPI)))==NULL)  
     {

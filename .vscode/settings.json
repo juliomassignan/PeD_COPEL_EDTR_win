@@ -16,6 +16,7 @@
         "funcoesleitura_tf.h": "c",
         "funcoesleituradados.h": "c",
         "data_structures_modcarga_tf.h": "c",
-        "funcoesauxiliares.h": "c"
+        "funcoesauxiliares.h": "c",
+        "funcoesrnp.h": "c"
     }
 }

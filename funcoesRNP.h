@@ -18,7 +18,7 @@ extern "C" {
 #ifdef	__cplusplus
 }
 #endif
-int numeroSetores;
+//int numeroSetores;
 
 
 void insereNos(NOSPAOCAO *conjuntoNosParam, long int p, long int r, long int a, int iadj, int pos);
@@ -162,7 +162,7 @@ void desalocaConfiguracao(CONFIGURACAO individuoParam);
  * @param matrizPIParam
  * @param numeroMaximoColunasParam
  */
-void inicializaMatrizPI(GRAFOSETORES *grafoSetoresParam, MATRIZPI ** matrizPIParam, int numeroMaximoColunasParam);
+void inicializaMatrizPI(GRAFOSETORES *grafoSetoresParam, MATRIZPI ** matrizPIParam, int numeroMaximoColunasParam, int numeroSetores);
 
 /**
  * Este método realiza a alocação e inicialização do vetor pi da RNP.

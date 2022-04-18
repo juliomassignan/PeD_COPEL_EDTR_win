@@ -10,7 +10,7 @@ int numeroNosSetor;/*< Variável global para cálculo do número de nos do setor
 long int numeroConsumidores; /*< Variável global para cálculo do número de consumidores do setor **/
 long int numeroConsumidoresEspeciais; /*< Variável global para cálculo do número de consumidores especiais do setor **/
 int numeroSetoresAlimentador; /*< Variável global para cálculo do número de setores do alimentador **/
-int numeroSetores;
+//int numeroSetores; //removido duplicado 
 extern long int numeroAlimentadores;
 
 void adicionaNo(BARRASETOR **setor, long int idNo)
