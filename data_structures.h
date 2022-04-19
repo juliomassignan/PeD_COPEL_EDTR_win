@@ -168,7 +168,6 @@ typedef struct {
   long int idAM; /**< Inteiro que indica o índice da AM caso tenha medidor. */
   TIPOARESTA tipoAresta; /**< Tipo da aresta no SDR. */
   CONDICAO condicao; /**< Condição operacional da aresta. */
-  //estou aqui
   SUBTIPOARESTA subTipoAresta; /**< Subtipo da aresta no SDR. */
   double resistencia; /**< Valor do tipo double indicando a resistência da aresta. */
   double reatancia; /**< Valor do tipo double indicando a reatância da aresta. */

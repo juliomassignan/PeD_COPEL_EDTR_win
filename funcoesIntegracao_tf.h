@@ -7,6 +7,8 @@
 
 #ifndef funcoesCalculoEletrico_H
 #define	funcoesCalculoEletrico_H
+#include "data_structures.h"
+#include "data_structures_tf.h"
 //
 /**
  * @brief 
@@ -20,5 +22,6 @@
  * @warning .
  */
 
+void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves);
 
 #endif	/* funcoesIntegracao_H */

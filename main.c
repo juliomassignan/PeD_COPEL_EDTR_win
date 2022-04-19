@@ -50,11 +50,14 @@ int main(int argc, char** argv) {
     long int numeroBarras = 0;
     long int numeroAlimentadores = 0, numeroAreas = 0, numeroSubestacoes = 0;
     long int numeroRamos = 0;
+    long int numeroNos=0;
     long int **numeroMedidas = NULL,**numeroMedidasPMU = NULL,**numeroVirtuais = NULL;
     long int **interfaceNiveis = NULL;
     long int numeroInterfaces = 0;
     long int i = 0;
     char *folder = NULL;
+    long int numeroTrafos=0;
+    long int numeroChaves=0;
     
     
     // Estruturas de dados da rede elétrica
@@ -65,9 +68,11 @@ int main(int argc, char** argv) {
     TF_GRAFO *grafo = NULL;
     TF_DMED *medida = NULL;
     TF_ALIMENTADOR *alimentador = NULL, *areas = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
-    
+
     TF_AREA_MEDICAO *areasMedicao = NULL;
     
+    GRAFO *grafoSDRParam=NULL;
+    DADOSREGULADOR *dadosReguladorSDRParam=NULL;
 
     // Para estimação de demanda e simulações com séries temporais
     TF_CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
@@ -138,6 +143,7 @@ int main(int argc, char** argv) {
     //resultadoLeitura =  leituraDadosAlimentadores(&dadosAlimentadorSDR);
     //resultadoLeitura =  leituraDadosReguladoresTensao(&dadosReguladorSDR);
 
+
     //--------------------------------------------------------------------------
     // atualizaEstadoChaves(grafoSDR,numeroBarras); //Atualiza os estados das chaves de acordo com ESTADOS_CHS
     //LISTASETORES * lista_setores = buscaSetores(grafoSDR, dadosAlimentadorSDR, numeroBarras);
@@ -150,7 +156,7 @@ int main(int argc, char** argv) {
     //configuracaoInicial = alocaIndividuo(numeroAlimentadores, idConfiguracao, 1);
     //constroiIndividuoInicial(grafoSetores, grafoSDR, listaChaves, dadosAlimentadorSDR, configuracaoInicial);
     
-    
+    converteGrafo_TFtoSDR(grafo,numeroBarras,&grafoSDRParam,dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
     //gravaIndividuo(".dad",configuracaoInicial[idConfiguracao]);
     //imprimeBarrasIsoladas(numeroBarras, grafoSDR);
     //salvaChaves(numeroChaves,listaChaves);
