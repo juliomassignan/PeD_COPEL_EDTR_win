@@ -77,6 +77,6 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
 
     //declara variaveis
     //aloca estrutura 
-    //laco for
+    //lafuncoesInicializacaoco for
 
 }

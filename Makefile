@@ -1,5 +1,5 @@
 all: fp 
-    fp: main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o
+    fp: main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o 
 	gcc -g -o fp main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o -lcholmod -lspqr -lsuitesparseconfig -lm -lstdc++ -fopenmp
 	
     funcoesCalculoEletrico_tf.o: funcoesCalculoEletrico_tf.c data_structures_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h

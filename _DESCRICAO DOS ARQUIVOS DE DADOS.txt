@@ -3,109 +3,109 @@ DBAR - Dados de barras e cargas:
 
 ID,LIGACAO,FASES,TENSAO_NOM,PNOM_A,PNOM_B,PNOM_C,QNOM_A,QNOM_B,QNOM_C,ZIP,VNOM_A,VNOM_B,VNOM_C,ANG_VNOM_A,ANG_VNOM_B,ANG_VNOM_C
 
-ID - Identificação numérica da barra;
-LIGACAO - Tipo de ligação da carga (1 = YN / 2 = Delta / 3 = Y);
-FASES - Número de fases (1=A; 2=B; 3=C; 4=AB; 5=CA; 6=BC; 7=ABC);
-TENSAO_NOM - Tensão nominal da barra em V;
-PNOM_A,PNOM_B,PNOM_C - Potência ativa da carga trifásica em kW;
-QNOM_A,QNOM_B,QNOM_C - Potência reativa da carga trifásica em kVAr;
-ZIP - Modelo ZIP (0 = Potência Constante / 1 = Corrente Constante / 2 = Impedância Constante);
-VNOM_A,VNOM_B,VNOM_C - Magnitude de tensão da barra de referência;
-ANG_VNOM_A,ANG_VNOM_B,ANG_VNOM_C - Ângulo de tensão da barra de referência;
+ID - Identificaï¿½ï¿½o numï¿½rica da barra;
+LIGACAO - Tipo de ligaï¿½ï¿½o da carga (1 = YN / 2 = Delta / 3 = Y);
+FASES - Nï¿½mero de fases (1=A; 2=B; 3=C; 4=AB; 5=CA; 6=BC; 7=ABC);
+TENSAO_NOM - Tensï¿½o nominal da barra em V;
+PNOM_A,PNOM_B,PNOM_C - Potï¿½ncia ativa da carga trifï¿½sica em kW;
+QNOM_A,QNOM_B,QNOM_C - Potï¿½ncia reativa da carga trifï¿½sica em kVAr;
+ZIP - Modelo ZIP (0 = Potï¿½ncia Constante / 1 = Corrente Constante / 2 = Impedï¿½ncia Constante);
+VNOM_A,VNOM_B,VNOM_C - Magnitude de tensï¿½o da barra de referï¿½ncia;
+ANG_VNOM_A,ANG_VNOM_B,ANG_VNOM_C - ï¿½ngulo de tensï¿½o da barra de referï¿½ncia;
 
 
 -------------------------------------------------------------------------------------------------------------------------------
-DSHNT - Dados de bancos shunts (modelados como impedância constante):
+DSHNT - Dados de bancos shunts (modelados como impedï¿½ncia constante):
 
 ID,LIGACAO,FASES,TENSAO_NOM,QNOM_A,QNOM_B,QNOM_C,TipoCont,nshunts,Dv,VA,VB,VC
 
-ID - Identificação numérica da barra;
-LIGACAO - Tipo de ligação do banco shunt (1 = YN / 2 = Delta / 3 = Y);
-FASES - Número de fases;
-TENSAO_NOM - Tensão nominal do banco shunt V;
-QNOM_A,QNOM_B,QNOM_C - Potência reativa do shunt trifásico em kVAr (Negativo para capacitor);
-TipoCont - Tipo de controle (0= sem controle / 1=Controle de tensão da barra)
-nshunts - número de bancos shunt
-Dv - Intevralo de tensão de controle (em pu)
-VA,VB,VC - setpoint de tensão (em pu)
+ID - Identificaï¿½ï¿½o numï¿½rica da barra;
+LIGACAO - Tipo de ligaï¿½ï¿½o do banco shunt (1 = YN / 2 = Delta / 3 = Y);
+FASES - Nï¿½mero de fases;
+TENSAO_NOM - Tensï¿½o nominal do banco shunt V;
+QNOM_A,QNOM_B,QNOM_C - Potï¿½ncia reativa do shunt trifï¿½sico em kVAr (Negativo para capacitor);
+TipoCont - Tipo de controle (0= sem controle / 1=Controle de tensï¿½o da barra)
+nshunts - nï¿½mero de bancos shunt
+Dv - Intevralo de tensï¿½o de controle (em pu)
+VA,VB,VC - setpoint de tensï¿½o (em pu)
 
 -------------------------------------------------------------------------------------------------------------------------------
-DGD - Dados geradores distribuídos:
+DGD - Dados geradores distribuï¿½dos:
 
 ID,LIGACAO,FASES,TENSAO_NOM,S_NOMINAL_MAQUINA,PNOM_A,PNOM_B,PNOM_C,QNOM_A,QNOM_B,QNOM_C,TIPO,LIM_MIN_Q,LIM_MAX_Q,VNOM_A,VNOM_B,VNOM_C
 
-ID - Identificação numérica da barra;
-LIGACAO - Tipo de ligação do banco shunt (1 = YN / 2 = Delta / 3 = Y);
-FASES - Número de fases;
-TENSAO_NOM - Tensão nominal do gerador distribuido em V;
-S_NOMINAL_MAQUINA - Potência nominal da máquina em kVA;
-PNOM_A,PNOM_B,PNOM_C - Potência ativa do gerador trifásico em kW (Negativo para máquina fornecendo potência ativa);
-QNOM_A,QNOM_B,QNOM_C - Potência reativa do reativa trifásico em kVAr (Negativo para máquina fornecendo potência reativa);
-TIPO - Controle da excitatriz do gerador (0 - Máquina como PQ constante / 1 = Máquina como PV constante / 2 = Corrente constante);
-LIM_MIN_Q,LIM_MAX_Q - Limites mínimo e máximo de geração de potência reativa;
-VNOM_A,VNOM_B,VNOM_C - Setpoint de tensão para máquina operando como PV constante;
-TIPO DE CONTROLE PV - 0 Sequência positiva / 2 por fase
+ID - Identificaï¿½ï¿½o numï¿½rica da barra;
+LIGACAO - Tipo de ligaï¿½ï¿½o do banco shunt (1 = YN / 2 = Delta / 3 = Y);
+FASES - Nï¿½mero de fases;
+TENSAO_NOM - Tensï¿½o nominal do gerador distribuido em V;
+S_NOMINAL_MAQUINA - Potï¿½ncia nominal da mï¿½quina em kVA;
+PNOM_A,PNOM_B,PNOM_C - Potï¿½ncia ativa do gerador trifï¿½sico em kW (Negativo para mï¿½quina fornecendo potï¿½ncia ativa);
+QNOM_A,QNOM_B,QNOM_C - Potï¿½ncia reativa do reativa trifï¿½sico em kVAr (Negativo para mï¿½quina fornecendo potï¿½ncia reativa);
+TIPO - Controle da excitatriz do gerador (0 - Mï¿½quina como PQ constante / 1 = Mï¿½quina como PV constante / 2 = Corrente constante);
+LIM_MIN_Q,LIM_MAX_Q - Limites mï¿½nimo e mï¿½ximo de geraï¿½ï¿½o de potï¿½ncia reativa;
+VNOM_A,VNOM_B,VNOM_C - Setpoint de tensï¿½o para mï¿½quina operando como PV constante;
+TIPO DE CONTROLE PV - 0 Sequï¿½ncia positiva / 2 por fase
 
 
 -------------------------------------------------------------------------------------------------------------------------------
-DLIN - Dados de linhas de transmissão:
+DLIN - Dados de linhas de transmissï¿½o:
 
 DE,PARA,FASES,COMPRIMENTO,Zaa,Zab,Zac,Zbb,Zbc,Zcc,Baa,Bab,Bac,Bbb,Bbc,Bcc
 
 DE - Barra de;
 PARA - Barra para;
-FASES - Número de fases;
+FASES - Nï¿½mero de fases;
 COMPRIMENTO - Comprimento total;
-Zaa,Zab,Zac,Zbb,Zbc,Zcc - Matriz de impedância em ohms por unidade de comprimento;
-Baa,Bab,Bac,Bbb,Bbc,Bcc - Matriz de susceptância em micro siemens  por unidade de comprimento;
+Zaa,Zab,Zac,Zbb,Zbc,Zcc - Matriz de impedï¿½ncia em ohms por unidade de comprimento;
+Baa,Bab,Bac,Bbb,Bbc,Bcc - Matriz de susceptï¿½ncia em micro siemens  por unidade de comprimento;
 
 
 -------------------------------------------------------------------------------------------------------------------------------
-DREG - Dados de reguladores de tensão:
+DREG - Dados de reguladores de tensï¿½o:
 
-DE,PARA,FASES,VNOM,REGULAÇÃO,NTAPS,S_NOMINAL,RESISTÊNCIA,REATÂNCIA,LIGAÇÃO,RELAÇÃO_TP,RELAÇÃO_TC,DELTA_V,R1,X1,R2,X2,R3,X3,V1,V2,V3,TIPOCONT,TAP1,TAP2,TAP3,DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev
+DE,PARA,FASES,VNOM,REGULAï¿½ï¿½O,NTAPS,S_NOMINAL,RESISTï¿½NCIA,REATï¿½NCIA,LIGAï¿½ï¿½O,RELAï¿½ï¿½O_TP,RELAï¿½ï¿½O_TC,DELTA_V,R1,X1,R2,X2,R3,X3,V1,V2,V3,TIPOCONT,TAP1,TAP2,TAP3,DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev
 
 DE - Barra de;
 PARA - Barra para;
-FASES - Número de fases;
-VNOM - Tensão nominal do regulador em V;
-REGULAÇÂO - Regulação de tensão Ex: 10% entrar como 0.1
-NTAPS - Número de taps (Ex: 16 para cima e 16 para baixo);
-S_NOMINAL - Potência nominal do regulador de tensão;
-RESISTÊNCIA - Resistência série do regulador;
-REATÂNCIA - Reatância série do regulador;
-LIGAÇÃO - Tipo de ligação do regulador (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto);
-RELAÇÃO_TP - Relação do TP do controlador do regulador;
-RELAÇÃO_TC - Relação do TC do controlador do regulador;
-DELTA_V - Intervalo de tensão para atuação em V secundários (Ex: 2 V significa +1 ou -1V em relação ao ajuste V1, V2 e V3 para atuação);
-R1,X1,R2,X2,R3,X3 - Parâmetros do controlador LDC por fase em ohms;
-V1,V2,V3 - Ajuste de tensão do controlador LDC em V secundários;
-TIPOCONT - Tipo de Controle (0 = Somente Forward sem Restrição / 1 = Locked Forward / 2 = Locked Reverse / 3 = Bidirectional / 4 = Idle / 5 = Neutral Reverse / 6 = Cogenartion / Ver manual Siemens MJ4A)
-TAP1,TAP2,TAP3 - Parâmetro de tap inicial (opcional - serve como tap do controle reverse locked)
-DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev - Ajustes reversos (Necessário se TIPOCONT > 0)
+FASES - Nï¿½mero de fases;
+VNOM - Tensï¿½o nominal do regulador em V;
+REGULAï¿½ï¿½O - Regulaï¿½ï¿½o de tensï¿½o Ex: 10% entrar como 0.1
+NTAPS - Nï¿½mero de taps (Ex: 16 para cima e 16 para baixo);
+S_NOMINAL - Potï¿½ncia nominal do regulador de tensï¿½o;
+RESISTï¿½NCIA - Resistï¿½ncia sï¿½rie do regulador;
+REATï¿½NCIA - Reatï¿½ncia sï¿½rie do regulador;
+LIGAï¿½ï¿½O - Tipo de ligaï¿½ï¿½o do regulador (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto);
+RELAï¿½ï¿½O_TP - Relaï¿½ï¿½o do TP do controlador do regulador;
+RELAï¿½ï¿½O_TC - Relaï¿½ï¿½o do TC do controlador do regulador;
+DELTA_V - Intervalo de tensï¿½o para atuaï¿½ï¿½o em V secundï¿½rios (Ex: 2 V significa +1 ou -1V em relaï¿½ï¿½o ao ajuste V1, V2 e V3 para atuaï¿½ï¿½o);
+R1,X1,R2,X2,R3,X3 - Parï¿½metros do controlador LDC por fase em ohms;
+V1,V2,V3 - Ajuste de tensï¿½o do controlador LDC em V secundï¿½rios;
+TIPOCONT - Tipo de Controle (0 = Somente Forward sem Restriï¿½ï¿½o / 1 = Locked Forward / 2 = Locked Reverse / 3 = Bidirectional / 4 = Idle / 5 = Neutral Reverse / 6 = Cogenartion / Ver manual Siemens MJ4A)
+TAP1,TAP2,TAP3 - Parï¿½metro de tap inicial (opcional - serve como tap do controle reverse locked)
+DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev - Ajustes reversos (Necessï¿½rio se TIPOCONT > 0)
 
 -------------------------------------------------------------------------------------------------------------------------------
-DTRF - Dados de transformadores de potência (Transformador abaixador ou elevador):
+DTRF - Dados de transformadores de potï¿½ncia (Transformador abaixador ou elevador):
 
-DE,PARA,FASES,VPRI,VSEC,S_NOMINAL,RESISTÊNCIA,REATÂNCIA,LIGAÇÃO_PRI,LIGAÇÃO_SEC,DEFASAMENTO,TAP_PRI,TAP_SEC,%imag,%NoLoadLosses,%Rmutua,%Xmutua 
+DE,PARA,FASES,VPRI,VSEC,S_NOMINAL,RESISTï¿½NCIA,REATï¿½NCIA,LIGAï¿½ï¿½O_PRI,LIGAï¿½ï¿½O_SEC,DEFASAMENTO,TAP_PRI,TAP_SEC,%imag,%NoLoadLosses,%Rmutua,%Xmutua 
 
 DE - Barra de;
 PARA - Barra para;
-FASES - Número de fases;
-VPRI - Tensão nominal do primário transformador em V;
-VSEC - Tensão nominal do secundário transformador em V;
-S_NOMINAL - Potência nominal do transformador;
-RESISTÊNCIA - Resistência série do transformador em ohm;
-REATÂNCIA - Reatância série do transformador em ohm;
-LIGAÇÃO_PRI - Tipo de ligação do primário (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto / 6 - Monofásico com tap central no secundário) ;
-LIGAÇÃO_SEC - Tipo de ligação do secundário (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto / 6 - Monofásico com tap central no secundário);
+FASES - Nï¿½mero de fases;
+VPRI - Tensï¿½o nominal do primï¿½rio transformador em V;
+VSEC - Tensï¿½o nominal do secundï¿½rio transformador em V;
+S_NOMINAL - Potï¿½ncia nominal do transformador;
+RESISTï¿½NCIA - Resistï¿½ncia sï¿½rie do transformador em ohm;
+REATï¿½NCIA - Reatï¿½ncia sï¿½rie do transformador em ohm;
+LIGAï¿½ï¿½O_PRI - Tipo de ligaï¿½ï¿½o do primï¿½rio (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto / 6 - Monofï¿½sico com tap central no secundï¿½rio) ;
+LIGAï¿½ï¿½O_SEC - Tipo de ligaï¿½ï¿½o do secundï¿½rio (1 = YN / 2 = Delta / 3 = Y / 4 - Estrela aberto / 5 - Delta aberto / 6 - Monofï¿½sico com tap central no secundï¿½rio);
 DEFASAMENTO - Defasamento angular (Ex: DYn0 ou DYn1);
-TAP_PRI - Tap do primário fora do nominal (Ex: 1.025);
-TAP_SEC - Tap do primário fora do nominal;
-%imag - corrente de magnetização
+TAP_PRI - Tap do primï¿½rio fora do nominal (Ex: 1.025);
+TAP_SEC - Tap do primï¿½rio fora do nominal;
+%imag - corrente de magnetizaï¿½ï¿½o
 %NoLoadLosses - perdas sem carga
-%Rmutua - resistência mútua para ligações de trafo especiais (trafo monofásico com tap central no secundário)
-%Xmutua - impedância mútua para ligações de trafo especiais (trafo monofásico com tap central no secundário)
+%Rmutua - resistï¿½ncia mï¿½tua para ligaï¿½ï¿½es de trafo especiais (trafo monofï¿½sico com tap central no secundï¿½rio)
+%Xmutua - impedï¿½ncia mï¿½tua para ligaï¿½ï¿½es de trafo especiais (trafo monofï¿½sico com tap central no secundï¿½rio)
 
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -115,76 +115,80 @@ DE,PARA,FASES,ESTADO
 
 DE - Barra de;
 PARA - Barra para;
-FASES - Número de fases;
+FASES - Nï¿½mero de fases;
 ESTADO - 0 = aberto / 1 = fechado
 TIPO - 0 = disjuntor / 1 = Seccionadora
 
 
 -------------------------------------------------------------------------------------------------------------------------------
-DSE  - Dados nominais de subestações
+DSE  - Dados nominais de subestaï¿½ï¿½es
 
 ID,ESTADO,TIPO,Vpri,Snom,Ntrafos,RBAS,nome,sigla
 
-ID - Identificação numérica da subestacao;
+ID - Identificaï¿½ï¿½o numï¿½rica da subestacao;
 ESTADO - 0 = on/ 1 = off
 TIPO - 0 (livre)
 Vpri - Tensao Primaria
-Ntrafos - número de trasnformadores
-RBAS - indicaçao de conexão com a rede básica
+Ntrafos - nï¿½mero de trasnformadores
+RBAS - indicaï¿½ao de conexï¿½o com a rede bï¿½sica
 
 -------------------------------------------------------------------------------------------------------------------------------
 DALIM  - Dados nominais de alimentadores
 
 ID,ESTADO,TIPO,Vnom,BARRA_RAIZ,ID_SE,ID_TR,nome,sigla_SE,COD_CH
 
-ID - Identificação numérica da subestacao;
+ID - Identificaï¿½ï¿½o numï¿½rica da subestacao;
 ESTADO - 0 = on/ 1 = off
 TIPO - 0 (livre)
 Vnom - Tensao Primaria
-BARRA_RAIZ- identificação da barra raiz
-ID_SE - identificação numérica da subestação
-ID_TR - identificação numérica do trafo da subestação
+BARRA_RAIZ- identificaï¿½ï¿½o da barra raiz
+ID_SE - identificaï¿½ï¿½o numï¿½rica da subestaï¿½ï¿½o
+ID_TR - identificaï¿½ï¿½o numï¿½rica do trafo da subestaï¿½ï¿½o
 
 
 -------------------------------------------------------------------------------------------------------------------------------
-DMED - Dados de medidas analógicas:
+DMED - Dados de medidas analï¿½gicas:
 
 LIGADO,TIPO,DE,PARA,FASES,ZMED,SIGMA
 
 LIGADO- 0 = on / 1 = off
 TIPO- Tipo de medidor (
-	0: Fluxo de Potência Ativa - kW
-	1: Fluxo de Potência Reativa - kVAr
-	2: Injeção de Potência Ativa - kW
-	3: Injeção de Potência Reativa - kVAr
-	4: Magnitude de Tensão - kV
-	5: Ângulo de Tensão - graus
+	0: Fluxo de Potï¿½ncia Ativa - kW
+	1: Fluxo de Potï¿½ncia Reativa - kVAr
+	2: Injeï¿½ï¿½o de Potï¿½ncia Ativa - kW
+	3: Injeï¿½ï¿½o de Potï¿½ncia Reativa - kVAr
+	4: Magnitude de Tensï¿½o - kV
+	5: ï¿½ngulo de Tensï¿½o - graus
 	6: Fluxo Magnitude de Corrente - A
-	7: Fluxo Ângulo de Corrente) - graus
-	8: Injeção Magnitude de Corrente - A
-	9: Injeção Ângulo de Corrente) - graus
+	7: Fluxo ï¿½ngulo de Corrente) - graus
+	8: Injeï¿½ï¿½o Magnitude de Corrente - A
+	9: Injeï¿½ï¿½o ï¿½ngulo de Corrente) - graus
 DE- Barra de
 PARA- Barra para
 FASES- Fases do medidor (N = 0; 1=A; 2=B; 3=C; 4=AB; 5=CA; 6=BC; 7=ABC);
 ZMED- Valor medido na unidade indicada acima
-SIGMA- Desvio padrão do medidor na unidade indicada acima
+SIGMA- Desvio padrï¿½o do medidor na unidade indicada acima
 
 
 -------------------------------------------------------------------------------------------------------------------------------
-DSTAT  - Dados de atualização de estado lógico dos equipamentos (medidas lógicas):
+DSTAT  - Dados de atualizaï¿½ï¿½o de estado lï¿½gico dos equipamentos (medidas lï¿½gicas):
 
 DE,PARA,LIGADO,TAP1,TAP2,TAP3
 
-LIGADO- Estado topológico do ramo 0 = on / 1 = off
-TAP1,TAP2,TAP3 - Valor numeríco da posição atual do tap de reguladores de tensão
+LIGADO- Estado topolï¿½gico do ramo 0 = on / 1 = off
+TAP1,TAP2,TAP3 - Valor numerï¿½co da posiï¿½ï¿½o atual do tap de reguladores de tensï¿½o
 
 -------------------------------------------------------------------------------------------------------------------------------
-Vinicial - Valores de tensão das barras para inicializar o estimador (opcional):
+Vinicial - Valores de tensï¿½o das barras para inicializar o estimador (opcional):
 
 ID,VNOM_A,VNOM_B,VNOM_C,ANG_VNOM_A,ANG_VNOM_B,ANG_VNOM_C
 
-ID - Identificação numérica da barra;
-VNOM_A,VNOM_B,VNOM_C - Magnitude de tensão da barra inicial;
-ANG_VNOM_A,ANG_VNOM_B,ANG_VNOM_C - Ângulo de tensão da barra inicial em graus;
+ID - Identificaï¿½ï¿½o numï¿½rica da barra;
+VNOM_A,VNOM_B,VNOM_C - Magnitude de tensï¿½o da barra inicial;
+ANG_VNOM_A,ANG_VNOM_B,ANG_VNOM_C - ï¿½ngulo de tensï¿½o da barra inicial em graus;
 
 
+DINTERSE
+
+No raiz alimentador 13.8 kV, Barra alta substacao 34.5kV,  N.A. , N.A., N.A.
+Olhar no cÃ³digo
