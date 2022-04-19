@@ -7,7 +7,6 @@
 
 #ifndef funcoesCalculoEletrico_H
 #define	funcoesCalculoEletrico_H
-
 //
 /**
  * @brief 
