@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
     //configuracaoInicial = alocaIndividuo(numeroAlimentadores, idConfiguracao, 1);
     //constroiIndividuoInicial(grafoSetores, grafoSDR, listaChaves, dadosAlimentadorSDR, configuracaoInicial);
     
-    converteGrafo_TFtoSDR(grafo,numeroBarras,&grafoSDRParam,dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
+
     //gravaIndividuo(".dad",configuracaoInicial[idConfiguracao]);
     //imprimeBarrasIsoladas(numeroBarras, grafoSDR);
     //salvaChaves(numeroChaves,listaChaves);
@@ -207,7 +207,7 @@ int main(int argc, char** argv) {
     double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
     printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores, numeroBarras);
     printf("\nTempo: %lf\n\n",  edtr_time);
-
+    converteGrafo_TFtoSDR(grafo,numeroBarras,ramo,numeroRamos,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
     
     
     

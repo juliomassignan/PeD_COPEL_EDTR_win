@@ -44,14 +44,19 @@
  */
 
 
-void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves)
+void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *ramos_tf,long int nramos_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves)
 {
     
     int i,k;
-    
+    int nreg=0;
+
+
+    (*numeroChaves)=0;
+    (*numeroTrafos)=0;
     // declaracao de variaveis auxiliares
     // alocacao de memoria
     (*numeroBarras)=numeroBarras_tf;
+    
     //realiza a alocação da estrutura em grafo para armazenar o SDR e verifica se o processo foi bem sucedido
     //caso não seja possível realizar a alocação o programa é encerrado
 
@@ -98,9 +103,22 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,GRAFO **g
             //
  
             
-            if(grafo_tf[i].adjacentes[k].tipo==ramal||grafo_tf[i].adjacentes[k].tipo==trafo)(*grafoSDRParam)[i].adjacentes[k].tipoAresta=trecho;
+            if(grafo_tf[i].adjacentes[k].tipo==ramal||grafo_tf[i].adjacentes[k].tipo==trafo)
+            {
+                (*grafoSDRParam)[i].adjacentes[k].tipoAresta=trecho;
+                if (grafo_tf[i].adjacentes[k].tipo==trafo)
+                {
+                  (*numeroTrafos)=(*numeroTrafos)+1;
+                }
+            }
+            
             else if (grafo_tf[i].adjacentes[k].tipo==regulador) (*grafoSDRParam)[i].adjacentes[k].tipoAresta=reguladorTensao;
-            else if (grafo_tf[i].adjacentes[k].tipo==chave) (*grafoSDRParam)[i].adjacentes[k].tipoAresta=chaveManual;
+            else if (grafo_tf[i].adjacentes[k].tipo==chave)
+            {
+                (*grafoSDRParam)[i].adjacentes[k].tipoAresta=chaveManual; //tipos de chave, onde obtêlos
+                (*numeroChaves)=(*numeroChaves)+1;
+            }
+            
             //grafo trifasico não le chave automatica?
 
             //preenche o indice AM
@@ -115,13 +133,55 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,GRAFO **g
             (*grafoSDRParam)[i].adjacentes[k].resistencia=0;
             (*grafoSDRParam)[i].adjacentes[k].reatancia=0;
             //O que é isso?
-            (*grafoSDRParam)[i].adjacentes[k].ampacidade=0;
-
+            (*grafoSDRParam)[i].adjacentes[k].ampacidade=ramos_tf[grafo_tf[i].adjacentes[k].idram].ampacidade;
 
         }
 
+        (*grafoSDRParam)[i].valorPQ.p=__real__ grafo_tf[i].S[0]+ grafo_tf[i].S[1]+grafo_tf[i].S[2];//unidade?
+        (*grafoSDRParam)[i].valorPQ.q=__imag__ grafo_tf[i].S[0]+ grafo_tf[i].S[1]+grafo_tf[i].S[2];//unidade?
+        (*grafoSDRParam)[i].priorizacoes.eusdGrupoA=0; // nao sei de onde vem
+        (*grafoSDRParam)[i].priorizacoes.eusdGrupoB=0; // nao sei de onde vem
+        (*grafoSDRParam)[i].priorizacoes.qtdConsumidores=0;
+        (*grafoSDRParam)[i].priorizacoes.qtdConsumidoresEspeciais=0;
+        
+        //(*grafoSDRParam)[i].compensacoes //??    
+        // (*grafoSDRParam)[i].idSetor= //esta info esta no grafo tf??
 
     }
+
+    for (i=0;i<nramos_tf;i++)
+    {
+        if (ramos_tf[i].tipo==regulador)
+        {
+            nreg++;
+        }
+    }
+
+
+    //realiza a alocação da estrutura em grafo para armazenar o SDR e verifica se o processo foi bem sucedido
+    //caso não seja possível realizar a alocação o programa é encerrado
+
+    if (((*dadosReguladorSDRParam) = (DADOSREGULADOR *)malloc((nreg+1) * sizeof(DADOSREGULADOR)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para o grafo do SDR !!!!");
+        exit(1); 
+    }
+    k=0;
+    for (i=0;i<nramos_tf;i++)
+    {
+        if (ramos_tf[i].tipo==regulador)
+        {
+        //    (*dadosReguladorSDRParam)[i].idRegulador=ramos_tf[i].regulador //??
+        // (*dadosReguladorSDRParam)[i].tipoRegulador= //??
+        (*dadosReguladorSDRParam)[k].tipoRegulador=ramos_tf[i].ampacidade;
+        (*dadosReguladorSDRParam)[k].tipoRegulador=ramos_tf[i].regulador.ntaps;
+        k++;
+        }
+    }
+
+
+
+
     printf("sucesso\n\n");
     // seguindo o padrao do leitura
     // 

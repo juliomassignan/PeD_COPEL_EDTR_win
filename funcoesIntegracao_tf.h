@@ -22,6 +22,6 @@
  * @warning .
  */
 
-void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves);
+void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *ramos_tf,long int nramos_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves);
 
 #endif	/* funcoesIntegracao_H */
