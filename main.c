@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     
     GRAFO *grafoSDRParam=NULL;
     DADOSREGULADOR *dadosReguladorSDRParam=NULL;
-
+    DADOSALIMENTADOR *dadosAlimentadorSDRParam=NULL;
     // Para estimação de demanda e simulações com séries temporais
     TF_CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
     long int flag_mod = 0;                  //FLAG para rodar a modelagem de cargas
@@ -208,7 +208,7 @@ int main(int argc, char** argv) {
     printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores, numeroBarras);
     printf("\nTempo: %lf\n\n",  edtr_time);
     converteGrafo_TFtoSDR(grafo,numeroBarras,ramo,numeroRamos,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
-    
+    converteDadosAlimentadores_TFtoSDR(alimentador,numeroAlimentadores,&dadosAlimentadorSDRParam);
     
     
     // Tempo Real ---------------- Estimação
