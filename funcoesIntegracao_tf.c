@@ -70,7 +70,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
     for (i=0;i<numeroBarras_tf;i++)
     {
         contador=i+1;//MARAN indexa o grafo a partir de 1
-        (*grafoSDRParam)[contador].idNo=grafo_tf[i].idNo;//MARAN indexa o grafo a partir de 1 o idNo é usado para indexar a MRAN ?
+        (*grafoSDRParam)[contador].idNo=grafo_tf[i].idNo+1;//MARAN indexa o grafo a partir de 1 o idNo é usado para indexar a MRAN ?
         //preenche tipo do nó
         if (grafo_tf[i].tipoNo== 0)(*grafoSDRParam)[contador].tipoNo= semCarga;
         else if (grafo_tf[i].tipoNo== 1)(*grafoSDRParam)[contador].tipoNo= comCarga;   
@@ -86,7 +86,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             (*grafoSDRParam)[contador].medicao=semMedidor;
         }    
         // preecnhe o indice que indica a área de medição
-        (*grafoSDRParam)[contador].idAM=grafo_tf[i].idAM;//comeca do zero ou do 1?
+        (*grafoSDRParam)[contador].idAM=grafo_tf[i].idAM+1;//comeca do zero ou do 1?
         // preenche o numero de nos adjacentes
         (*grafoSDRParam)[contador].numeroAdjacentes=grafo_tf[i].numeroAdjacentes;
         // preencher os alica os adjacentes (precisa preencher)
@@ -96,7 +96,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         for (k=0;k<grafo_tf[i].numeroAdjacentes;k++)
         {
             
-            (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo;//MARAN indexa o grafo a partir de 1
+            (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;//MARAN indexa o grafo a partir de 1
             //conferir com o julio
             sprintf((*grafoSDRParam)[contador].adjacentes[k].idAresta,"%ld",grafo_tf[i].adjacentes[k].idram);
             // informa se há medidores nos ramos
@@ -123,10 +123,16 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             //grafo trifasico não le chave automatica?
 
             //preenche o indice AM
-            (*grafoSDRParam)[contador].adjacentes[k].idAM=grafo_tf[i].adjacentes[k].idAM;//sera q tem q adicionar 1?
+            (*grafoSDRParam)[contador].adjacentes[k].idAM=grafo_tf[i].adjacentes[k].idAM+1;//sera q tem q adicionar 1?
             
             //descobrir
-            (*grafoSDRParam)[contador].adjacentes[k].condicao=emOperacao;
+            
+            if(grafo_tf[i].adjacentes[k].estado==fechado)
+            {
+                (*grafoSDRParam)[contador].adjacentes[k].condicao=emOperacao;
+            }
+
+            
             // descobrir deve ficar junto com o tipo de aresta
             (*grafoSDRParam)[contador].adjacentes[k].subTipoAresta=outrosSubTipo;
 
@@ -190,7 +196,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
     {
         if (ramos_tf[i].tipo==regulador)
         {
-        //(*dadosReguladorSDRParam)[i].idRegulador=ramos_tf[i].de //??
+        sprintf((*dadosReguladorSDRParam)[i].idRegulador,"%ld",i+1);
         // (*dadosReguladorSDRParam)[i].tipoRegulador= //??
         (*dadosReguladorSDRParam)[k].tipoRegulador=ramos_tf[i].ampacidade;
         (*dadosReguladorSDRParam)[k].tipoRegulador=ramos_tf[i].regulador.ntaps;
