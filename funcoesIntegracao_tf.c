@@ -49,7 +49,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
     
     int i,k,contador;
     int nreg=0;
-
+    
 
     (*numeroChaves)=0;
     (*numeroTrafos)=0;
@@ -98,6 +98,8 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             
             (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;//MARAN indexa o grafo a partir de 1
             //conferir com o julio
+
+            //deixar vazio os outro também 
             sprintf((*grafoSDRParam)[contador].adjacentes[k].idAresta,"%ld",grafo_tf[i].adjacentes[k].idram);
             // informa se há medidores nos ramos
             if(grafo_tf[i].adjacentes[k].nmed>0)(*grafoSDRParam)[contador].adjacentes[k].medicao=medidorRamo;
@@ -117,6 +119,9 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             else if (grafo_tf[i].adjacentes[k].tipo==chave)
             {
                 (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=chaveManual; //tipos de chave, onde obtêlos
+               
+               // (*grafoSDRParam)[contador].adjacentes[k].estadoChave=n
+               // verificar nos dados trifásico 
                 (*numeroChaves)=(*numeroChaves)+1;
             }
             
@@ -196,10 +201,11 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
     {
         if (ramos_tf[i].tipo==regulador)
         {
-        sprintf((*dadosReguladorSDRParam)[i].idRegulador,"%ld",i+1);
-        // (*dadosReguladorSDRParam)[i].tipoRegulador= //??
-        (*dadosReguladorSDRParam)[k].tipoRegulador=ramos_tf[i].ampacidade;
-        (*dadosReguladorSDRParam)[k].tipoRegulador=ramos_tf[i].regulador.ntaps;
+        // nao preencher
+        //sprintf((*dadosReguladorSDRParam)[k].idRegulador,"%ld",i+1);
+        (*dadosReguladorSDRParam)[k].tipoRegulador= comFluxoReverso;
+        (*dadosReguladorSDRParam)[k].ampacidade=ramos_tf[i].ampacidade;
+        (*dadosReguladorSDRParam)[k].numeroTaps=ramos_tf[i].regulador.ntaps;
         k++;
         }
     }
@@ -207,7 +213,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
 
 
-    printf("sucesso\n\n");
     // seguindo o padrao do leitura
     // 
     //laço for 0 a numerodebarras
@@ -233,27 +238,29 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
  */
 
 
-void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_Tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
+void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
 
     int contador, i;
     //declara variaveis
     //aloca estrutura 
     //lafuncoesInicializacaoco for
-    if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numeroAlimentadores+1) * sizeof(DADOSALIMENTADOR)))==NULL)
+
+    extern long int numeroAlimentadores ;
+    numeroAlimentadores = numerosAlimentadores_tf+1;
+    if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numerosAlimentadores_tf+1) * sizeof(DADOSALIMENTADOR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para alimentadores !!!!");
         exit(1); 
     }
 
-
-    for ( i = 0; i < numeroAlimentadores; i++)
+    for ( i = 0; i < numerosAlimentadores_tf; i++)
     {
         contador=i+1;
-        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz; //é usado para indexar?
-        sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
+        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz+1; //é usado para indexar?
+        //sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
         (*dadosAlimentadorSDRParam)[contador].idTrafo = alimentadores_tf[i].idRaiz;// nao tem equivalente no alimentadores_tf. conferir com o Julio
         //codigo operacional?
-        (*dadosAlimentadorSDRParam)[contador].numeroSetores=alimentadores_tf[i].numeroNos;//Cada setor é um nó do alimentador
+        (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;//Cada setor é um nó do alimentador
 
 
     }

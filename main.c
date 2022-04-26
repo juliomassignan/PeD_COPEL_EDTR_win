@@ -23,6 +23,9 @@
 #include "data_structures_modcarga_tf.h"
 #include "funcoesModCarga_tf.h"
 
+// bibliotecas originais GRNP
+#include "funcoesSetor.h"
+
 
 
 
@@ -48,7 +51,8 @@ double Sbase = 1000000; //Variável global com a potência base da rede elétric
 int main(int argc, char** argv) {
     long int estampa_tempo = 0;
     long int numeroBarras = 0;
-    long int numeroAlimentadores = 0, numeroAreas = 0, numeroSubestacoes = 0;
+    long int numeroAlimentadores_tf = 0;
+    long int numeroAreas = 0, numeroSubestacoes = 0;
     long int numeroRamos = 0;
     long int numeroNos=0;
     long int **numeroMedidas = NULL,**numeroMedidasPMU = NULL,**numeroVirtuais = NULL;
@@ -102,7 +106,7 @@ int main(int argc, char** argv) {
     
     // Leitura dos dados da rede elétrica - Assume que já identação de barras está pré-mapeado e ordenado de 0 até NB corretamente
     clock_t a1 = clock();
-    folder = leituraDados(&barra,&ramo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
+    folder = leituraDados(&barra,&ramo,&numeroBarras,&numeroRamos,&numeroAlimentadores_tf);
     
     // Leitura de Interface entre Níveis de Tensão - Subestações de 34.5 / 13.8 kV
     interfaceNiveis = leituraDINTERSE(folder,"DINTERSE.csv", &numeroInterfaces, &barra,&numeroBarras,&ramo,&numeroRamos);
@@ -117,7 +121,7 @@ int main(int argc, char** argv) {
     geraGrafo(&grafo, barra, numeroBarras,ramo,numeroRamos); 
     
     // Cria as listas encadeadas radiais dos alimentadores
-    buscaProfundidadeAlimentadores(grafo, numeroBarras, &alimentador, numeroAlimentadores); 
+    buscaProfundidadeAlimentadores(grafo, numeroBarras, &alimentador, numeroAlimentadores_tf); 
 //    for(i=0; i<numeroAlimentadores; i++) supressaoBarrasPassagem(grafo, alimentador,i, ramo); // Suprime barras de passagem - Aceleração de cálculo
  
     // Transforma em pu e cria matrizes de admitância iniciais
@@ -138,6 +142,8 @@ int main(int argc, char** argv) {
         colocartf em tudo
         colocar as coisas MR dentro do codigo
     */
+    converteGrafo_TFtoSDR(grafo,numeroBarras,ramo,numeroRamos,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
+    converteDadosAlimentadores_TFtoSDR(alimentador,numeroAlimentadores_tf,&dadosAlimentadorSDRParam);
 
     //resultadoLeitura = leituraBarrasLinhasTrafos(&grafoSDR, &dadosTrafoSDR, &numeroBarras, &numeroTrafos, &numeroChaves);
     //resultadoLeitura =  leituraDadosAlimentadores(&dadosAlimentadorSDR);
@@ -146,7 +152,9 @@ int main(int argc, char** argv) {
 
     //--------------------------------------------------------------------------
     // atualizaEstadoChaves(grafoSDR,numeroBarras); //Atualiza os estados das chaves de acordo com ESTADOS_CHS
-    //LISTASETORES * lista_setores = buscaSetores(grafoSDR, dadosAlimentadorSDR, numeroBarras);
+    LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras);
+ 
+    // testar cada uma 
 
     //constroiListaChaves(grafoSDR, &listaChaves, numeroChaves, numeroBarras);
     //constroiListaAdjacenciaSetores(&grafoSDR, lista_setores, &listaChaves, &grafoSetores, &numeroChaves, &numeroBarras);
@@ -155,7 +163,8 @@ int main(int argc, char** argv) {
     //gravaGrafoSetores(grafoSetores, numeroSetores, listaChaves);
     //configuracaoInicial = alocaIndividuo(numeroAlimentadores, idConfiguracao, 1);
     //constroiIndividuoInicial(grafoSetores, grafoSDR, listaChaves, dadosAlimentadorSDR, configuracaoInicial);
-    
+   
+
 
     //gravaIndividuo(".dad",configuracaoInicial[idConfiguracao]);
     //imprimeBarrasIsoladas(numeroBarras, grafoSDR);
@@ -197,18 +206,17 @@ int main(int argc, char** argv) {
     
     // Fluxo de Potência via Varredura Direta/Inversa Trifásica por Níveis de Tensão
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
-    incializaTensoesVarredura(grafo, numeroBarras, alimentador, numeroAlimentadores);
+    incializaTensoesVarredura(grafo, numeroBarras, alimentador, numeroAlimentadores_tf);
     
     clock_t start2 = clock();
     
     
-    fluxoPotencia_Niveis_BFS_Multiplos(grafo, numeroBarras, alimentador, numeroAlimentadores, ramo, Sbase/1000, interfaceNiveis, numeroInterfaces, true); // true converge FP | false faz iteraçao única (P&D)
+    fluxoPotencia_Niveis_BFS_Multiplos(grafo, numeroBarras, alimentador, numeroAlimentadores_tf, ramo, Sbase/1000, interfaceNiveis, numeroInterfaces, true); // true converge FP | false faz iteraçao única (P&D)
     clock_t end2 = clock();
     double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
-    printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores, numeroBarras);
+    printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores_tf, numeroBarras);
     printf("\nTempo: %lf\n\n",  edtr_time);
-    converteGrafo_TFtoSDR(grafo,numeroBarras,ramo,numeroRamos,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
-    converteDadosAlimentadores_TFtoSDR(alimentador,numeroAlimentadores,&dadosAlimentadorSDRParam);
+
     
     
     // Tempo Real ---------------- Estimação
@@ -236,7 +244,7 @@ int main(int argc, char** argv) {
     free_BARRA(barra,numeroBarras);
     free_DRAM(ramo,numeroRamos);
     free_GRAFO(grafo,numeroBarras);
-    free_ALIMENTADOR(alimentador,numeroAlimentadores);
+    free_ALIMENTADOR(alimentador,numeroAlimentadores_tf);
     return (EXIT_SUCCESS);
 }
 
