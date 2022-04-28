@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     char *folder = NULL;
     long int numeroTrafos=0;
     long int numeroChaves=0;
-    
+    extern long int numeroSetores;
     
     // Estruturas de dados da rede elétrica
     TF_DBAR *barra = NULL;
@@ -75,9 +75,15 @@ int main(int argc, char** argv) {
 
     TF_AREA_MEDICAO *areasMedicao = NULL;
     
-    GRAFO *grafoSDRParam=NULL;
+    // compatibilizacao com a MRAM
+    GRAFO *grafoSDRParam=NULL;//DEIXAR SÓ SDR
+    GRAFOSETORES *grafoSetoresSDR=NULL;
+    RNPSETORES *rnpSetoresSDR=NULL;
     DADOSREGULADOR *dadosReguladorSDRParam=NULL;
     DADOSALIMENTADOR *dadosAlimentadorSDRParam=NULL;
+    LISTACHAVES *listaChavesSDR=NULL;
+    CONFIGURACAO *configuracaoInicialSDR=NULL;
+    long int idConfiguracaoSDR=0;
     // Para estimação de demanda e simulações com séries temporais
     TF_CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
     long int flag_mod = 0;                  //FLAG para rodar a modelagem de cargas
@@ -156,18 +162,19 @@ int main(int argc, char** argv) {
  
     // testar cada uma 
 
-    //constroiListaChaves(grafoSDR, &listaChaves, numeroChaves, numeroBarras);
-    //constroiListaAdjacenciaSetores(&grafoSDR, lista_setores, &listaChaves, &grafoSetores, &numeroChaves, &numeroBarras);
-    //constroiRNPSetores(lista_setores, grafoSDR, &rnpSetores, numeroBarras);
-    //gravaRNPSetores (rnpSetores, numeroSetores);
-    //gravaGrafoSetores(grafoSetores, numeroSetores, listaChaves);
-    //configuracaoInicial = alocaIndividuo(numeroAlimentadores, idConfiguracao, 1);
-    //constroiIndividuoInicial(grafoSetores, grafoSDR, listaChaves, dadosAlimentadorSDR, configuracaoInicial);
+    constroiListaChaves(grafoSDRParam, &listaChavesSDR, numeroChaves, numeroBarras);
+    constroiListaAdjacenciaSetores(&grafoSDRParam, lista_setores, &listaChavesSDR, &grafoSetoresSDR, &numeroChaves, &numeroBarras);
+    gravaGrafoSetores(grafoSetoresSDR, numeroSetores, listaChavesSDR);
+    // constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras); // o erro está aqui
+    // gravaRNPSetores (rnpSetoresSDR, numeroSetores);
+    
+    configuracaoInicialSDR = alocaIndividuo(numeroAlimentadores_tf, idConfiguracaoSDR, 1);
+    constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
    
 
 
-    //gravaIndividuo(".dad",configuracaoInicial[idConfiguracao]);
-    //imprimeBarrasIsoladas(numeroBarras, grafoSDR);
+    gravaIndividuo(".dad",configuracaoInicialSDR[idConfiguracaoSDR]);
+    imprimeBarrasIsoladas(numeroBarras, grafoSDRParam);
     //salvaChaves(numeroChaves,listaChaves);
     //salvaChavesCompleto(numeroChaves, listaChaves);
     //gravaDadosBarras(numeroBarras, grafoSDR);
