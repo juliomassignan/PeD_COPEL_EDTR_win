@@ -70,6 +70,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
     {
         contador=i+1;//MARAN indexa o grafo a partir de 1
         (*grafoSDRParam)[contador].idNo=grafo_tf[i].idNo+1;//MARAN indexa o grafo a partir de 1 o idNo é usado para indexar a MRAN ?
+
         //preenche tipo do nó
         if (grafo_tf[i].tipoNo== 0)(*grafoSDRParam)[contador].tipoNo= semCarga;
         else if (grafo_tf[i].tipoNo== 1)(*grafoSDRParam)[contador].tipoNo= comCarga;   
@@ -96,6 +97,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         {
             
             (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;//MARAN indexa o grafo a partir de 1
+            
             //conferir com o julio
 
             //deixar vazio os outro também 
@@ -109,6 +111,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             {
                 (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=trecho;
                 (*grafoSDRParam)[contador].adjacentes[k].estadoChave=outrasArestas;
+                (*grafoSDRParam)[contador].adjacentes[k].subTipoAresta=outrosSubTipo;
                 if (grafo_tf[i].adjacentes[k].tipo==trafo)
                 {
                   (*numeroTrafos)=(*numeroTrafos)+1;
@@ -118,6 +121,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             {
                 (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=reguladorTensao;
                 (*grafoSDRParam)[contador].adjacentes[k].estadoChave=outrasArestas; 
+                (*grafoSDRParam)[contador].adjacentes[k].subTipoAresta=outrosSubTipo;
             } 
             else if (grafo_tf[i].adjacentes[k].tipo==chave)
             {
@@ -140,14 +144,12 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             
             //descobrir
             
-            if(grafo_tf[i].adjacentes[k].estado==fechado)
-            {
-                (*grafoSDRParam)[contador].adjacentes[k].condicao=emOperacao;
-            }
+            (*grafoSDRParam)[contador].adjacentes[k].condicao=emOperacao;
+
 
             
             // descobrir deve ficar junto com o tipo de aresta
-            (*grafoSDRParam)[contador].adjacentes[k].subTipoAresta=outrosSubTipo;
+
 
             //valores de sequ pos?
             (*grafoSDRParam)[contador].adjacentes[k].resistencia=0;

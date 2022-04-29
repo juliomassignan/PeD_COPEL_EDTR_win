@@ -44,7 +44,7 @@ BOOL iteration_multiple_level_OPT = 1; //Variável global para ativar iteraçõe
 BOOL includeVR_INTERSE_OPT = 1; //Variável global para incluir modelo de regulador ideal nas barras com INTERSE
 
 double Sbase = 1000000; //Variável global com a potência base da rede elétrica em VA
-
+BARRASETOR *teste;
 /*
  * 
  */
@@ -155,20 +155,29 @@ int main(int argc, char** argv) {
     //resultadoLeitura =  leituraDadosAlimentadores(&dadosAlimentadorSDR);
     //resultadoLeitura =  leituraDadosReguladoresTensao(&dadosReguladorSDR);
 
-
+    teste=0x55558068d3c0;
     //--------------------------------------------------------------------------
     // atualizaEstadoChaves(grafoSDR,numeroBarras); //Atualiza os estados das chaves de acordo com ESTADOS_CHS
     LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras);
- 
+    // LISTASETORES * lista_setores_teste=0x55558068d4e0;
     // testar cada uma 
+    // teste->prox=NULL;
+
+
+
 
     constroiListaChaves(grafoSDRParam, &listaChavesSDR, numeroChaves, numeroBarras);
     constroiListaAdjacenciaSetores(&grafoSDRParam, lista_setores, &listaChavesSDR, &grafoSetoresSDR, &numeroChaves, &numeroBarras);
     gravaGrafoSetores(grafoSetoresSDR, numeroSetores, listaChavesSDR);
-    // constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras); // o erro está aqui
+
+    
+
+
+    constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras); // o erro está aqui
     // gravaRNPSetores (rnpSetoresSDR, numeroSetores);
     
     configuracaoInicialSDR = alocaIndividuo(numeroAlimentadores_tf, idConfiguracaoSDR, 1);
+    // teste->prox=NULL;
     constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
    
 

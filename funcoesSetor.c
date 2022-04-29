@@ -314,6 +314,7 @@ LISTASETORES * buscaSetores(GRAFO *grafo, DADOSALIMENTADOR *alimentadores, long 
         buscaSetor(grafo, idAlim, &lista_setores, visitado);
         alimentadores[i].numeroSetores = numeroSetoresAlimentador;
     }
+    
     numeroSetores = idSetor;
     return lista_setores;
 }
@@ -376,6 +377,7 @@ void constroiRNP(BARRASETOR *inicioListaSetor, long int idNo, BOOL *visitado, RN
 {
     //Atribui o no e a sua profundidade
         int idNoAdj;
+        int contador=0;
         rnpParam->nos[indice[0]].idNo = idNo;
         rnpParam->nos[indice[0]].profundidade = profundidade;
         visitado[idNo] = true;
@@ -383,7 +385,8 @@ void constroiRNP(BARRASETOR *inicioListaSetor, long int idNo, BOOL *visitado, RN
         profundidade++;
         BARRASETOR *noSetor = inicioListaSetor;
         while((noSetor!=NULL))
-        {   
+        {
+            contador++;   
                 if (estaListaAdjacencias(grafoSDRParam, idNo,  noSetor->idNo) && (visitado[noSetor->idNo]== false))
                 {
                     idNoAdj= noSetor->idNo;
@@ -406,6 +409,11 @@ void percorreAdjacentesSetor(BARRASETOR *setorParam, BARRASETOR *setorAdjParam, 
     int idNo;
     int indiceRNP;
     int profundidade;
+
+
+    
+
+
     while (noAdjacenteSetor != NULL)
     {
         for (contador =1; contador <=numeroBarras; contador++)
@@ -451,6 +459,18 @@ void constroiRNPSetores(LISTASETORES *listaSetores, GRAFO *grafoSDRParam, RNPSET
     }
     LISTASETORES * setores = listaSetores;
     int idNo;
+
+    // LISTASETORES * inicio;
+    // inicio=listaSetores;
+    //    while(inicio!=NULL)
+    // {
+    //     if(inicio->barraSetor->idNo==159)
+    //     {
+    //         printf("teste\n");
+    //     }
+    //     inicio=inicio->prox;
+
+    // }
     
     while(setores != NULL)
     {
