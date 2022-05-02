@@ -312,7 +312,7 @@ LISTASETORES * buscaSetores(GRAFO *grafo, DADOSALIMENTADOR *alimentadores, long 
         numeroSetoresAlimentador = 0;
         idAlim = alimentadores[i].barraAlimentador;
         buscaSetor(grafo, idAlim, &lista_setores, visitado);
-        alimentadores[i].numeroSetores = numeroSetoresAlimentador;
+        alimentadores[i].numeroSetores = numeroSetoresAlimentador; //altera o valor aqui
     }
     
     numeroSetores = idSetor;
@@ -376,6 +376,8 @@ BOOL estaListaAdjacenciasSetores(GRAFOSETORES *grafoSetoresSdrParam, long int id
 void constroiRNP(BARRASETOR *inicioListaSetor, long int idNo, BOOL *visitado, RNPSETOR *rnpParam, int *indice, int profundidade, GRAFO *grafoSDRParam)
 {
     //Atribui o no e a sua profundidade
+        
+        
         int idNoAdj;
         int contador=0;
         rnpParam->nos[indice[0]].idNo = idNo;
@@ -409,7 +411,6 @@ void percorreAdjacentesSetor(BARRASETOR *setorParam, BARRASETOR *setorAdjParam, 
     int idNo;
     int indiceRNP;
     int profundidade;
-
 
     
 

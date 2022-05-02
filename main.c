@@ -44,7 +44,8 @@ BOOL iteration_multiple_level_OPT = 1; //Variável global para ativar iteraçõe
 BOOL includeVR_INTERSE_OPT = 1; //Variável global para incluir modelo de regulador ideal nas barras com INTERSE
 
 double Sbase = 1000000; //Variável global com a potência base da rede elétrica em VA
-BARRASETOR *teste;
+BARRASETOR *teste=0x555559df3e00;
+BARRASETOR *teste2=0x55558068d3c0;
 /*
  * 
  */
@@ -155,9 +156,9 @@ int main(int argc, char** argv) {
     //resultadoLeitura =  leituraDadosAlimentadores(&dadosAlimentadorSDR);
     //resultadoLeitura =  leituraDadosReguladoresTensao(&dadosReguladorSDR);
 
-    teste=0x55558068d3c0;
+    // teste=0x55558068d3c0;
     //--------------------------------------------------------------------------
-    // atualizaEstadoChaves(grafoSDR,numeroBarras); //Atualiza os estados das chaves de acordo com ESTADOS_CHS
+    // atualizaEstadoChaves(grafoSDR,numeroBarras); //Atualiza os estados das chaves de acordo com ESTADOS_CHS    
     LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras);
     // LISTASETORES * lista_setores_teste=0x55558068d4e0;
     // testar cada uma 
@@ -174,16 +175,16 @@ int main(int argc, char** argv) {
 
 
     constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras); // o erro está aqui
-    // gravaRNPSetores (rnpSetoresSDR, numeroSetores);
+    gravaRNPSetores (rnpSetoresSDR, numeroSetores);
     
     configuracaoInicialSDR = alocaIndividuo(numeroAlimentadores_tf, idConfiguracaoSDR, 1);
     // teste->prox=NULL;
-    constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
+    //constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
    
 
 
-    gravaIndividuo(".dad",configuracaoInicialSDR[idConfiguracaoSDR]);
-    imprimeBarrasIsoladas(numeroBarras, grafoSDRParam);
+    //gravaIndividuo(".dad",configuracaoInicialSDR[idConfiguracaoSDR]);
+    // imprimeBarrasIsoladas(numeroBarras, grafoSDRParam);
     //salvaChaves(numeroChaves,listaChaves);
     //salvaChavesCompleto(numeroChaves, listaChaves);
     //gravaDadosBarras(numeroBarras, grafoSDR);

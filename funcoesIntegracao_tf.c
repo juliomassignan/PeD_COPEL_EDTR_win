@@ -256,7 +256,7 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
     //lafuncoesInicializacaoco for
 
     extern long int numeroAlimentadores ;
-    numeroAlimentadores = numerosAlimentadores_tf+1;
+    numeroAlimentadores = numerosAlimentadores_tf;
     if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numerosAlimentadores_tf+1) * sizeof(DADOSALIMENTADOR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para alimentadores !!!!");
@@ -266,7 +266,7 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
     for ( i = 0; i < numerosAlimentadores_tf; i++)
     {
         contador=i+1;
-        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz+1; 
+        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz+1; // zaui esta dando problema
         //sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
         (*dadosAlimentadorSDRParam)[contador].idTrafo = alimentadores_tf[i].idRaiz;// nao tem equivalente no alimentadores_tf. conferir com o Julio
         (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;//Cada setor é um nó do alimentador
