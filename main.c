@@ -25,7 +25,9 @@
 
 // bibliotecas originais GRNP
 #include "funcoesSetor.h"
-
+#include "funcoesInicializacao.h"
+#include "funcoesRNP.h"
+#include "funcoesAuxiliares.h"
 
 
 
@@ -63,7 +65,7 @@ int main(int argc, char** argv) {
     char *folder = NULL;
     long int numeroTrafos=0;
     long int numeroChaves=0;
-    extern long int numeroSetores;
+    extern int numeroSetores;
     
     // Estruturas de dados da rede elétrica
     TF_DBAR *barra = NULL;
@@ -176,21 +178,23 @@ int main(int argc, char** argv) {
 
     constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras); // o erro está aqui
     gravaRNPSetores (rnpSetoresSDR, numeroSetores);
+
+
     
     configuracaoInicialSDR = alocaIndividuo(numeroAlimentadores_tf, idConfiguracaoSDR, 1);
     // teste->prox=NULL;
-    //constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
+    constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
    
 
 
-    //gravaIndividuo(".dad",configuracaoInicialSDR[idConfiguracaoSDR]);
-    // imprimeBarrasIsoladas(numeroBarras, grafoSDRParam);
-    //salvaChaves(numeroChaves,listaChaves);
-    //salvaChavesCompleto(numeroChaves, listaChaves);
-    //gravaDadosBarras(numeroBarras, grafoSDR);
-    //salvaLinhas(numeroBarras, grafoSDR);
-    //salvaChavesAMontante(listaChaves, configuracaoInicial[idConfiguracao],grafoSetores);
-    //gravaBarrasRT(dadosReguladorSDR, numeroReguladores, grafoSDR, numeroBarras);
+    gravaIndividuo(".dad",configuracaoInicialSDR[idConfiguracaoSDR]);
+    imprimeBarrasIsoladas(numeroBarras, grafoSDRParam);
+    salvaChaves(numeroChaves,listaChavesSDR);
+    salvaChavesCompleto(numeroChaves, listaChavesSDR);
+    gravaDadosBarras(numeroBarras, grafoSDRParam);
+    salvaLinhas(numeroBarras, grafoSDRParam);
+    salvaChavesAMontante(listaChavesSDR, configuracaoInicialSDR[idConfiguracaoSDR],grafoSetoresSDR);
+    //gravaBarrasRT(dadosReguladorSDRParam, numeroReguladores, grafoSDRParam, numeroBarras);
     //gravaDadosTrafo(numeroTrafos, dadosTrafoSDR);
 
     //free(dadosReguladorSDR);
@@ -260,7 +264,7 @@ int main(int argc, char** argv) {
     //Liberação de Memória
     free_BARRA(barra,numeroBarras);
     free_DRAM(ramo,numeroRamos);
-    free_GRAFO(grafo,numeroBarras);
+    //free_GRAFO(grafo,numeroBarras);
     free_ALIMENTADOR(alimentador,numeroAlimentadores_tf);
     return (EXIT_SUCCESS);
 }
