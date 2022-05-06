@@ -53,30 +53,30 @@ BARRASETOR *teste2=0x55558068d3c0;
  */
 int main(int argc, char** argv) {
     long int estampa_tempo = 0;
-    long int numeroBarras = 0;
+    long int numeroBarras_tf = 0;
     long int numeroAlimentadores_tf = 0;
-    long int numeroAreas = 0, numeroSubestacoes = 0;
-    long int numeroRamos = 0;
+    long int numeroAreas_tf = 0, numeroSubestacoes_tf = 0;
+    long int numeroRamos_tf = 0;
     long int numeroNos=0;
-    long int **numeroMedidas = NULL,**numeroMedidasPMU = NULL,**numeroVirtuais = NULL;
-    long int **interfaceNiveis = NULL;
-    long int numeroInterfaces = 0;
+    long int **numeroMedidas = NULL,**numeroMedidas_PMU_tf = NULL,**numeroVirtuais_tf = NULL;
+    long int **interfaceNiveis_tf = NULL;
+    long int numeroInterfaces_tf = 0;
     long int i = 0;
     char *folder = NULL;
-    long int numeroTrafos=0;
-    long int numeroChaves=0;
-    extern int numeroSetores;
+    long int numeroTrafos=0;//dados da MRAN
+    long int numeroChaves=0;//dados da MRAM
+    extern int numeroSetores; //dados da MRAM
     
     // Estruturas de dados da rede elétrica
-    TF_DBAR *barra = NULL;
-    TF_DRAM *ramo = NULL;
-    TF_DSUBESTACAO *subestacoes = NULL;
-    TF_DALIM *static_alimentador = NULL;     // salva dados estáticos para relacionar alimentadores com subestações
-    TF_GRAFO *grafo = NULL;
-    TF_DMED *medida = NULL;
-    TF_ALIMENTADOR *alimentador = NULL, *areas = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
+    TF_DBAR *barra_tf = NULL;
+    TF_DRAM *ramo_tf = NULL;
+    TF_DSUBESTACAO *subestacoes_tf = NULL;
+    TF_DALIM *static_alimentador_tf = NULL;     // salva dados estáticos para relacionar alimentadores com subestações
+    TF_GRAFO *grafo_tf = NULL;
+    TF_DMED *medida_tf = NULL;
+    TF_ALIMENTADOR *alimentador_tf = NULL, *areas_tf = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
 
-    TF_AREA_MEDICAO *areasMedicao = NULL;
+    TF_AREA_MEDICAO *areasMedicao_tf = NULL;
     
     // compatibilizacao com a MRAM
     GRAFO *grafoSDRParam=NULL;//DEIXAR SÓ SDR
@@ -115,10 +115,10 @@ int main(int argc, char** argv) {
     
     // Leitura dos dados da rede elétrica - Assume que já identação de barras está pré-mapeado e ordenado de 0 até NB corretamente
     clock_t a1 = clock();
-    folder = leituraDados(&barra,&ramo,&numeroBarras,&numeroRamos,&numeroAlimentadores_tf);
+    folder = leituraDados(&barra_tf,&ramo_tf,&numeroBarras_tf,&numeroRamos_tf,&numeroAlimentadores_tf);
     
     // Leitura de Interface entre Níveis de Tensão - Subestações de 34.5 / 13.8 kV
-    interfaceNiveis = leituraDINTERSE(folder,"DINTERSE.csv", &numeroInterfaces, &barra,&numeroBarras,&ramo,&numeroRamos);
+    interfaceNiveis_tf = leituraDINTERSE(folder,"DINTERSE.csv", &numeroInterfaces_tf, &barra_tf,&numeroBarras_tf,&ramo_tf,&numeroRamos_tf);
     
     clock_t a2 = clock();
     double tempo_A = (double)(a2 - a1) / CLOCKS_PER_SEC;
@@ -127,17 +127,17 @@ int main(int argc, char** argv) {
     
     
     // Cria estrutura de dados da rede elétrica
-    geraGrafo(&grafo, barra, numeroBarras,ramo,numeroRamos); 
+    geraGrafo(&grafo_tf, barra_tf, numeroBarras_tf,ramo_tf,numeroRamos_tf); 
     
     // Cria as listas encadeadas radiais dos alimentadores
-    buscaProfundidadeAlimentadores(grafo, numeroBarras, &alimentador, numeroAlimentadores_tf); 
-//    for(i=0; i<numeroAlimentadores; i++) supressaoBarrasPassagem(grafo, alimentador,i, ramo); // Suprime barras de passagem - Aceleração de cálculo
+    buscaProfundidadeAlimentadores(grafo_tf, numeroBarras_tf, &alimentador_tf, numeroAlimentadores_tf); 
+//    for(i=0; i<numeroAlimentadores; i++) supressaoBarrasPassagem(grafo_tf, alimentador,i, ramo_tf); // Suprime barras de passagem - Aceleração de cálculo
  
     // Transforma em pu e cria matrizes de admitância iniciais
-    calculaPU(grafo, numeroBarras, ramo, numeroRamos, Sbase);
+    calculaPU(grafo_tf, numeroBarras_tf, ramo_tf, numeroRamos_tf, Sbase);
     
     //Atualiza a posição de taps
-    atualizaTaps(ramo, numeroRamos); //terminar o tap fixo de trafos de potência
+    atualizaTaps(ramo_tf, numeroRamos_tf); //terminar o tap fixo de trafos de potência
     
     
     
@@ -145,14 +145,14 @@ int main(int argc, char** argv) {
     // Compatibilização com MRAN
     
     /*
-        funcao monta grafo SDR 
-        passar grafo trifásico passar grafo SDR 
+        funcao monta grafo_tf SDR 
+        passar grafo_tf trifásico passar grafo SDR 
         e dados alimentadores SDR
         colocartf em tudo
         colocar as coisas MR dentro do codigo
     */
-    converteGrafo_TFtoSDR(grafo,numeroBarras,ramo,numeroRamos,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
-    converteDadosAlimentadores_TFtoSDR(alimentador,numeroAlimentadores_tf,&dadosAlimentadorSDRParam);
+    converteGrafo_TFtoSDR(grafo_tf,numeroBarras_tf,ramo_tf,numeroRamos_tf,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
+    converteDadosAlimentadores_TFtoSDR(alimentador_tf,numeroAlimentadores_tf,&dadosAlimentadorSDRParam);
 
     //resultadoLeitura = leituraBarrasLinhasTrafos(&grafoSDR, &dadosTrafoSDR, &numeroBarras, &numeroTrafos, &numeroChaves);
     //resultadoLeitura =  leituraDadosAlimentadores(&dadosAlimentadorSDR);
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
     // teste=0x55558068d3c0;
     //--------------------------------------------------------------------------
     // atualizaEstadoChaves(grafoSDR,numeroBarras); //Atualiza os estados das chaves de acordo com ESTADOS_CHS    
-    LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras);
+    LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras_tf);
     // LISTASETORES * lista_setores_teste=0x55558068d4e0;
     // testar cada uma 
     // teste->prox=NULL;
@@ -169,30 +169,29 @@ int main(int argc, char** argv) {
 
 
 
-    constroiListaChaves(grafoSDRParam, &listaChavesSDR, numeroChaves, numeroBarras);
-    constroiListaAdjacenciaSetores(&grafoSDRParam, lista_setores, &listaChavesSDR, &grafoSetoresSDR, &numeroChaves, &numeroBarras);
+    constroiListaChaves(grafoSDRParam, &listaChavesSDR, numeroChaves, numeroBarras_tf);
+    constroiListaAdjacenciaSetores(&grafoSDRParam, lista_setores, &listaChavesSDR, &grafoSetoresSDR, &numeroChaves, &numeroBarras_tf);
     gravaGrafoSetores(grafoSetoresSDR, numeroSetores, listaChavesSDR);
 
     
 
 
-    constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras); // o erro está aqui
+    constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras_tf); // o erro está aqui
     gravaRNPSetores (rnpSetoresSDR, numeroSetores);
 
 
     
     configuracaoInicialSDR = alocaIndividuo(numeroAlimentadores_tf, idConfiguracaoSDR, 1);
-    // teste->prox=NULL;
     constroiIndividuoInicial(grafoSetoresSDR, grafoSDRParam, listaChavesSDR, dadosAlimentadorSDRParam, configuracaoInicialSDR);
    
 
 
     gravaIndividuo(".dad",configuracaoInicialSDR[idConfiguracaoSDR]);
-    imprimeBarrasIsoladas(numeroBarras, grafoSDRParam);
+    imprimeBarrasIsoladas(numeroBarras_tf, grafoSDRParam);
     salvaChaves(numeroChaves,listaChavesSDR);
     salvaChavesCompleto(numeroChaves, listaChavesSDR);
-    gravaDadosBarras(numeroBarras, grafoSDRParam);
-    salvaLinhas(numeroBarras, grafoSDRParam);
+    gravaDadosBarras(numeroBarras_tf, grafoSDRParam);
+    salvaLinhas(numeroBarras_tf, grafoSDRParam);
     salvaChavesAMontante(listaChavesSDR, configuracaoInicialSDR[idConfiguracaoSDR],grafoSetoresSDR);
     //gravaBarrasRT(dadosReguladorSDRParam, numeroReguladores, grafoSDRParam, numeroBarras);
     //gravaDadosTrafo(numeroTrafos, dadosTrafoSDR);
@@ -219,23 +218,23 @@ int main(int argc, char** argv) {
     
     //Simulacoes com Curvas de Carga - Considera o valor de P e Q de arquivo de curva previamente agregada
     if (flag_mod == 3){ 
-        leituraCurvasAgregadas(folder, &curvasTrafos,barra,numeroBarras); //Leitura de curvas de cargas agregadas
+        leituraCurvasAgregadas(folder, &curvasTrafos,barra_tf,numeroBarras_tf); //Leitura de curvas de cargas agregadas
         estampa_tempo  = 10;
-        inicializaPQcurvas(barra, curvasTrafos, numeroBarras,  estampa_tempo, VALOR_ESPERADO, Sbase); 
+        inicializaPQcurvas(barra_tf, curvasTrafos, numeroBarras_tf,  estampa_tempo, VALOR_ESPERADO, Sbase); 
     }    
      
     
     // Fluxo de Potência via Varredura Direta/Inversa Trifásica por Níveis de Tensão
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
-    incializaTensoesVarredura(grafo, numeroBarras, alimentador, numeroAlimentadores_tf);
+    incializaTensoesVarredura(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf);
     
     clock_t start2 = clock();
     
     
-    fluxoPotencia_Niveis_BFS_Multiplos(grafo, numeroBarras, alimentador, numeroAlimentadores_tf, ramo, Sbase/1000, interfaceNiveis, numeroInterfaces, true); // true converge FP | false faz iteraçao única (P&D)
+    fluxoPotencia_Niveis_BFS_Multiplos(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true); // true converge FP | false faz iteraçao única (P&D)
     clock_t end2 = clock();
     double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
-    printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores_tf, numeroBarras);
+    printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores_tf, numeroBarras_tf);
     printf("\nTempo: %lf\n\n",  edtr_time);
 
     
@@ -252,20 +251,20 @@ int main(int argc, char** argv) {
     
     
 //    // Leitura de Medidas do sistema SCADA (SASE processado)
-//    numeroMedidas = leituraMedidas(folder, "DMED.csv", &medida, ramo, numeroRamos, barra, numeroBarras, grafo, Sbase); 
+//    numeroMedidas_tf = leituraMedidas(folder, "DMED.csv", &medida, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras, grafo, Sbase); 
 //    
 //    // Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
-//    buscaAMs(grafo, numeroBarras, alimentador, numeroAlimentadores, medida, numeroMedidas, &areasMedicao);
+//    buscaAMs(grafo, numeroBarras, alimentador_tf, numeroAlimentadores, medida, numeroMedidas_tf, &areasMedicao_tf);
 //    
 //    //Estimador de Demandas Trifásicas
-//    estimadorDemandaTrifasico(grafo, numeroBarras, alimentador, numeroAlimentadores, ramo, Sbase/1000, interfaceNiveis, numeroInterfaces, areasMedicao);
+//    estimadorDemandaTrifasico(grafo, numeroBarras, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase/1000, interfaceNiveis, numeroInterfaces, areasMedicao_tf);
     
         
     //Liberação de Memória
-    free_BARRA(barra,numeroBarras);
-    free_DRAM(ramo,numeroRamos);
+    free_BARRA(barra_tf,numeroBarras_tf);
+    free_DRAM(ramo_tf,numeroRamos_tf);
     //free_GRAFO(grafo,numeroBarras);
-    free_ALIMENTADOR(alimentador,numeroAlimentadores_tf);
+    free_ALIMENTADOR(alimentador_tf,numeroAlimentadores_tf);
     return (EXIT_SUCCESS);
 }
 

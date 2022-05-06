@@ -279,3 +279,167 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
 
 
 }
+
+void inicializaTensaoSDR_tf()
+{
+
+}
+
+void avaliaConfiguracaoSDR_tf()
+{
+    //fluxo de potencia
+}
+
+void fluxoPotencia_Niveis_BFS_Multiplos_tf(){
+
+}
+
+void fluxoPotencia_BFS_Alimentador_tf()
+{
+
+}
+
+
+//Cálculo de Fluxo de Potência para um Alimentador de Distribuição Baseado na Varredura Direta/Inversa Trifasica
+/**
+ * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa
+ * 
+ * Essa função efetua
+ * A função retorna @c TF_PFSOLUTION.
+ * 
+ * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
+ * @param numeroBarras
+ * @param alimentador
+ * @param ramos
+ * @param Sbase
+ * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
+ * @see fluxoPotencia_BFS_Multiplos
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase){
+    int it, nvar, k = 0,i, conv = 0;
+    double *DV, nDV = 0, loading = 0, cargaAtivaTotal = 0 ;
+    long int *RNP = NULL;
+    BOOL control_action = 0;
+    double fatorDesbalanco;
+
+    TF_FILABARRAS *barraAtual = NULL, *barraProx = NULL;
+    TF_NOADJACENTE *ramoAdj = NULL;
+
+    TF_PFSOLUTION powerflow_result;
+
+    //----------------------------------------------------------------------
+    //RNP no formato de vetor
+    //
+    RNP = aloca_vetor_int(alimentador.numeroNos+1);
+    barraAtual = &alimentador.rnp[0];
+    while(barraAtual != NULL){
+        RNP[k] = barraAtual->idNo;
+        k++;
+        barraAtual = barraAtual->prox;
+    }
+    nvar = alimentador.numeroNos*6;
+    DV = aloca_vetor(nvar);
+    powerflow_result.convergencia = 0;
+    powerflow_result.maiorCarregamentoCorrente = 0;
+    powerflow_result.perdasResistivas = 0;
+    powerflow_result.maiorCarregamentoTrafo = 0;
+    powerflow_result.carregamentoRede = 0;
+    powerflow_result.menorTensao = 1.00;
+    powerflow_result.quedaMaxima = 0;
+    powerflow_result.iteracoes = 0;
+    powerflow_result.desbalancoTensaoMaximo = 0;
+    powerflow_result.desbalancoCorrenteMaximo = 0;
+    powerflow_result.desbalancoCorrenteAlim = 0;
+    powerflow_result.menorTensaoABC[0] = 1.0;
+    powerflow_result.menorTensaoABC[1] = 1.0;
+    powerflow_result.menorTensaoABC[2] = 1.0;
+     
+        //Backward Sweep
+        for(k = alimentador.numeroNos-1; k >= 0; k--){
+            backward(&grafo[RNP[k]], grafo);
+        }
+
+        //---------------------------------------------------------------------- 
+        //Forward Sweep
+        for(k = 0; k < alimentador.numeroNos; k++){
+            control_action = forward(&grafo[RNP[k]], grafo);
+            if (control_action) powerflow_result.tap_change_flag = true;
+        }
+        
+
+    powerflow_result.convergencia = 1;
+    powerflow_result.iteracoes = 1;
+    ////----------------------------------------------------------------------
+    // Calcula resultados condensados de fluxo de potência  para o alimentador
+    if(powerflow_result.convergencia == 1){
+        //---------------------------------------------------------------------- 
+        //Calculos das grandezas de interesse nos ramos - via varredura backward
+        for(k = alimentador.numeroNos-1; k > 0; k--){
+            powerflow_result.perdasResistivas += calculaPerdas(&grafo[RNP[k]], grafo);
+            loading = calculaCarregamento(&grafo[RNP[k]], grafo, 1000*Sbase);
+            cargaAtivaTotal += creal(cabs(grafo[RNP[k]].S[0]) + cabs(grafo[RNP[k]].S[1]) + cabs(grafo[RNP[k]].S[2]));
+
+            if (loading > powerflow_result.maiorCarregamentoCorrente)
+                powerflow_result.maiorCarregamentoCorrente = loading;
+            
+//            Menor tensão por fase
+            if (cabs(grafo[RNP[k]].V[0]) < powerflow_result.menorTensaoABC[0])
+                powerflow_result.menorTensaoABC[0] = cabs(grafo[RNP[k]].V[0]);
+            if (cabs(grafo[RNP[k]].V[1]) < powerflow_result.menorTensaoABC[1])
+                powerflow_result.menorTensaoABC[1] = cabs(grafo[RNP[k]].V[1]);
+            if (cabs(grafo[RNP[k]].V[2]) < powerflow_result.menorTensaoABC[2])
+                powerflow_result.menorTensaoABC[2] = cabs(grafo[RNP[k]].V[2]);
+            
+//            Menor tensão entre as três fases
+            if (cabs(grafo[RNP[k]].V[0]) < powerflow_result.menorTensao){
+                powerflow_result.menorTensao = cabs(grafo[RNP[k]].V[0]);
+                powerflow_result.quedaMaxima = (cabs(grafo[alimentador.noRaiz].V[0]) - powerflow_result.menorTensao)/cabs(grafo[alimentador.noRaiz].V[0]) * 100;
+            }
+            if (cabs(grafo[RNP[k]].V[1]) < powerflow_result.menorTensao){
+                powerflow_result.menorTensao = cabs(grafo[RNP[k]].V[1]);
+                powerflow_result.quedaMaxima = (cabs(grafo[alimentador.noRaiz].V[1]) - powerflow_result.menorTensao)/cabs(grafo[alimentador.noRaiz].V[1]) * 100;
+            }
+            if (cabs(grafo[RNP[k]].V[2]) < powerflow_result.menorTensao){
+                powerflow_result.menorTensao = cabs(grafo[RNP[k]].V[2]);
+                powerflow_result.quedaMaxima = (cabs(grafo[alimentador.noRaiz].V[2]) - powerflow_result.menorTensao)/cabs(grafo[alimentador.noRaiz].V[2]) * 100;
+            }
+            
+            if (grafo[RNP[k]].fases == ABC){
+                fatorDesbalanco = desbalancoFasorialSeq(grafo[RNP[k]].V);
+                if (fatorDesbalanco > powerflow_result.desbalancoTensaoMaximo)
+                    powerflow_result.desbalancoTensaoMaximo = fatorDesbalanco;
+            }
+            
+            if (grafo[RNP[k]].fases == ABC){
+                for (int j =0; j < grafo[RNP[k]].numeroAdjacentes; j++){
+                    if (grafo[grafo[RNP[k]].adjacentes[j].idNo].profundidade < grafo[RNP[k]].profundidade){
+                        
+                        if (( cabs(grafo[RNP[k]].adjacentes[j].Cur[0]) != 0) && (cabs(grafo[RNP[k]].adjacentes[j].Cur[1]) !=0) && (cabs(grafo[RNP[k]].adjacentes[j].Cur[2]) != 0 ))
+                            fatorDesbalanco = desbalancoFasorialSeq(grafo[RNP[k]].adjacentes[j].Cur);
+                        else
+                            fatorDesbalanco = 0;
+                            
+                        if (fatorDesbalanco > powerflow_result.desbalancoCorrenteMaximo)
+                            powerflow_result.desbalancoCorrenteMaximo = fatorDesbalanco;
+                        }
+                    }
+            }
+            
+        }
+        powerflow_result.carregamentoRede = powerflow_result.perdasResistivas + cargaAtivaTotal;
+        
+        powerflow_result.carregamentoRedeABC[0] = creal(grafo[RNP[0]].V[0]*conj(grafo[RNP[0]].adjacentes[0].Cur[0]));
+        powerflow_result.carregamentoRedeABC[1] = creal(grafo[RNP[0]].V[1]*conj(grafo[RNP[0]].adjacentes[0].Cur[1]));
+        powerflow_result.carregamentoRedeABC[2] = creal(grafo[RNP[0]].V[2]*conj(grafo[RNP[0]].adjacentes[0].Cur[2]));
+        
+        if( cabs(grafo[RNP[0]].adjacentes[0].Cur[0] + grafo[RNP[0]].adjacentes[0].Cur[1] + grafo[RNP[0]].adjacentes[0].Cur[2]) != 0 )
+            powerflow_result.desbalancoCorrenteAlim = desbalancoFasorialSeq(grafo[RNP[0]].adjacentes[0].Cur);
+        else
+            powerflow_result.desbalancoCorrenteAlim = 0;
+    }
+    
+    free(DV); free(RNP); free(barraAtual); free(barraProx); free(ramoAdj);
+    return(powerflow_result);
+}
