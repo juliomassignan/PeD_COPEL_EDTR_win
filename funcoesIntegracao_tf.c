@@ -32,13 +32,27 @@
 
 //
 /**
- * @brief 
+ * @brief Função de integracao da MRAN para converter o grafo utilizado trifasico no grafo utilizado na MRAN e para preencher os dados dos reguladores. 
  *
- * Essa função realiza 
- * 
- * @param 
- * @return c
- * @see 
+ * Essa função recebe como parâmetro o grafo do tipo TF_GRAFO, do fluxo de potência trifásico e realiza a conversão de suas informações para 
+ * para preencher o grafo @p **grafoSDRParam do tipo GRAFO. A partir do grafo trifásico também é preenchida a estrutura @p **dadosReguladorSDRParam , do tipo DADOSREGULADOR. Ambas estruturas são alocadas nessa funcao
+ * Além disso, ela retorna número de nós da rede @p numeroBarras , o número de transformadores em @p numeroTrafos , e o número de chaves em @p numeroChaves , que são ponteiros para long int.
+ * Todas estas informacoes serao necessarias para utilizar as funcoes da MRAN e o fluxo de potência por varredura de RNP
+ * @param grafo_tf grafo trifásico da rede com as informações que serão fornecidas nesta função
+ * @param  numeroBarras_tf inteiro com o número de barras da rede, segundo o fluxo trifásico
+ * @param ramos_tf vetor do tipo TF_DRAM com as informações dos ramos da rede, ulizada para preencher o grafoSDR e dadosRegulador
+ * @param nramos_tf inteiro que conta o número de ramos da rede
+ * @param grafoSDRParam ponteiro para um vetor do tipo GRAFO, retorna o grafo da rede a ser utilizado na MRAN 
+ * @param dadosReguladorSDRParam ponteiro para um vetor do tipo DADOSREGULADOR com as informacoes dos reguladores a ser utilizado na MRAN
+ * @param numeroBarras retorna o número de nos no grafo grafoSDRParam 
+ * @param numeroTrafos retorna o número de trafos
+ * @param numeroChaves retorna o numero de chaves na rede
+ * @return void.
+ * @see leituraBarras
+ * @see leituraLinhas
+ * @see leituraTrafos
+ * @see leituraDados
+ * @see geraGrafo
  * @note
  * @warning .
  */
@@ -47,29 +61,27 @@
 void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *ramos_tf,long int nramos_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves)
 {
     
-    int i,k,contador;
-    int nreg=0;
+    int i,k,contador; // variaveis utilizadas como indexadores e contadores em loops
+    int nreg=0; // variável que conta o numero de reguladores
 
-    (*numeroChaves)=0;
-    (*numeroTrafos)=0;
-    // declaracao de variaveis auxiliares
-    // alocacao de memoria
-    (*numeroBarras)=numeroBarras_tf;
+    (*numeroChaves)=0; // variável que conta o numero de chaves e é inicializada com zero
+    (*numeroTrafos)=0; // variavel que conta o numero de trafos e é inicializada com zero
+    
+    (*numeroBarras)=numeroBarras_tf; //que conta o numero de barras e é inicializada com o numero de barras trifasicas
     
     //realiza a alocação da estrutura em grafo para armazenar o SDR e verifica se o processo foi bem sucedido
-    //caso não seja possível realizar a alocação o programa é encerrado
     //a MRAM COMECA A INDEXACAO DO GRAFO EM 1
-
-    if (((*grafoSDRParam) = (GRAFO *)malloc((numeroBarras_tf+1) * sizeof(GRAFO)))==NULL)
+    if (((*grafoSDRParam) = (GRAFO *)malloc((numeroBarras_tf+1) * sizeof(GRAFO)))==NULL) 
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para o grafo do SDR !!!!");
         exit(1); 
     }
 
+    // loop que percorre o grafo trifasico
     for (i=0;i<numeroBarras_tf;i++)
     {
         contador=i+1;//MARAN indexa o grafo a partir de 1
-        (*grafoSDRParam)[contador].idNo=grafo_tf[i].idNo+1;//MARAN indexa o grafo a partir de 1 o idNo é usado para indexar a MRAN ?
+        (*grafoSDRParam)[contador].idNo=grafo_tf[i].idNo+1; // preenche o idNo no grafo trifasico
 
         //preenche tipo do nó
         if (grafo_tf[i].tipoNo== 0)(*grafoSDRParam)[contador].tipoNo= semCarga;
@@ -77,6 +89,8 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         else if (grafo_tf[i].tipoNo==2)(*grafoSDRParam)[contador].tipoNo= capacitor;   
         else if (grafo_tf[i].tipoNo==3)(*grafoSDRParam)[contador].tipoNo= raizAlimentador;
 
+        
+        //indica se há medidor no nó
         if(grafo_tf[i].nmedPQ>0)
         {
             (*grafoSDRParam)[contador].medicao=medidorClasseA;
@@ -85,28 +99,28 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         {
             (*grafoSDRParam)[contador].medicao=semMedidor;
         }    
+
         // preecnhe o indice que indica a área de medição
-        (*grafoSDRParam)[contador].idAM=grafo_tf[i].idAM+1;//comeca do zero ou do 1?
+        (*grafoSDRParam)[contador].idAM=grafo_tf[i].idAM+1;
         // preenche o numero de nos adjacentes
         (*grafoSDRParam)[contador].numeroAdjacentes=grafo_tf[i].numeroAdjacentes;
         // preencher os alica os adjacentes (precisa preencher)
         (*grafoSDRParam)[contador].adjacentes=Malloc(NOADJACENTE,11);
 
-        //preencher info dos adjacentes
+        //loop para preencher a info dos adjacentes
         for (k=0;k<grafo_tf[i].numeroAdjacentes;k++)
         {
             
-            (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;//MARAN indexa o grafo a partir de 1
-            
-            //conferir com o julio
+            (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;// preenche o idNo
 
             //deixar vazio os outro também 
             // sprintf((*grafoSDRParam)[contador].adjacentes[k].idAresta,"%ld",grafo_tf[i].adjacentes[k].idram);
-            // informa se há medidores nos ramos
+            
+            // informa preenche a informacao se há medidor nos ramos
             if(grafo_tf[i].adjacentes[k].nmed>0)(*grafoSDRParam)[contador].adjacentes[k].medicao=medidorRamo;
             else (*grafoSDRParam)[contador].adjacentes[k].medicao=semMedidor;
  
-            
+           //preenche a informacao dos ramos tipo trecho 
             if(grafo_tf[i].adjacentes[k].tipo==ramal||grafo_tf[i].adjacentes[k].tipo==trafo)
             {
                 (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=trecho;
@@ -117,15 +131,17 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
                   (*numeroTrafos)=(*numeroTrafos)+1;
                 }
             }   
+            //preenche a informacao dos ramos tipo regulador
             else if (grafo_tf[i].adjacentes[k].tipo==regulador)
             {
                 (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=reguladorTensao;
                 (*grafoSDRParam)[contador].adjacentes[k].estadoChave=outrasArestas; 
                 (*grafoSDRParam)[contador].adjacentes[k].subTipoAresta=outrosSubTipo;
             } 
+            //preenche a informacao dos ramos tipo chave
             else if (grafo_tf[i].adjacentes[k].tipo==chave)
             {
-                (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=chaveManual; //tipos de chave, onde obtêlos
+                (*grafoSDRParam)[contador].adjacentes[k].tipoAresta=chaveManual; 
                 (*numeroChaves)=(*numeroChaves)+1;
                 if (grafo_tf[i].adjacentes[k].estado==fechado)
                 {
@@ -137,30 +153,27 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
                 }
             }
             
-            //grafo trifasico não le chave automatica?
-
-            //preenche o indice AM
+            // preenche o idAM
             (*grafoSDRParam)[contador].adjacentes[k].idAM=grafo_tf[i].adjacentes[k].idAM+1;//sera q tem q adicionar 1?
             
-            //descobrir
+            // inicia todos os ramos como em operacao
             
             (*grafoSDRParam)[contador].adjacentes[k].condicao=emOperacao;
 
 
-            
-            // descobrir deve ficar junto com o tipo de aresta
 
 
-            //valores de sequ pos?
+            //incia os valores da resistencia e reatancia que serão preenchidos em outro momento
             (*grafoSDRParam)[contador].adjacentes[k].resistencia=0;
             (*grafoSDRParam)[contador].adjacentes[k].reatancia=0;
-            //O que é isso?
+            //preenche o valor da ampacidade
             (*grafoSDRParam)[contador].adjacentes[k].ampacidade=ramos_tf[grafo_tf[i].adjacentes[k].idram].ampacidade;
 
         }
-
-        (*grafoSDRParam)[contador].valorPQ.p=__real__ grafo_tf[i].S[0]+ grafo_tf[i].S[1]+grafo_tf[i].S[2];//unidade?
-        (*grafoSDRParam)[contador].valorPQ.q=__imag__ grafo_tf[i].S[0]+ grafo_tf[i].S[1]+grafo_tf[i].S[2];//unidade?
+        //inicia os valores da potencia no no
+        (*grafoSDRParam)[contador].valorPQ.p=__real__ grafo_tf[i].S[0]+ grafo_tf[i].S[1]+grafo_tf[i].S[2];
+        (*grafoSDRParam)[contador].valorPQ.q=__imag__ grafo_tf[i].S[0]+ grafo_tf[i].S[1]+grafo_tf[i].S[2];
+        
         (*grafoSDRParam)[contador].priorizacoes.eusdGrupoA=0;
         (*grafoSDRParam)[contador].priorizacoes.eusdGrupoB=0; 
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidores=0;
@@ -189,6 +202,8 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
     }
 
+
+    //conta o numero de reguladores
     for (i=0;i<nramos_tf;i++)
     {
         if (ramos_tf[i].tipo==regulador)
@@ -201,21 +216,26 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
     //realiza a alocação da estrutura em grafo para armazenar o SDR e verifica se o processo foi bem sucedido
     //caso não seja possível realizar a alocação o programa é encerrado
 
+
+    //aloca a estrutura com os dados dos reguladores
     if (((*dadosReguladorSDRParam) = (DADOSREGULADOR *)malloc((nreg+1) * sizeof(DADOSREGULADOR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para o grafo do SDR !!!!");
         exit(1); 
     }
     k=0;
+
+    //preenche os dados do regulador de acordo com os dados do trifásico
+
     for (i=0;i<nramos_tf;i++)
     {
         if (ramos_tf[i].tipo==regulador)
         {
         // nao preencher
         //sprintf((*dadosReguladorSDRParam)[k].idRegulador,"%ld",i+1);
-        (*dadosReguladorSDRParam)[k].tipoRegulador= comFluxoReverso;
-        (*dadosReguladorSDRParam)[k].ampacidade=ramos_tf[i].ampacidade;
-        (*dadosReguladorSDRParam)[k].numeroTaps=ramos_tf[i].regulador.ntaps;
+        (*dadosReguladorSDRParam)[k].tipoRegulador= comFluxoReverso; //o tipo de todos os reguladores é iniciado como com fluxo reverso
+        (*dadosReguladorSDRParam)[k].ampacidade=ramos_tf[i].ampacidade; //preenche a amapacidade
+        (*dadosReguladorSDRParam)[k].numeroTaps=ramos_tf[i].regulador.ntaps; // preenche o numero de taps
         k++;
         }
     }
@@ -236,12 +256,17 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
 //
 /**
- * @brief 
- *
- * Essa função realiza 
+ * @brief Função de integracao da MRAN, para preencher a estrutura dadosAlimentadorSDRParam do tipo DADOSALIMENTADOR que será utilizada nas funcoes da MRAN. 
  * 
- * @param 
- * @return c
+ * Essa função recebe como parâmetro o vetor @p alimentadores_tf do tipo TF_ALIMENTADOR, com as informacoes dos alimentadores da rede, lidas para o calculo do fluxo de potencia trifasico
+ * e o long int @p numerosAlimentadores_tf com o numero de alimentadores de acordo com o fluxo trifásico. Em posse destes dados, esta funcao aloca o espaço necessário para a estrutura @p dadosAlimentadorSDRParam
+ * e a preenche, com as informacoes necessarias para utilizar as funcoes da rnp. 
+ *
+ * 
+ * @param alimentadores_tf vetor do tipo TF_ALIMENTADOR com as informacoes sobre o alimentador trifasico
+ * @param numero_alimentadores numero inteiro que conta o numero de alimentadores presentes no sistema
+ * @param dadosAlimentadorSDRParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
+ * @return void
  * @see 
  * @note
  * @warning .
@@ -250,26 +275,27 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
 void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
 
-    int contador, i;
-    //declara variaveis
-    //aloca estrutura 
-    //lafuncoesInicializacaoco for
+    int contador, i; //variaveis utilizadas para contar e indexar
 
-    extern long int numeroAlimentadores ;
-    numeroAlimentadores = numerosAlimentadores_tf;
+
+    extern long int numeroAlimentadores ; //variavel global com o numero de alimentadores
+    numeroAlimentadores = numerosAlimentadores_tf; //recebe o numero de alimentadores do trifasico
+
+    //aloca memoria para a estrutura DADOSALIMENTADOR, caso nao seja possivel encerra o programa
     if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numerosAlimentadores_tf+1) * sizeof(DADOSALIMENTADOR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para alimentadores !!!!");
         exit(1); 
     }
 
+    //loop que preenche os dados dos alimentadores de acordo com o trifásico
     for ( i = 0; i < numerosAlimentadores_tf; i++)
     {
         contador=i+1;
-        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz+1; // zaui esta dando problema
+        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz+1; // preenche a barraAlimentador com o noRaiz
         //sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
-        (*dadosAlimentadorSDRParam)[contador].idTrafo = alimentadores_tf[i].idRaiz;// nao tem equivalente no alimentadores_tf. conferir com o Julio
-        (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;//Cada setor é um nó do alimentador
+        (*dadosAlimentadorSDRParam)[contador].idTrafo = alimentadores_tf[i].idRaiz;// preenche com idRaiz do no raiz
+        (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;// inicia o numero de setores com zero
 
 
     }
