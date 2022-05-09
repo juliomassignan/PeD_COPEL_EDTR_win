@@ -275,7 +275,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
 void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
 
-    int contador, i; //variaveis utilizadas para contar e indexar
+    int contador, i=0; //variaveis utilizadas para contar e indexar
 
 
     extern long int numeroAlimentadores ; //variavel global com o numero de alimentadores
