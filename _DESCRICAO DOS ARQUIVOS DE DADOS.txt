@@ -63,7 +63,7 @@ Baa,Bab,Bac,Bbb,Bbc,Bcc - Matriz de suscept�ncia em micro siemens  por unidade
 -------------------------------------------------------------------------------------------------------------------------------
 DREG - Dados de reguladores de tens�o:
 
-DE,PARA,FASES,VNOM,REGULA��O,NTAPS,S_NOMINAL,RESIST�NCIA,REAT�NCIA,LIGA��O,RELA��O_TP,RELA��O_TC,DELTA_V,R1,X1,R2,X2,R3,X3,V1,V2,V3,TIPOCONT,TAP1,TAP2,TAP3,DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev
+DE,PARA,FASES,VNOM,REGULA��O,NTAPS,S_NOMINAL,RESIST�NCIA,REAT�NCIA,LIGA��O,RELA��O_TP,RELA��O_TC,DELTA_V,R1,X1,R2,X2,R3,X3,V1,V2,V3,TIPOCONT,TAP1,TAP2,TAP3,DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev,FEATNUM
 
 DE - Barra de;
 PARA - Barra para;
@@ -83,11 +83,12 @@ V1,V2,V3 - Ajuste de tens�o do controlador LDC em V secund�rios;
 TIPOCONT - Tipo de Controle (0 = Somente Forward sem Restri��o / 1 = Locked Forward / 2 = Locked Reverse / 3 = Bidirectional / 4 = Idle / 5 = Neutral Reverse / 6 = Cogenartion / Ver manual Siemens MJ4A)
 TAP1,TAP2,TAP3 - Par�metro de tap inicial (opcional - serve como tap do controle reverse locked)
 DELTA_V_rev,R1_rev,X1_rev,R2_rev,X2_rev,R3_rev,X3_rev,V1_rev,V2_rev,V3_rev - Ajustes reversos (Necess�rio se TIPOCONT > 0)
+FEATNUM - String de identificao de equipamento
 
 -------------------------------------------------------------------------------------------------------------------------------
 DTRF - Dados de transformadores de pot�ncia (Transformador abaixador ou elevador):
 
-DE,PARA,FASES,VPRI,VSEC,S_NOMINAL,RESIST�NCIA,REAT�NCIA,LIGA��O_PRI,LIGA��O_SEC,DEFASAMENTO,TAP_PRI,TAP_SEC,%imag,%NoLoadLosses,%Rmutua,%Xmutua 
+DE,PARA,FASES,VPRI,VSEC,S_NOMINAL,RESIST�NCIA,REAT�NCIA,LIGA��O_PRI,LIGA��O_SEC,DEFASAMENTO,TAP_PRI,TAP_SEC,%imag,%NoLoadLosses,%Rmutua,%Xmutua,FEATNUM
 
 DE - Barra de;
 PARA - Barra para;
@@ -106,19 +107,19 @@ TAP_SEC - Tap do prim�rio fora do nominal;
 %NoLoadLosses - perdas sem carga
 %Rmutua - resist�ncia m�tua para liga��es de trafo especiais (trafo monof�sico com tap central no secund�rio)
 %Xmutua - imped�ncia m�tua para liga��es de trafo especiais (trafo monof�sico com tap central no secund�rio)
-
+FEATNUM - String de identificao de equipamento
 
 -------------------------------------------------------------------------------------------------------------------------------
 DSWTC - Dados de chaves:
 
-DE,PARA,FASES,ESTADO
+DE,PARA,FASES,ESTADO,FEATNUM
 
 DE - Barra de;
 PARA - Barra para;
 FASES - N�mero de fases;
 ESTADO - 0 = aberto / 1 = fechado
 TIPO - 0 = disjuntor / 1 = Seccionadora
-
+FEATNUM - String de identificao de equipamento
 
 -------------------------------------------------------------------------------------------------------------------------------
 DSE  - Dados nominais de subesta��es

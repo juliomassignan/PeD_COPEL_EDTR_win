@@ -283,7 +283,7 @@ typedef struct {
     double ampacidade;  // ampacidade do ramo
     double Snominal;    // capacidade de potência nominal do ramo
     double comprimento;    // comprimento do ramo em metros
-    
+    char feat_num[16];
     //Dados detalhados do componente associado ao ramo
     TF_DLIN linha;
     TF_DTRF trafo;

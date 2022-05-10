@@ -753,6 +753,7 @@ void avaliaConfiguracao(BOOL todosAlimentadores, CONFIGURACAO *configuracoesPara
         perdasTotais+=configuracoesParam[idNovaConfiguracaoParam].rnp[indiceRNP].fitnessRNP.perdasResistivas;
 
     }
+    
     configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente * 100;
     configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = perdasTotais;
     carregamentoTrafo(dadosTrafoParam, numeroTrafosParam, numeroAlimentadoresParam, dadosAlimentadorParam, configuracoesParam, idNovaConfiguracaoParam, idAntigaConfiguracaoParam, todosAlimentadores, rnpP, rnpA);
