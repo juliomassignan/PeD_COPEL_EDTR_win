@@ -306,6 +306,26 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
 
 }
 
+void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int idIndividuoInicialParam, long int numeroConfiguracoesParam, CONFIGURACAO **configuracao)
+{
+    int i,contador;
+
+    for (i=0;i<(idIndividuoInicialParam+numeroConfiguracoesParam);i++)
+    {
+        (*configuracao)[i].objetivo.maiorCarregamentoCorrente=powerflow_result[i].maiorCarregamentoCorrente;
+        (*configuracao)[i].objetivo.perdasResistivas=powerflow_result[i].perdasResistivas;
+        (*configuracao)[i].objetivo.maiorCarregamentoTrafo=powerflow_result[i].maiorCarregamentoTrafo;
+        (*configuracao)[i].objetivo.menorTensao=powerflow_result[i].menorTensao;
+        (*configuracao)[i].objetivo.quedaMaxima=powerflow_result[i].quedaMaxima;
+
+        
+    }
+    
+
+}
+
+
+
 void inicializaTensaoSDR_tf()
 {
 

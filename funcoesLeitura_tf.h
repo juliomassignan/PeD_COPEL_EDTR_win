@@ -133,6 +133,7 @@ char* charFases(TF_FASES num);
  */
 char* charMedidor(long int num);
 
+const char * getfield_str(char* lin, int num);
 //------------------------------------------------------------------------------
 //
 // FUNÇÕES DE LEITURA DE DADOS DA REDE ELÉTRICA

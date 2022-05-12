@@ -147,6 +147,78 @@ double getfield_double(char* lin, int num){
     return NAN;
 }
 
+const char * getfield_str(char* lin, int num)
+{
+    int i,k,j;
+    int inicio=0;
+    int fim=0;
+    int contacampos=0;
+    char *str_r=NULL;
+    str_r = (char *)malloc((16)*sizeof(char));
+
+    i=0;
+    while(lin[i]!='\0')
+    {  
+        if(lin[i]==','||lin[i]==';'||lin[i]=='\n')
+        {
+            contacampos++;
+        }
+        i++;
+    }
+    if (contacampos < num) 
+    {
+        sprintf(str_r,"NA");
+        return str_r;
+    }
+    else
+    {
+        k=0;
+        i=0;
+        while(lin[i]!='\0')
+        {
+            i++;
+            if(lin[i]==','||lin[i]==';'||lin[i]=='\n')
+            {
+                k++;
+                if(k==(num-1))
+                {
+                    inicio=i;
+                    j=i+1;
+                    while(lin[j]!='\0')
+                    {
+                        if(lin[j]==','||lin[j]==';'||lin[j]=='\n'){
+                            fim=j;
+                            break;
+                        }
+                        j++;
+
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    k=0;
+    if (inicio+1==fim)
+    {
+        sprintf(str_r,"NA");
+    }
+    if(inicio-fim>16)
+    {
+        fim=inicio+16;
+    }
+    for (i=inicio+1;i<fim;i++)
+    {
+        str_r[k]=lin[i];
+        k++;
+    }
+    str_r[k]='\0';
+
+    return str_r;
+
+}
+
 //Retorna string referente ao tipo de ligacao trifásica
 /**
  * @brief Função auxiliar retornar string referente ao tipo de ligação trifásica
@@ -573,6 +645,7 @@ void leituraDBAR(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras, long i
         }
         if (aux == -1){ //Criando novo DBAR
             (*barras)[contador].ID = (getfield_int(dados,1));
+
             (*barras)[contador].i = contador;
             (*barras)[contador].ligacao = (getfield_int(dados,2));
             (*barras)[contador].fases = (getfield_int(dados,3));
@@ -1174,7 +1247,7 @@ void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
-
+    const char *str_r=NULL; //string de manipulação
     
     //Aloca na memória espaço para os trafos
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -1235,6 +1308,10 @@ void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
             (*ramos)[contador].trafo.r_mutua = getfield_double(dados,16);
             (*ramos)[contador].trafo.x_mutua = getfield_double(dados,17);
         }
+
+        str_r=getfield_str(dados,18);
+        sprintf((*ramos)[contador].feat_num,str_r);
+        if(str_r!=NULL)free(str_r);
                       
         contador++;
     }
@@ -1272,7 +1349,7 @@ void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
-    
+    const char *str_r=NULL;
     
     //Aloca na memória espaço para os reguladores
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -1355,6 +1432,11 @@ void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
             (*ramos)[contador].regulador.V2r = (getfield_double(dados,35));
             (*ramos)[contador].regulador.V3r = (getfield_double(dados,36));
         }
+        str_r=getfield_str(dados,37);
+        sprintf((*ramos)[contador].feat_num,str_r);
+        if(str_r!=NULL)free(str_r);
+
+        
         contador++;
     }
     numeroRamos[0] = numeroRamos[0] + numLinhas;
@@ -1391,7 +1473,7 @@ void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
-
+    const char *str_r=NULL;
     
     //Aloca na memória espaço para os trafos
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -1437,7 +1519,9 @@ void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR
                 (*ramos)[contador].linha.ampacidade = 9999999.9;
             
         }   
-
+        str_r=getfield_str(dados,7);
+        sprintf((*ramos)[contador].feat_num,str_r);
+        if(str_r!=NULL)free(str_r);
         contador++;
     }
     numeroRamos[0] = numeroRamos[0] + numLinhas;
