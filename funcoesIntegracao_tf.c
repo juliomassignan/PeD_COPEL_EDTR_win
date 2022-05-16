@@ -419,7 +419,10 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
  */
 
 void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
- long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP,RNPSETORES *matrizB){
+ long int **interfaceNiveis,long int numeroInterfaces,/* long int numeroBarrasParam*/, 
+        DADOSALIMENTADOR *dadosAlimentadorParam, DADOSTRAFO *dadosTrafoParam,
+        CONFIGURACAO *configuracoesParam, long int indiceConfiguracao, RNPSETORES *matrizB,
+        /*MATRIZCOMPLEXA *ZParam*/, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam){
 
     // recebe a rede completa  e chama a fluxoPotencia_BFS_Alimentador_tf
     //rede completa
@@ -445,7 +448,9 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
 */
 void fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase,
-CONFIGURACAO *configuracoesParam, int rnpA, int rnpP,RNPSETORES *matrizB)
+        /*int numeroBarrasParam*/, CONFIGURACAO *configuracoesParam, 
+        /*double VFParam*/, int indiceRNP, int indiceConfiguracao, RNPSETORES *matrizB,
+       /* MATRIZCOMPLEXA *ZParam*/, MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado )
 {
     //por alimentador utilizando a rpn interna
 
