@@ -324,24 +324,130 @@ void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int
 
 }
 
-
-
-void inicializaTensaoSDR_tf()
+//Função inicialização do vetor x para sistemas radiais através de uma varredura para compensar os taps fora da nominal (sem o arquivo Vinicial)
+/**
+ * @brief Função auxiliar para inicializar as tensões complexas nodais trifásicas de todos os alimentadores através de um processo de varredura direta
+ * 
+ * Essa função inicializa as tensões complexas nodais por fase (fase-neutro) de todas as barras de todos os alimentadores da rede elértrica. 
+ * O valor de inicilização é obtido através de uma varredura direta partindo do nó raiz de cada alimentador para compensar possíveis valores de tap
+ * fora do nominal (no caso de reguladores e transformadores). Recebe como parâmetros de entrada e saída o grafo da
+ * rede elétrica @p grafo com as tensões complexas inicializadas e como parâmertros de entrada os alimentadores @p alimentadores e quantidades
+ * totais de barras e alimentadores da rede elétrica @p numeroBarras e @p numeroAlimentadores ,respectivamente. 
+ * A função retorna @c void.
+ * 
+ * @param *grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
+ * @param numeroBarras quatidade total de barras
+ * @param *alimentadores ponteiro par os alimentadores da rede elétrica
+ * @param numeroAlimentadores quantidade total de alimentadores
+ * @return void
+ * @see
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+*/
+void inicializaTensaoSDR_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
+BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam)
 {
+
+    // faz uma varredura incializando as tensoes em todas as varras da rede antes do fluxo de potencia. 
+    //Talvez não precise ser modificada
 
 }
 
-void avaliaConfiguracaoSDR_tf()
+void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam, DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,
+        int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam, */int idAntigaConfiguracaoParam, RNPSETORES *matrizB, /*MATRIZCOMPLEXA *ZParam,*/
+        /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
+        TF_GRAFO *grafo, TF_ALIMENTADOR *alimentadores, 
+        TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow)
 {
+    //revisar funcionalidade bool todosalimentadores
+    //revisar funcionalidade bool dados eletricos
     //fluxo de potencia
+
+    //inicializa tensão sdr_tf todas as entradas mais o configuracoes param
+    //fluxode potencia BFS_Multiplos todas as entradas mais configuracoes param
+    // preenche_powerflowresult_SDRalim 
+
 }
 
-void fluxoPotencia_Niveis_BFS_Multiplos_tf(){
+
+// Em consutrução
+//Rotina para Cálculo de Fluxo de Potência em múltiplos alimentadores de um sistema utilizando RNP de distribuição na sequeência hierárquica dos níveis de tensão (Primeiro 13.8kV e depois 34.5kV)
+/**
+ * @brief Função principal para cálculo de fluxo de potência (Primeiro 13.8kV e depois 34.5kV).
+ *
+ * Essa função realiza a leitura da pasta com os dados da rede elétrica em arquivos separados. 
+ * A pasta e subpasta são indicadas no arquivo "config.txt". A função assume que o nome do arquivo é padrão da e os arquivos 
+ * lidos são: DBAR.csv; DSHNT.csv; DGD.csv; DLIN.csv; DTRF.csv; DREG.csv; DSWTC.csv; DSUBESTACAP.csv; e Viniciail.csv . 
+ * Todos os arquivos são opcionais de leitura exceto o DBAR.csv. Além disso o arquivo possui como separação dos dados os marcadores especificados.
+ * Realiza alocação de memória para armazenar os dados da rede elétrica.
+ * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo DBAR @p **barras que armazena dados das barras da rede elétrica e
+ * um ponteiro para ponteiro do tipo DBAR @p **barras que armazena dados das barras da rede elétrica. Além disto recebe como 
+ * parâmetros de entrada e saída inteiros que indicam: @p numeroBarras a quantidade total de barras na rede; @p numeroRamos a 
+ * quantidade total de ramos na rede; e @p numeroAlimentadores a quantidade total de alimentadores na rede.
+ * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
+ * 
+ * Para utilizar a função:
+ * @code
+ * long int numeroBarras = 0;
+ * long int numeroAlimentadores = 0;
+ * long int numeroRamos = 0;
+ * char *folder = NULL;
+ * DBAR *barra = NULL;
+ * DRAM *ramo = NULL; 
+ * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
+ * if (folder !=NULL)
+ *      printf("leitura concluida\n");
+ * @endcode
+ * 
+ * @param barra parâmetro de entrada e saída que armazena os dados de barras da rede elétrica
+ * @param ramo  parâmetro de entrada e saída que armazena os dados de ramos da rede elétrica
+ * @param numeroBarras parâmetro de entrada e saída que armazena a quantidade total de barras da rede elétrica
+ * @param numeroRamos parâmetro de entrada e saída que armazena a quantidade total de ramos da rede elétrica
+ * @param numeroAlimentadores parâmetro de entrada e saída que armazena a quantidade total de alimentadores da rede elétrica
+ * @return char* com string referente ao endereço da pasta com os arquivos da rede elétrica lidos
+ * @see leituraDBAR
+ * @see leituraDSHNT
+ * @see leituraDGD
+ * @see leituraDLIN
+ * @see leituraDTRF
+ * @see leituraDREG
+ * @see leituraDSWTC
+ * @see leituraDSUBESTACAO
+ * @see leituraVinicial
+ * @note
+ * @warning .
+ */
+
+void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
+ long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP,RNPSETORES *matrizB){
+
+    // recebe a rede completa  e chama a fluxoPotencia_BFS_Alimentador_tf
+    //rede completa
 
 }
 
-void fluxoPotencia_BFS_Alimentador_tf()
+
+//Cálculo de Fluxo de Potência para um Alimentador de Distribuição Baseado na Varredura Direta/Inversa Trifasica Utilizando RPN
+/**
+ * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa
+ * 
+ * Essa função efetua
+ * A função retorna @c TF_PFSOLUTION.
+ * 
+ * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
+ * @param numeroBarras
+ * @param alimentador
+ * @param ramos
+ * @param Sbase
+ * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
+ * @see fluxoPotencia_BFS_Multiplos
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+*/
+void fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase,
+CONFIGURACAO *configuracoesParam, int rnpA, int rnpP,RNPSETORES *matrizB)
 {
+    //por alimentador utilizando a rpn interna
 
 }
 

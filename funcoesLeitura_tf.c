@@ -1309,9 +1309,9 @@ void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
             (*ramos)[contador].trafo.x_mutua = getfield_double(dados,17);
         }
 
-        str_r=getfield_str(dados,18);
-        sprintf((*ramos)[contador].feat_num,str_r);
-        if(str_r!=NULL)free(str_r);
+        // str_r=getfield_str(dados,18);
+        // sprintf((*ramos)[contador].feat_num,str_r);
+        // if(str_r!=NULL)free(str_r);
                       
         contador++;
     }
@@ -1432,9 +1432,9 @@ void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
             (*ramos)[contador].regulador.V2r = (getfield_double(dados,35));
             (*ramos)[contador].regulador.V3r = (getfield_double(dados,36));
         }
-        str_r=getfield_str(dados,37);
-        sprintf((*ramos)[contador].feat_num,str_r);
-        if(str_r!=NULL)free(str_r);
+        // str_r=getfield_str(dados,37);
+        // sprintf((*ramos)[contador].feat_num,str_r);
+        // if(str_r!=NULL)free(str_r);
 
         
         contador++;
