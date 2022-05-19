@@ -40,4 +40,7 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
 
 void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int idIndividuoInicialParam, long int numeroConfiguracoesParam, CONFIGURACAO **configuracao);
 
+void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int indiceRNP,int indiceConfiguracao);
+
+
 #endif	/* funcoesIntegracao_H */

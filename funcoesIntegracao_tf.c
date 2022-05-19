@@ -399,9 +399,24 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 }
 
 void inicializaTensaoSDR_alimentadores_tf (TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
-BOOL todosAlimentadores, CONFIGURACAO configuracaoParam,RNPSETORES *matrizB,int idRNP)
+BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int indiceConfiguracao)
 {
-    // chama a anterior
+    int indiceRNP;
+    int iniAlim;
+
+
+    for (indiceRNP = 0; indiceRNP < configuracaoParam[indiceConfiguracao].numeroRNP; indiceRNP++)
+    {
+        //inicia a tensao do primeiro no do alimentador
+        iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;
+        grafo[iniAlim].V[0]=grafo[iniAlim].barra->Vinicial[0];// conferir com o julio se é isso mesmo 
+        grafo[iniAlim].V[1]=grafo[iniAlim].barra->Vinicial[1];
+        grafo[iniAlim].V[2]=grafo[iniAlim].barra->Vinicial[2];
+
+        inicializaTensaoSDR_alimentador_tf(grafo,numeroBarras,alimentadores,numeroAlimentadores,todosAlimentadores,configuracaoParam,matrizB,indiceRNP,indiceConfiguracao);
+
+    }
+
 }
 
 void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam, DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,

@@ -542,7 +542,7 @@ void fluxoCargaAlimentador(int numeroBarrasParam, CONFIGURACAO *configuracoesPar
         noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
         for(indice = 1; indice < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
         // varre as rnps de setores
-            noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
+            noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
             noR = noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];
             rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
             
