@@ -518,6 +518,8 @@ void fluxoCargaAlimentador(int numeroBarrasParam, CONFIGURACAO *configuracoesPar
         double VFParam, int indiceRNP, int indiceConfiguracao, RNPSETORES *matrizB,
         MATRIZCOMPLEXA *ZParam, MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulador) {
 
+    // recebo o indice da RNP do setor indiceRNP
+
     long int indice, noS, noR, noN, indiceBarra;
     int iteracoes = 0, carga;
     
@@ -536,6 +538,7 @@ void fluxoCargaAlimentador(int numeroBarrasParam, CONFIGURACAO *configuracoesPar
     {
      //   printf("----------------iteracao %d -----------------\n", iteracoes);
         indice = 0;
+        // pega a profundidade do primeiro no da RNP e o idNo 
         noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
         for(indice = 1; indice < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
         // varre as rnps de setores

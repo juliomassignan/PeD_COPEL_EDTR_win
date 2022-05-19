@@ -344,27 +344,53 @@ void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
 */
 void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
-BOOL todosAlimentadores, CONFIGURACAO configuracaoParam,RNPSETORES *matrizB,int idRNP)
+BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int indiceRNP,int indiceConfiguracao)
 {
 
     long int indice, indice1, noS, noR, noN, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3;
+    long int iniAlim;
     double IMod, IAng;
     long int noProf[200]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
    __complex__ double iAcumulada;
     RNPSETOR rnpSetorSR;
+    __complex__ double Valim[3];
+    
 
-    for (indice = 1; indice < configuracaoParam.rnp[idRNP].numeroNos; indice++) {
-            noS = configuracaoParam.rnp[idRNP].nos[indice].idNo;
-            noR = noProf[configuracaoParam.rnp[idRNP].nos[indice].profundidade - 1];
-            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);// igual da funcao anterior, como percorre
+    
+    indice=0;
+
+    iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
+
+    
+    Valim[0]=grafo[iniAlim].V[0];// conferir com o julio
+    Valim[1]=grafo[iniAlim].V[1];
+    Valim[2]=grafo[iniAlim].V[2];
+    
+
+    noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
+
+    
+    noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = iniAlim;    
+
+
+    for (indice = 1; indice < configuracaoParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
+            // varre as rnps de setores
+            noS = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
+            noR = noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];//pega o id do nó na profundidade anterior
+            // recebe a RNP dos Setores
+            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);//retorna a rnp entre esses dois nos?
+            // Inicializa com a tensão do alimentador
+
             for (indice1 = 0; indice1 < rnpSetorSR.numeroNos; indice1++) {
+                //percorre todos os nos da RNP daquele setor
                 noN = rnpSetorSR.nos[indice1].idNo; 
-
+                grafo[noN].V[0]=Valim[0];
+                grafo[noN].V[1]=Valim[1];
+                grafo[noN].V[2]=Valim[2];
                 //colocar igual na varredura original  
                 // entender a partir da L 430          
-
             }
-
+        noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // preenche a próxima profundidade
     }            
 
     //faz uma varredura incializando as tensoes em todas as varras da rede antes do fluxo de potencia. 
