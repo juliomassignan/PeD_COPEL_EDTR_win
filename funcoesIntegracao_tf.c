@@ -162,7 +162,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
 
 
-
             //incia os valores da resistencia e reatancia que serão preenchidos em outro momento
             (*grafoSDRParam)[contador].adjacentes[k].resistencia=0;
             (*grafoSDRParam)[contador].adjacentes[k].reatancia=0;
@@ -344,13 +343,39 @@ void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
 */
-void inicializaTensaoSDR_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
-BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam)
+void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
+BOOL todosAlimentadores, CONFIGURACAO configuracaoParam,RNPSETORES *matrizB,int idRNP)
 {
 
-    // faz uma varredura incializando as tensoes em todas as varras da rede antes do fluxo de potencia. 
+    long int indice, indice1, noS, noR, noN, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3;
+    double IMod, IAng;
+    long int noProf[200]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+   __complex__ double iAcumulada;
+    RNPSETOR rnpSetorSR;
+
+    for (indice = 1; indice < configuracaoParam.rnp[idRNP].numeroNos; indice++) {
+            noS = configuracaoParam.rnp[idRNP].nos[indice].idNo;
+            noR = noProf[configuracaoParam.rnp[idRNP].nos[indice].profundidade - 1];
+            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);// igual da funcao anterior, como percorre
+            for (indice1 = 0; indice1 < rnpSetorSR.numeroNos; indice1++) {
+                noN = rnpSetorSR.nos[indice1].idNo; 
+
+                //colocar igual na varredura original  
+                // entender a partir da L 430          
+
+            }
+
+    }            
+
+    //faz uma varredura incializando as tensoes em todas as varras da rede antes do fluxo de potencia. 
     //Talvez não precise ser modificada
 
+}
+
+void inicializaTensaoSDR_alimentadores_tf (TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
+BOOL todosAlimentadores, CONFIGURACAO configuracaoParam,RNPSETORES *matrizB,int idRNP)
+{
+    // chama a anterior
 }
 
 void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam, DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,
@@ -359,7 +384,52 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
         TF_GRAFO *grafo, TF_ALIMENTADOR *alimentadores, 
         TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow)
 {
-    //revisar funcionalidade bool todosalimentadores
+    long int contador;
+    double quedaMaxima, menorTensao, VF, perdasTotais;
+    perdasTotais = 0;
+
+    //if (idNovaConfiguracaoParam != idAntigaConfiguracaoParam) {
+    // if (copiarDadosEletricos) {
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+            // for (contador = 1; contador <= numeroBarrasParam; contador++) {
+                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.iJusante[contador];
+                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.corrente[contador];
+                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.potencia[contador];
+                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra[contador];
+            // }
+    // } else { //não mantém os dados elétricos individualmente, somente copia os ponteiros para os vetores com dados elétricos
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.iJusante;
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.corrente;
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.potencia;
+            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra;
+    // }
+    //}
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosParam + 1) * sizeof (__complex__ double));
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = 100000;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = 0;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = 0;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = 0;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = 0;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.ponderacao = 0;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.quedaMaxima = 0;
+
+
+    
+    if (todosAlimentadores) //calcula os valores de fitness para todos os alimentadores
+    {
+        //fluxoCargaTodosAlimentadores(numeroBarrasParam,dadosAlimentadorParam,dadosTrafoParam, configuracoesParam, idNovaConfiguracaoParam, matrizB, ZParam, indiceRegulador, dadosRegulador, maximoCorrenteParam);
+    } else { //calcula o fluxo de carga somente para os alimentadores que foram alterados.
+        // rnpA e P só usa quando roda pra 2 alimentadores, neste else
+        // VF = 1000*dadosTrafoParam[dadosAlimentadorParam[rnpP+1].idTrafo].tensaoReal/sqrt(3);
+        // fluxoCargaAlimentador(numeroBarrasParam, configuracoesParam, VF, rnpP, idNovaConfiguracaoParam, matrizB, ZParam, maximoCorrenteParam, indiceRegulador, dadosRegulador);
+        // VF = 1000*dadosTrafoParam[dadosAlimentadorParam[rnpA+1].idTrafo].tensaoReal/sqrt(3);
+        // fluxoCargaAlimentador(numeroBarrasParam, configuracoesParam, VF, rnpA, idNovaConfiguracaoParam, matrizB, ZParam, maximoCorrenteParam, indiceRegulador, dadosRegulador);
+    }
+    
+
     //revisar funcionalidade bool dados eletricos
     //fluxo de potencia
 
@@ -419,10 +489,10 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
  */
 
 void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
- long int **interfaceNiveis,long int numeroInterfaces,/* long int numeroBarrasParam*/, 
+ long int **interfaceNiveis,long int numeroInterfaces,/* long int numeroBarrasParam, */
         DADOSALIMENTADOR *dadosAlimentadorParam, DADOSTRAFO *dadosTrafoParam,
-        CONFIGURACAO *configuracoesParam, long int indiceConfiguracao, RNPSETORES *matrizB,
-        /*MATRIZCOMPLEXA *ZParam*/, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam){
+        CONFIGURACAO *configuracoesParam, long int indiceConfiguracao, RNPSETORES *matrizB/*,
+        MATRIZCOMPLEXA *ZParam*/, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam){
 
     // recebe a rede completa  e chama a fluxoPotencia_BFS_Alimentador_tf
     //rede completa
@@ -448,9 +518,9 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
 */
 void fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase,
-        /*int numeroBarrasParam*/, CONFIGURACAO *configuracoesParam, 
-        /*double VFParam*/, int indiceRNP, int indiceConfiguracao, RNPSETORES *matrizB,
-       /* MATRIZCOMPLEXA *ZParam*/, MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado )
+        /*int numeroBarrasParam,*/ CONFIGURACAO *configuracoesParam, 
+        /*double VFParam,*/ int indiceRNP, int indiceConfiguracao, RNPSETORES *matrizB,
+       /* MATRIZCOMPLEXA *ZParam,*/ MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado )
 {
     //por alimentador utilizando a rpn interna
 
