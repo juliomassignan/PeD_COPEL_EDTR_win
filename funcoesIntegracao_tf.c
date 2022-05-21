@@ -347,13 +347,16 @@ void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, 
 BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int indiceRNP,int indiceConfiguracao)
 {
 
-    long int indice, indice1, noS, noR, noN, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3;
+    long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3;
     long int iniAlim;
+    int k;
     double IMod, IAng;
+    extern BOOL control_REG_OPT;
     long int noProf[200]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
    __complex__ double iAcumulada;
     RNPSETOR rnpSetorSR;
     __complex__ double Valim[3];
+    __complex__ double VTran[3];
     
 
     
@@ -362,34 +365,100 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
     iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
 
     
-    Valim[0]=grafo[iniAlim].V[0];// conferir com o julio
-    Valim[1]=grafo[iniAlim].V[1];
-    Valim[2]=grafo[iniAlim].V[2];
     
 
-    noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
+    // noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
 
     
     noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = iniAlim;    
-
+        // while(barraAtual != NULL){
+        //     grafo[barraAtual->idNo].V_aux[0] = grafo[barraAtual->idNo].V[0];
+        //     grafo[barraAtual->idNo].V_aux[1] = grafo[barraAtual->idNo].V[1];
+        //     grafo[barraAtual->idNo].V_aux[2] = grafo[barraAtual->idNo].V[2];
+        //     atualizaInjecoes(&grafo[barraAtual->idNo]);
+        //     barraAtual = barraAtual->prox;
+        // }
 
     for (indice = 1; indice < configuracaoParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
             // varre as rnps de setores
             noS = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
+            
+            grafo[noS].V[0]=Valim[0];
+            grafo[noS].V[1]=Valim[1];
+            grafo[noS].V[2]=Valim[2];            
+            
             noR = noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];//pega o id do nó na profundidade anterior
             // recebe a RNP dos Setores
             rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);//retorna a rnp entre esses dois nos?
             // Inicializa com a tensão do alimentador
-
             for (indice1 = 0; indice1 < rnpSetorSR.numeroNos; indice1++) {
                 //percorre todos os nos da RNP daquele setor
-                noN = rnpSetorSR.nos[indice1].idNo; 
+                noN = rnpSetorSR.nos[indice1].idNo;
+                
                 grafo[noN].V[0]=Valim[0];
                 grafo[noN].V[1]=Valim[1];
                 grafo[noN].V[2]=Valim[2];
-                //colocar igual na varredura original  
-                // entender a partir da L 430          
-            }
+                atualizaInjecoes(&grafo[noN]);
+
+
+                // for(indice2=noN;indice2>=0;indice2--)
+                // {
+                //     if(rnpSetorSR.nos[indice2].profundidade==rnpSetorSR.nos[indice1].profundidade-1)
+                //     {
+                //         no_prev=rnpSetorSR.nos[indice2].idNo;
+                //         break;
+                //     }
+                // }
+                // if(indice1==0) no_prev=noS;
+
+                // //colocar igual na varredura original  
+                // // entender a partir da L 430
+                // for(k=0;k<grafo[no_prev].numeroAdjacentes;k++)
+                // {
+                //     if(noN==grafo[no_prev].adjacentes[k].idNo) break;
+                // }
+
+                // if ((grafo[no_prev].adjacentes[k].tipo == 1)){ //Atualiza o V0 para trafo visto a ligação e tap
+                //         grafo[noN].V[0] = grafo[no_prev].V[0];
+                //         grafo[noN].V[1] = grafo[no_prev].V[1];
+                //         grafo[noN].V[2] = grafo[no_prev].V[2];
+                        
+                //         if ((grafo[no_prev].adjacentes[k].ramo->trafo.lig_pri == 1) && (grafo[no_prev].adjacentes[k].ramo->trafo.lig_sec == 2)){                                
+                //             grafo[noN].V[0] = cabs(grafo[no_prev].V[0])*(cos(-30*PI/180) + I*sin(-30*PI/180));
+                //             grafo[noN].V[1] = cabs(grafo[no_prev].V[1])*(cos(-150*PI/180) + I*sin(-150*PI/180));
+                //             grafo[noN].V[2] = cabs(grafo[no_prev].V[2])*(cos(90*PI/180) + I*sin(90*PI/180));                                    
+                //         }
+                //         else if ((grafo[no_prev].adjacentes[k].ramo->trafo.lig_pri == 3) && (grafo[no_prev].adjacentes[k].ramo->trafo.lig_sec == 2)){                                
+                //             grafo[noN].V[0] = cabs(grafo[no_prev].V[0])*(cos(-30*PI/180) + I*sin(-30*PI/180));
+                //             grafo[noN].V[1] = cabs(grafo[no_prev].V[1])*(cos(-150*PI/180) + I*sin(-150*PI/180));
+                //             grafo[noN].V[2] = cabs(grafo[no_prev].V[2])*(cos(90*PI/180) + I*sin(90*PI/180));                                    
+                //         }
+                //         else if ((grafo[no_prev].adjacentes[k].ramo->trafo.lig_pri == 2) && (grafo[no_prev].adjacentes[k].ramo->trafo.lig_sec == 1)){
+                //             grafo[noN].V[0] = cabs(grafo[no_prev].V[0])*(cos(-30*PI/180) + I*sin(-30*PI/180));
+                //             grafo[noN].V[1] = cabs(grafo[no_prev].V[1])*(cos(-150*PI/180) + I*sin(-150*PI/180));
+                //             grafo[noN].V[2] = cabs(grafo[no_prev].V[2])*(cos(90*PI/180) + I*sin(90*PI/180));                                    
+                //         }            
+                                    
+                
+                //     }
+                //     else if (grafo[no_prev].adjacentes[k].tipo == 2){ //noN o caso de regulador de tensão
+                //         if (control_REG_OPT == 1){
+                //             grafo[no_prev].adjacentes[k].ramo->regulador.tap[0] = 0;
+                //             grafo[no_prev].adjacentes[k].ramo->regulador.tap[1] = 0;
+                //             grafo[no_prev].adjacentes[k].ramo->regulador.tap[2] = 0;
+
+                //             atualizaTapRegulador(grafo[no_prev].adjacentes[k].ramo);
+                //         }
+                //         grafo[noN].V[0] = grafo[no_prev].V[0]*grafo[no_prev].adjacentes[k].ramo->tap_pri[0]*grafo[no_prev].adjacentes[k].ramo->tap_sec[0];
+                //         grafo[noN].V[1] = grafo[no_prev].V[1]*grafo[no_prev].adjacentes[k].ramo->tap_pri[1]*grafo[no_prev].adjacentes[k].ramo->tap_sec[1];
+                //         grafo[noN].V[2] = grafo[no_prev].V[2]*grafo[no_prev].adjacentes[k].ramo->tap_pri[2]*grafo[no_prev].adjacentes[k].ramo->tap_sec[2];
+                //     }
+                //     else{
+                //         grafo[noN].V[0] = grafo[no_prev].V[0];
+                //         grafo[noN].V[1] = grafo[no_prev].V[1];
+                //         grafo[noN].V[2] = grafo[no_prev].V[2];
+                // }          
+            }   
         noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // preenche a próxima profundidade
     }            
 
