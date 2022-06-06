@@ -207,7 +207,7 @@ void correnteJusante(int idRNP, int carga, int iteracao,
         for (indice = 1; indice < configuracaoParam.rnp[idRNP].numeroNos; indice++) {
             noS = configuracaoParam.rnp[idRNP].nos[indice].idNo;
             noR = noProf[configuracaoParam.rnp[idRNP].nos[indice].profundidade - 1];
-            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);// igual da funcao anterior, como percorre
+            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
             for (indice1 = 0; indice1 < rnpSetorSR.numeroNos; indice1++) {
                 noN = rnpSetorSR.nos[indice1].idNo;
                 
@@ -518,8 +518,6 @@ void fluxoCargaAlimentador(int numeroBarrasParam, CONFIGURACAO *configuracoesPar
         double VFParam, int indiceRNP, int indiceConfiguracao, RNPSETORES *matrizB,
         MATRIZCOMPLEXA *ZParam, MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulador) {
 
-    // recebo o indice da RNP do setor indiceRNP
-
     long int indice, noS, noR, noN, indiceBarra;
     int iteracoes = 0, carga;
     
@@ -538,15 +536,13 @@ void fluxoCargaAlimentador(int numeroBarrasParam, CONFIGURACAO *configuracoesPar
     {
      //   printf("----------------iteracao %d -----------------\n", iteracoes);
         indice = 0;
-        // pega a profundidade do primeiro no da RNP e o idNo 
         noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
         for(indice = 1; indice < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
-        // varre as rnps de setores
-            noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
+            noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
             noR = noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];
             rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
             
-            for (indiceBarra = 0; indiceBarra < rnpSetorSR.numeroNos; indiceBarra++) { //inicializa tensao
+            for (indiceBarra = 0; indiceBarra < rnpSetorSR.numeroNos; indiceBarra++) {
                 noN = rnpSetorSR.nos[indiceBarra].idNo;
                 if (iteracoes == 0) {
                     configuracoesParam[indiceConfiguracao].dadosEletricos.vBarra[noN] = VFParam;
@@ -757,7 +753,6 @@ void avaliaConfiguracao(BOOL todosAlimentadores, CONFIGURACAO *configuracoesPara
         perdasTotais+=configuracoesParam[idNovaConfiguracaoParam].rnp[indiceRNP].fitnessRNP.perdasResistivas;
 
     }
-    
     configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente * 100;
     configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = perdasTotais;
     carregamentoTrafo(dadosTrafoParam, numeroTrafosParam, numeroAlimentadoresParam, dadosAlimentadorParam, configuracoesParam, idNovaConfiguracaoParam, idAntigaConfiguracaoParam, todosAlimentadores, rnpP, rnpA);

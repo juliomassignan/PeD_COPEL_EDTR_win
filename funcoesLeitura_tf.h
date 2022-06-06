@@ -133,7 +133,6 @@ char* charFases(TF_FASES num);
  */
 char* charMedidor(long int num);
 
-const char * getfield_str(char* lin, int num);
 //------------------------------------------------------------------------------
 //
 // FUNÇÕES DE LEITURA DE DADOS DA REDE ELÉTRICA
@@ -521,9 +520,78 @@ void free_ALIMENTADOR(TF_ALIMENTADOR *alimentadores, long int numeroAlimentadore
 
 
 long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, TF_DBAR **barras, long int *numeroBarras, TF_DRAM **ramos, long int *numeroRamos);
-void includeDREG(TF_DRAM **ramos, long int *numeroRamos, int DE, int PARA);
+
+
+/**
+ * @brief Função auxiliar para a inserção de novo regulador de tensão elétrica no final do vetor TF_DRAM.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DREG a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, int modo_controle);
+
+/**
+ * @brief Função auxiliar para a inserção de nova barra elétrica no final do vetor TF_DBAR.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de TF_DBAR a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
 void includeDBAR(TF_DBAR **barras, long int *numeroBarras,  double Vbase);
+
+
+
+/**
+ * @brief Função auxiliar para a inserção de novo transformador de potência no final do vetor TF_DRAM.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DTRF a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+
 void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, double Vpri, double Vsec, int lig_pri, int lig_sec);
+
+/**
+ * @brief Função auxiliar para a inserção de nova chave no final do vetor TF_DRAM.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DREG a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void includeDSWTC(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, int estado);
 
 #endif	/* funcoesLeitura_H */
 

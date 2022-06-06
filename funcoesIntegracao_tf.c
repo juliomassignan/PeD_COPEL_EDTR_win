@@ -16,6 +16,7 @@
 
 #include "data_structures_tf.h"
 #include "funcoesTopologia_tf.h"
+#include "funcoesLeitura_tf.h"
 #include "funcoesFluxoVarredura_tf.h"
 #include "funcoesCalculoEletrico_tf.h"
 #include "funcoesMatematicas_tf.h"
@@ -272,7 +273,51 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
  */
 
 
-void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
+void converteDadosAlimentadores_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
+
+    int contador, i=0; //variaveis utilizadas para contar e indexar
+    
+    int k=0;
+    extern long int numeroAlimentadores; //variavel global com o numero de alimentadores
+    // numerosAlimentadores_tf[0]=0; //recebe o numero de alimentadores do trifasico
+    int idraiz[numerosAlimentadores_tf];
+    
+    for(i=0; i<numeroBarras; i++){ 
+        if(grafo_tf[i].tipo == 2){
+            // idraiz[numerosAlimentadores_tf[0]]=grafo_tf[i].idNo;
+            idraiz[k]=grafo_tf[i].idNo;
+            // numerosAlimentadores_tf[0]++;
+            k++;   
+        }
+    }
+
+    if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numerosAlimentadores_tf+1) * sizeof(DADOSALIMENTADOR)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para alimentadores !!!!");
+        exit(1); 
+    }
+    numeroAlimentadores=numerosAlimentadores_tf;
+
+
+
+    //aloca memoria para a estrutura DADOSALIMENTADOR, caso nao seja possivel encerra o programa
+
+    //loop que preenche os dados dos alimentadores de acordo com o trifásico
+
+    for ( i = 0; i < numerosAlimentadores_tf; i++)
+    {
+        contador=i+1;
+        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = idraiz[i]+1; // preenche a barraAlimentador com o noRaiz
+        //sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
+        (*dadosAlimentadorSDRParam)[contador].idTrafo = idraiz[i];// preenche com idRaiz do no raiz
+        (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;// inicia o numero de setores com zero
+    }
+
+
+}
+
+
+void converteDadosAlimentadores_TFtoSDR_alt(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam ){
 
     int contador, i=0; //variaveis utilizadas para contar e indexar
 
@@ -301,6 +346,35 @@ void converteDadosAlimentadores_TFtoSDR(TF_ALIMENTADOR *alimentadores_tf,long in
     
 
     
+
+
+}
+
+
+compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras, long int *numeroBarras, TF_DRAM **ramos, long int *numeroRamos,GRAFO* grafoSDR, long int numeroNos)
+{
+
+    int aux=numeroBarras[0];
+    int de;
+    int para;
+    int idAdj;
+
+    for(int i=aux;i<numeroNos;i++)
+    {
+        idAdj=grafoSDR[i+1].adjacentes[0].idNo-1;
+        includeDBAR(barras,numeroBarras,(*grafo_tf)[idAdj].Vbase);
+        includeNografoTF(grafo_tf,(*barras),numeroBarras[0]-1);
+        for (size_t j = 0; j < grafoSDR[i+1].numeroAdjacentes; j++)
+        {
+           de=grafoSDR[i+1].idNo-1;
+           para=grafoSDR[i+1].adjacentes[j].idNo-1; 
+           includeDSWTC(ramos,numeroRamos,de,para,grafoSDR[i+1].adjacentes[j].estadoChave);
+           includeAdjGrafoTF((*grafo_tf),(*barras),i,(*ramos),numeroRamos[0]-1);
+        }
+        
+        
+
+    }
 
 
 }
@@ -363,7 +437,6 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
     indice=0;
 
     iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
-
     
     
 
@@ -381,13 +454,15 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 
     for (indice = 1; indice < configuracaoParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
             // varre as rnps de setores
+            
+            noR = noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];
             noS = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
             
-            grafo[noS].V[0]=Valim[0];
-            grafo[noS].V[1]=Valim[1];
-            grafo[noS].V[2]=Valim[2];            
+            Valim[0]=grafo[noR-1].V[0];
+            Valim[1]=grafo[noR-1].V[1];
+            Valim[2]=grafo[noR-1].V[2];            
             
-            noR = noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];//pega o id do nó na profundidade anterior
+            //pega o id do nó na profundidade anterior
             // recebe a RNP dos Setores
             rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);//retorna a rnp entre esses dois nos?
             // Inicializa com a tensão do alimentador
@@ -395,10 +470,10 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
                 //percorre todos os nos da RNP daquele setor
                 noN = rnpSetorSR.nos[indice1].idNo;
                 
-                grafo[noN].V[0]=Valim[0];
-                grafo[noN].V[1]=Valim[1];
-                grafo[noN].V[2]=Valim[2];
-                atualizaInjecoes(&grafo[noN]);
+                grafo[noN-1].V[0]=Valim[0];
+                grafo[noN-1].V[1]=Valim[1];
+                grafo[noN-1].V[2]=Valim[2];
+                atualizaInjecoes(&grafo[noN-1]);
 
 
                 // for(indice2=noN;indice2>=0;indice2--)
@@ -477,10 +552,10 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
     for (indiceRNP = 0; indiceRNP < configuracaoParam[indiceConfiguracao].numeroRNP; indiceRNP++)
     {
         //inicia a tensao do primeiro no do alimentador
-        iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;
-        grafo[iniAlim].V[0]=grafo[iniAlim].barra->Vinicial[0];// conferir com o julio se é isso mesmo 
-        grafo[iniAlim].V[1]=grafo[iniAlim].barra->Vinicial[1];
-        grafo[iniAlim].V[2]=grafo[iniAlim].barra->Vinicial[2];
+        iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;//compatibilizacao idex sdr itf
+        grafo[iniAlim-1].V[0]=grafo[iniAlim-1].barra->Vinicial[0];// conferir com o julio se é isso mesmo 
+        grafo[iniAlim-1].V[1]=grafo[iniAlim-1].barra->Vinicial[1];
+        grafo[iniAlim-1].V[2]=grafo[iniAlim-1].barra->Vinicial[2];
 
         inicializaTensaoSDR_alimentador_tf(grafo,numeroBarras,alimentadores,numeroAlimentadores,todosAlimentadores,configuracaoParam,matrizB,indiceRNP,indiceConfiguracao);
 

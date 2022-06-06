@@ -147,78 +147,6 @@ double getfield_double(char* lin, int num){
     return NAN;
 }
 
-const char * getfield_str(char* lin, int num)
-{
-    int i,k,j;
-    int inicio=0;
-    int fim=0;
-    int contacampos=0;
-    char *str_r=NULL;
-    str_r = (char *)malloc((16)*sizeof(char));
-
-    i=0;
-    while(lin[i]!='\0')
-    {  
-        if(lin[i]==','||lin[i]==';'||lin[i]=='\n')
-        {
-            contacampos++;
-        }
-        i++;
-    }
-    if (contacampos < num) 
-    {
-        sprintf(str_r,"NA");
-        return str_r;
-    }
-    else
-    {
-        k=0;
-        i=0;
-        while(lin[i]!='\0')
-        {
-            i++;
-            if(lin[i]==','||lin[i]==';'||lin[i]=='\n')
-            {
-                k++;
-                if(k==(num-1))
-                {
-                    inicio=i;
-                    j=i+1;
-                    while(lin[j]!='\0')
-                    {
-                        if(lin[j]==','||lin[j]==';'||lin[j]=='\n'){
-                            fim=j;
-                            break;
-                        }
-                        j++;
-
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    k=0;
-    if (inicio+1==fim)
-    {
-        sprintf(str_r,"NA");
-    }
-    if(inicio-fim>16)
-    {
-        fim=inicio+16;
-    }
-    for (i=inicio+1;i<fim;i++)
-    {
-        str_r[k]=lin[i];
-        k++;
-    }
-    str_r[k]='\0';
-
-    return str_r;
-
-}
-
 //Retorna string referente ao tipo de ligacao trifásica
 /**
  * @brief Função auxiliar retornar string referente ao tipo de ligação trifásica
@@ -473,12 +401,9 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }
     fgets(linha, 1000, config);
     folder = getfield(linha,1);
-    fgets(linha, 1000, config);
-    pasta=  getfield(linha,1);
-    printf("Main directory: \n %s \n", folder);
-    printf("Data sub-folder: \n %s \n", pasta);
+    printf("Main directory: %s \n", folder);
     fclose(config);
-    strcpy(aux,pasta);
+    strcpy(aux,folder);
     strcpy(aux2,folder);
 
     
@@ -497,7 +422,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }
     // printf("\nDBAR ok\n");
 
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DSHNT.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -506,7 +431,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }    
     // printf("DSHNT ok\n");
     
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DGD.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -516,7 +441,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     // printf("DGDS ok\n");   
     // Leitura dos dados de ramos
     
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DLIN.csv"),"r");//Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -525,7 +450,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }
     // printf("DLIN ok\n");
 
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DTRF.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -534,7 +459,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }
     // printf("DTRF ok\n");
     
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DREG.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -543,7 +468,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }
     // printf("DREG ok\n");
     
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DSWTC.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -552,7 +477,7 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
     }
     // printf("DSWTC ok\n");
     
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"Vinicial.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
@@ -560,25 +485,22 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
             fclose(arquivo);
     }
     
-    strcpy(aux,pasta);
+    strcpy(aux,aux2);
     arquivo = fopen(strcat(aux,"DSE.csv"),"r"); //Le somente se existir o arquivo
-    if(arquivo != NULL)
-    {
-            //leituraAlimentadores
-            fclose(arquivo);
-    }
-    
-    
-    strcpy(aux,pasta);
-    arquivo = fopen(strcat(aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
             //leituraSubestacoes
             fclose(arquivo);
     }
     
-    // folder = getfield(aux2,1);
-    // free(pasta);
+    
+    strcpy(aux,aux2);
+    arquivo = fopen(strcat(aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
+    if(arquivo != NULL)
+    {
+            //leituraAlimentadores
+            fclose(arquivo);
+    }
     return(folder);
     
 }
@@ -645,7 +567,6 @@ void leituraDBAR(FILE *arquivo, TF_DBAR **barras, long int *numeroBarras, long i
         }
         if (aux == -1){ //Criando novo DBAR
             (*barras)[contador].ID = (getfield_int(dados,1));
-
             (*barras)[contador].i = contador;
             (*barras)[contador].ligacao = (getfield_int(dados,2));
             (*barras)[contador].fases = (getfield_int(dados,3));
@@ -916,7 +837,8 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
     extern BOOL includeVR_INTERSE_OPT;
     
     // Leitura dos dados de medidores
-    strcpy(text_aux,folder);
+    //strcpy(text_aux,folder);
+    sprintf(text_aux,"%s",folder);
     arquivo = fopen(strcat(text_aux,file),"r");
     
     if(arquivo != NULL)
@@ -934,7 +856,7 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
         interfaceNiveis = (long int**)malloc((numLinhas + 1) * sizeof(long int*)); 
         for (i = 0; i < numLinhas; i++){ 
              interfaceNiveis[i] = (long int*) malloc(4 * sizeof(long int));
-             for (j = 0; j < 4; j++){
+             for (j = 0; j < 5; j++){
                   interfaceNiveis[i][j] = -1;
              }
         }
@@ -950,6 +872,7 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
             interfaceNiveis[contador][0] = getfield_int(dados,1);
             interfaceNiveis[contador][1] = getfield_int(dados,2);
             interfaceNiveis[contador][2] = getfield_int(dados,4);
+            interfaceNiveis[contador][4] = getfield_int(dados,6); // Indicando se é subestação 34.5/13.8 ou estação de chaves 34.5/34.5 - sem necessidade de trafo + reg (0 para se e 1 para estação de chaves)
             
             // para salvar a barra de 34.5 original da interface
             interfaceNiveis[contador][3] = interfaceNiveis[contador][1];
@@ -958,26 +881,27 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
         fclose(arquivo);
         
         
-        // Incluir um regulador de tensão e um transformador como modelo básico da INTERSE
-        // Falta incluir novo trafo Delta Estrela Aterrado 
+        // Incluir um regulador de tensão e um transformador Estrela Aterrado Delta como modelo básico da INTERSE
         int aux_bar = numeroBarras[0];
         if (includeVR_INTERSE_OPT){
             
             //Percorre interfaces 34.5 / 13.8 para atualizar o modelo de fronteira com barras fictícias
             for (int idInter = 0; idInter < contador; idInter++){
-                if (interfaceNiveis[idInter][1] < aux_bar){
+                if ((interfaceNiveis[idInter][1] < aux_bar) && (interfaceNiveis[idInter][4] == 0)){ // se não é barra ficticia
                     //-------------------------------------------
                     // inclui nova barra de fronteira
                     includeDBAR(barras, numeroBarras, 34500);
                     
                     // inclui regulador entre a barra de fronteira original e a nova barra de fronteira
-                    includeDREG(ramos, numeroRamos, interfaceNiveis[idInter][1], numeroBarras[0] - 1);
+                            // Considera sempre Forward jusante modelo 99
+                            //Controle em p.u. em relação a barra imediatamente após o regulador - caso COPEL
+                    includeDREG(ramos, numeroRamos, interfaceNiveis[idInter][1], numeroBarras[0] - 1, 99);
                     
                     // inclui nova barra de fronteira
                     includeDBAR(barras, numeroBarras, 13800);
                     
-                    // inclui transformador Delta Estrela entre a barra de fronteira original e a nova barra de fronteira
-                    includeDTRF(ramos, numeroRamos,  numeroBarras[0] - 2, numeroBarras[0] - 1, 34500, 13800, 1, 2);
+                    // inclui transformador Estrela Delta entre a barra de fronteira original e a nova barra de fronteira
+                    includeDTRF(ramos, numeroRamos,  numeroBarras[0] - 2, numeroBarras[0] - 1, 34500, 13800, 1, 1);
                     
                     
                     //-------------------------------------------
@@ -1247,7 +1171,7 @@ void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
-    const char *str_r=NULL; //string de manipulação
+
     
     //Aloca na memória espaço para os trafos
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -1308,10 +1232,6 @@ void leituraDTRF(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
             (*ramos)[contador].trafo.r_mutua = getfield_double(dados,16);
             (*ramos)[contador].trafo.x_mutua = getfield_double(dados,17);
         }
-
-        // str_r=getfield_str(dados,18);
-        // sprintf((*ramos)[contador].feat_num,str_r);
-        // if(str_r!=NULL)free(str_r);
                       
         contador++;
     }
@@ -1349,7 +1269,7 @@ void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
-    const char *str_r=NULL;
+    
     
     //Aloca na memória espaço para os reguladores
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -1432,11 +1352,6 @@ void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
             (*ramos)[contador].regulador.V2r = (getfield_double(dados,35));
             (*ramos)[contador].regulador.V3r = (getfield_double(dados,36));
         }
-        // str_r=getfield_str(dados,37);
-        // sprintf((*ramos)[contador].feat_num,str_r);
-        // if(str_r!=NULL)free(str_r);
-
-        
         contador++;
     }
     numeroRamos[0] = numeroRamos[0] + numLinhas;
@@ -1473,7 +1388,7 @@ void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
-    const char *str_r=NULL;
+
     
     //Aloca na memória espaço para os trafos
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -1496,7 +1411,7 @@ void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR
         (*ramos)[contador].DE = (getfield_int(dados,1));
         (*ramos)[contador].PARA = (getfield_int(dados,2));
         (*ramos)[contador].tipo = 3;
-        (*ramos)[contador].comprimento = 0.02;
+        (*ramos)[contador].comprimento = 0.002;
         
 //        for(i=0;i<numeroBarras[0];i++){
 //            if((*ramos)[contador].DE == (*barras)[i].ID ){
@@ -1519,9 +1434,7 @@ void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR
                 (*ramos)[contador].linha.ampacidade = 9999999.9;
             
         }   
-        str_r=getfield_str(dados,7);
-        sprintf((*ramos)[contador].feat_num,str_r);
-        if(str_r!=NULL)free(str_r);
+
         contador++;
     }
     numeroRamos[0] = numeroRamos[0] + numLinhas;
@@ -1666,7 +1579,7 @@ void includeDBAR(TF_DBAR **barras, long int *numeroBarras,  double Vbase){
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
+void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, int modo_controle){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -1674,7 +1587,7 @@ void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
     
     contador = numeroRamos[0];
     
-     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(TF_DRAM)))==NULL)
+     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
         exit(1); 
@@ -1711,7 +1624,7 @@ void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
     (*ramos)[contador].regulador.V1 = 122.6;
     (*ramos)[contador].regulador.V2 = 122.6;
     (*ramos)[contador].regulador.V3 = 122.6;
-    (*ramos)[contador].regulador.controle = 99;  //Controle em p.u. em relação a barra imediatamente após o regulador - caso COPEL
+    (*ramos)[contador].regulador.controle = modo_controle; 
     (*ramos)[contador].regulador.tap[0] = 0;
     (*ramos)[contador].regulador.tap[1] = 0;
     (*ramos)[contador].regulador.tap[2] = 0;
@@ -1725,6 +1638,53 @@ void includeDREG(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA){
     
 }
 
+
+
+/**
+ * @brief Função auxiliar para a inserção de nova chave no final do vetor TF_DRAM.
+ * Função auxiliar para criação de barras fictícias no modelo
+ *
+ * 
+ * A função retorna @c void.
+ * 
+ * @param **barras: vetor de DREG a ser incrementado com uma nova barra
+ * @param *numeroBarras: número total de barras a ser incrementado
+ * @param Vbase: tensão base a ser associada com a barra adicionada
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void includeDSWTC(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA,int estado){
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int i, aux, k, contador; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    
+    
+    contador = numeroRamos[0];
+    
+     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1) * sizeof(TF_DRAM)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
+        exit(1); 
+    }
+    
+    (*ramos)[contador].DE = DE;
+    (*ramos)[contador].PARA = PARA;
+    (*ramos)[contador].tipo = 3;
+    (*ramos)[contador].estado = estado;
+    (*ramos)[contador].fases = ABC;
+    (*ramos)[contador].comprimento = 0.001;
+
+    (*ramos)[contador].k = (*ramos)[contador].DE ;
+    (*ramos)[contador].m = (*ramos)[contador].PARA ;
+
+    (*ramos)[contador].ampacidade = 9999999.9;
+
+    numeroRamos[0]++;
+    
+    
+}
 
 
 
@@ -1751,7 +1711,7 @@ void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, doub
     
     contador = numeroRamos[0];
     
-     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1 + 1) * sizeof(TF_DRAM)))==NULL)
+     if (((*ramos) = (TF_DRAM *)realloc((*ramos), (numeroRamos[0] + 1) * sizeof(TF_DRAM)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para os reguladores de tensão de SE 34.5 / 13.8 kV !!!!");
         exit(1); 
@@ -1763,6 +1723,7 @@ void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, doub
     (*ramos)[contador].estado = 1;
     (*ramos)[contador].fases = ABC;
     (*ramos)[contador].comprimento = 1;
+    (*ramos)[contador].Snominal = 10000.00;
 
     (*ramos)[contador].k = (*ramos)[contador].DE ;
     (*ramos)[contador].m = (*ramos)[contador].PARA ;
@@ -1771,9 +1732,10 @@ void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, doub
     //Valores default
     (*ramos)[contador].trafo.Vpri = Vpri;
     (*ramos)[contador].trafo.Vsec = Vsec;
+    (*ramos)[contador].trafo.fases = ABC;
     (*ramos)[contador].trafo.Snominal = 10000.00;
-    (*ramos)[contador].trafo.R = (0.033) * pow((*ramos)[contador].trafo.Vsec,2)/((*ramos)[contador].trafo.Snominal*1000)/3; //R*(Vpri^2/(S*1000))
-    (*ramos)[contador].trafo.X = (0.063) * pow((*ramos)[contador].trafo.Vsec,2)/((*ramos)[contador].trafo.Snominal*1000)/3;
+    (*ramos)[contador].trafo.R = (0.0133) * pow((*ramos)[contador].trafo.Vsec,2)/((*ramos)[contador].trafo.Snominal*1000)/3; //R*(Vpri^2/(S*1000))
+    (*ramos)[contador].trafo.X = (0.0363) * pow((*ramos)[contador].trafo.Vsec,2)/((*ramos)[contador].trafo.Snominal*1000)/3;
     (*ramos)[contador].trafo.lig_pri = lig_pri;
     (*ramos)[contador].trafo.lig_sec = lig_sec;
     (*ramos)[contador].trafo.defasamento = 1;

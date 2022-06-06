@@ -440,5 +440,10 @@ void atualizaTaps(TF_DRAM *ramos, long int numeroRamos);
 
 void atualizaEstadoChaves_tf(const char *folder, const char *filename, TF_GRAFO *grafo, long int numeroBarras);
 
+
+void includeNografoTF (TF_GRAFO **grafo,TF_DBAR *barras, long int idBarra );
+
+void includeAdjGrafoTF(TF_GRAFO *grafo,TF_DBAR *barras,long int idBarra,TF_DRAM* ramos, long int idRamo);
+
 #endif	/* FUNCOESTOPOLOGIA_H */
 

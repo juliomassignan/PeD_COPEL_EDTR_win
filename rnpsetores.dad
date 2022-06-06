@@ -1040,21 +1040,21 @@ Origem	149	numero	nos	4
 1619	1621	1622	1623	
 0	1	2	3	
 Identificador	Setor:	151	RNPs	5
-Origem	154	numero	nos	6
-1628	1627	1626	1625	1630	1624	
-0	1	2	3	4	4	
-Origem	148	numero	nos	6
-1635	1630	1625	1626	1627	1624	
-0	1	2	3	4	3	
-Origem	153	numero	nos	6
-1629	1626	1627	1625	1630	1624	
-0	1	2	2	3	3	
-Origem	152	numero	nos	6
-1631	1624	1625	1630	1626	1627	
-0	1	2	3	3	4	
-Origem	150	numero	nos	6
-1623	1624	1625	1630	1626	1627	
-0	1	2	3	3	4	
+Origem	154	numero	nos	8
+1628	1627	1626	27364	27365	1625	1630	1624	
+0	1	2	3	4	3	4	4	
+Origem	148	numero	nos	8
+1635	1630	1625	1626	27364	27365	1627	1624	
+0	1	2	3	4	5	4	3	
+Origem	153	numero	nos	8
+1629	1626	27364	27365	1627	1625	1630	1624	
+0	1	2	3	2	2	3	3	
+Origem	152	numero	nos	8
+1631	1624	1625	1630	1626	27364	27365	1627	
+0	1	2	3	3	4	5	4	
+Origem	150	numero	nos	8
+1623	1624	1625	1630	1626	27364	27365	1627	
+0	1	2	3	3	4	5	4	
 Identificador	Setor:	152	RNPs	1
 Origem	151	numero	nos	2
 1624	1631	
@@ -1332,24 +1332,24 @@ Origem	189	numero	nos	3
 2433	2435	2436	
 0	1	2	
 Identificador	Setor:	191	RNPs	6
-Origem	948	numero	nos	7
-5486	5485	2440	2443	2441	2437	2438	
-0	1	2	3	3	3	4	
-Origem	195	numero	nos	7
-2444	2443	2440	5485	2441	2437	2438	
-0	1	2	3	3	3	4	
-Origem	194	numero	nos	7
-2442	2441	2440	5485	2443	2437	2438	
-0	1	2	3	3	3	4	
-Origem	193	numero	nos	7
-2439	2438	2437	2440	5485	2443	2441	
-0	1	2	3	4	4	4	
-Origem	192	numero	nos	7
-5487	2437	2440	5485	2443	2441	2438	
-0	1	2	3	3	3	2	
-Origem	190	numero	nos	7
-2436	2437	2440	5485	2443	2441	2438	
-0	1	2	3	3	3	2	
+Origem	948	numero	nos	9
+5486	5485	2440	2443	2441	27370	27371	2437	2438	
+0	1	2	3	3	4	5	3	4	
+Origem	195	numero	nos	9
+2444	2443	2440	5485	2441	27370	27371	2437	2438	
+0	1	2	3	3	4	5	3	4	
+Origem	194	numero	nos	9
+2442	2441	27370	27371	2440	5485	2443	2437	2438	
+0	1	2	3	2	3	3	3	4	
+Origem	193	numero	nos	9
+2439	2438	2437	2440	5485	2443	2441	27370	27371	
+0	1	2	3	4	4	4	5	6	
+Origem	192	numero	nos	9
+5487	2437	2440	5485	2443	2441	27370	27371	2438	
+0	1	2	3	3	3	4	5	2	
+Origem	190	numero	nos	9
+2436	2437	2440	5485	2443	2441	27370	27371	2438	
+0	1	2	3	3	3	4	5	2	
 Identificador	Setor:	192	RNPs	1
 Origem	191	numero	nos	2
 2437	5487	
@@ -6879,18 +6879,18 @@ Origem	969	numero	nos	2
 2023	2024	
 0	1	
 Identificador	Setor:	983	RNPs	4
-Origem	986	numero	nos	5
-2003	2002	1998	1999	1997	
-0	1	2	3	3	
-Origem	985	numero	nos	5
-2001	1999	1998	2002	1997	
-0	1	2	3	3	
-Origem	984	numero	nos	5
-2000	1999	1998	2002	1997	
-0	1	2	3	3	
-Origem	953	numero	nos	5
-1996	1997	1998	2002	1999	
-0	1	2	3	3	
+Origem	986	numero	nos	7
+2003	2002	1998	1999	27366	27367	1997	
+0	1	2	3	4	5	3	
+Origem	985	numero	nos	7
+2001	1999	27366	27367	1998	2002	1997	
+0	1	2	3	2	3	3	
+Origem	984	numero	nos	7
+2000	1999	27366	27367	1998	2002	1997	
+0	1	2	3	2	3	3	
+Origem	953	numero	nos	7
+1996	1997	1998	2002	1999	27366	27367	
+0	1	2	3	3	4	5	
 Identificador	Setor:	984	RNPs	1
 Origem	983	numero	nos	2
 1999	2000	
@@ -6925,15 +6925,15 @@ Origem	987	numero	nos	2
 5659	5673	
 0	1	
 Identificador	Setor:	990	RNPs	3
-Origem	992	numero	nos	5
-5670	5669	5666	5667	5665	
-0	1	2	3	3	
-Origem	991	numero	nos	5
-5668	5667	5666	5669	5665	
-0	1	2	3	3	
-Origem	987	numero	nos	5
-5664	5665	5666	5669	5667	
-0	1	2	3	3	
+Origem	992	numero	nos	7
+5670	5669	27368	27369	5666	5667	5665	
+0	1	2	3	2	3	3	
+Origem	991	numero	nos	7
+5668	5667	5666	5669	27368	27369	5665	
+0	1	2	3	4	5	3	
+Origem	987	numero	nos	7
+5664	5665	5666	5669	27368	27369	5667	
+0	1	2	3	4	5	3	
 Identificador	Setor:	991	RNPs	1
 Origem	990	numero	nos	2
 5667	5668	
@@ -13457,10 +13457,10 @@ Origem	1922	numero	nos	2
 0	1	
 Identificador	Setor:	1926	RNPs	2
 Origem	5891	numero	nos	2
-27365	10143	
+27373	10143	
 0	1	
 Origem	5890	numero	nos	2
-27364	10143	
+27372	10143	
 0	1	
 Identificador	Setor:	1927	RNPs	3
 Origem	1928	numero	nos	3
@@ -13470,7 +13470,7 @@ Origem	1926	numero	nos	3
 10143	10145	10144	
 0	1	2	
 Origem	5891	numero	nos	3
-27365	10144	10145	
+27373	10144	10145	
 0	1	2	
 Identificador	Setor:	1928	RNPs	8
 Origem	1941	numero	nos	24
@@ -16285,7 +16285,7 @@ Origem	1977	numero	nos	2
 0	1	
 Identificador	Setor:	2330	RNPs	2
 Origem	5890	numero	nos	2
-27364	10144	
+27372	10144	
 0	1	
 Origem	1926	numero	nos	2
 10143	10144	
@@ -21885,10 +21885,10 @@ Origem	3128	numero	nos	2
 0	1	
 Identificador	Setor:	3130	RNPs	2
 Origem	5893	numero	nos	2
-27367	15715	
+27375	15715	
 0	1	
 Origem	5892	numero	nos	2
-27366	15715	
+27374	15715	
 0	1	
 Identificador	Setor:	3131	RNPs	3
 Origem	3132	numero	nos	6
@@ -21898,7 +21898,7 @@ Origem	3130	numero	nos	6
 15715	15719	15720	15718	15717	15716	
 0	1	2	2	3	4	
 Origem	5893	numero	nos	6
-27367	15716	15717	15718	15719	15720	
+27375	15716	15717	15718	15719	15720	
 0	1	2	3	4	5	
 Identificador	Setor:	3132	RNPs	2
 Origem	3133	numero	nos	11
@@ -25945,7 +25945,7 @@ Origem	3283	numero	nos	2
 0	1	
 Identificador	Setor:	3710	RNPs	2
 Origem	5892	numero	nos	2
-27366	15716	
+27374	15716	
 0	1	
 Origem	3130	numero	nos	2
 15715	15716	
@@ -41187,29 +41187,29 @@ Origem	5888	numero	nos	2
 0	1	
 Identificador	Setor:	5890	RNPs	2
 Origem	2330	numero	nos	2
-10144	27364	
+10144	27372	
 0	1	
 Origem	1926	numero	nos	2
-10143	27364	
+10143	27372	
 0	1	
 Identificador	Setor:	5891	RNPs	2
 Origem	1926	numero	nos	2
-10143	27365	
+10143	27373	
 0	1	
 Origem	2330	numero	nos	2
-10144	27365	
+10144	27373	
 0	1	
 Identificador	Setor:	5892	RNPs	2
 Origem	3710	numero	nos	2
-15716	27366	
+15716	27374	
 0	1	
 Origem	3130	numero	nos	2
-15715	27366	
+15715	27374	
 0	1	
 Identificador	Setor:	5893	RNPs	2
 Origem	3130	numero	nos	2
-15715	27367	
+15715	27375	
 0	1	
 Origem	3710	numero	nos	2
-15716	27367	
+15716	27375	
 0	1	

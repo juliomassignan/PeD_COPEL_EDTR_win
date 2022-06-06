@@ -283,7 +283,7 @@ typedef struct {
     double ampacidade;  // ampacidade do ramo
     double Snominal;    // capacidade de potência nominal do ramo
     double comprimento;    // comprimento do ramo em metros
-    char feat_num[16];
+    
     //Dados detalhados do componente associado ao ramo
     TF_DLIN linha;
     TF_DTRF trafo;
@@ -485,7 +485,8 @@ typedef struct {
     double quedaMaxima;                 //Queda de tensão em percentual em relação à subestação (nó raiz)
     double desbalancoTensaoMaximo;      //Valor máximo de desbalanço de tensão na rede elétrica
     double desbalancoCorrenteMaximo;     //Valor máximo de desbalanço de corrente nos ramos da rede elétrica
-    double desbalancoCorrenteAlim;      //Valor máximo de desbalanço de corrente na saída dos alimentadores    
+    double desbalancoCorrenteAlim;      //Valor máximo de desbalanço de corrente na saída dos alimentadores   
+    double correnteNeutroSE;            // Corrente de neutro na saída do alimentador
     
     double menorTensaoABC[3];                 //Valor de menor tensão na rede elétrica por fase
     double quedaMaximaABC[3];                 //Queda de tensão em percentual em relação à subestação (nó raiz) por fase

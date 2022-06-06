@@ -273,7 +273,13 @@ void buscaProfundidade(TF_FILABARRAS *barraAtual, long int idNo, int profundidad
             {
                 barraAtual->idAdj = i;
                 nos_alim[0]++; 
-                grafo[barraAdj].Vbase = grafo[idNo].Vbase; //Atualiza base de tensão conforme varredura
+                
+                //Atualiza base de tensão conforme varredura
+                if (no->adjacentes[i].tipo == 1)
+                    grafo[barraAdj].Vbase = grafo[idNo].Vbase * (no->adjacentes[i].relacao); //Trafo
+                else
+                    grafo[barraAdj].Vbase = grafo[idNo].Vbase; 
+                
                 grafo[barraAdj].fases = no->adjacentes[i].ramo->fases; //Atualiza base de tensão conforme varredura
                 
                 grafo[barraAdj].distanciaSE_acc = grafo[idNo].distanciaSE_acc  + no->adjacentes[i].ramo->comprimento;
@@ -628,6 +634,113 @@ void geraGrafo(TF_GRAFO ** grafo, TF_DBAR *barras, long int numeroBarras,TF_DRAM
     }
 }
 
+
+void includeNografoTF (TF_GRAFO **grafo,TF_DBAR *barras, long int idBarra )
+{
+
+    //aloca uma barra a mais após ela já ter sido adicionada na estrutura TF_DBAR barras
+    long int i,j,k;
+    long int barraDe, barraPara,nadj;
+    // TF_NOADJACENTE no_vazio = {.idNO = 0, .estado = 0, .tipo = 3, .relacao = 1, .ramo = NULL, .idram = 0, .nmed = 0, .medidores = NULL, .S[0] = 0, .S[1] = 0, .S[2] = 0, .Cur[0] = 0, .Cur[1] = 0, .Cur[2] = 0, .losses = 0, .loading = 0 };
+    
+
+
+    if (((*grafo) = (TF_GRAFO *)realloc( (*grafo), (idBarra+1) * sizeof(TF_GRAFO)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para as barras !!!!");
+        exit(1); 
+    }
+    
+    i=idBarra;
+    
+    (*grafo)[i].idNo = i;//barras[i].ID;
+    (*grafo)[i].tipo = barras[i].tipo;
+    (*grafo)[i].fases = barras[i].fases;
+    (*grafo)[i].Vbase = barras[i].Vbase;
+    (*grafo)[i].distanciaSE_acc = 0;
+    (*grafo)[i].barra = &barras[i];
+    (*grafo)[i].nmed = 0;
+    (*grafo)[i].nmedPQ = 0;
+    (*grafo)[i].numeroAdjacentes = 0;
+
+    for(j=0;j<3;j++) (*grafo)[i].V[j] = 0;
+    for(j=0;j<3;j++) (*grafo)[i].S[j] = 0;
+    for(j=0;j<3;j++) (*grafo)[i].Cur[j] = 0;
+    for(j=0;j<3;j++) (*grafo)[i].V_aux[j] = 0;
+        
+    (*grafo)[i].medidores = NULL;
+    (*grafo)[i].medidores = (TF_DMED**)malloc(30 * sizeof(TF_DMED *));
+    for (j=0;j<30;j++)(*grafo)[i].medidores[j] = NULL;
+    for(j=0;j<3;j++){
+        for(k=0;k<3;k++){
+            (*grafo)[i].Ysh[j][k] = 0;
+        }
+    }
+
+
+}
+
+
+
+void includeAdjGrafoTF(TF_GRAFO *grafo,TF_DBAR *barras,long int idBarra,TF_DRAM* ramos, long int idRamo)
+{
+
+    //aloca uma barra a mais após ela já ter sido adicionada na estrutura TF_DBAR barras
+    long int i,j,k;
+    long int barraDe, barraPara,nadj;
+    // TF_NOADJACENTE no_vazio = {.idNO = 0, .estado = 0, .tipo = 3, .relacao = 1, .ramo = NULL, .idram = 0, .nmed = 0, .medidores = NULL, .S[0] = 0, .S[1] = 0, .S[2] = 0, .Cur[0] = 0, .Cur[1] = 0, .Cur[2] = 0, .losses = 0, .loading = 0 };
+    
+
+    i=idRamo;
+    
+
+    barraDe = ramos[i].k;
+    barraPara = ramos[i].m;
+    nadj = grafo[barraDe].numeroAdjacentes;
+    
+    grafo[barraDe].adjacentes[nadj].ramo = &ramos[i];
+    grafo[barraDe].adjacentes[nadj].idNo = barraPara;
+    grafo[barraDe].adjacentes[nadj].tipo = ramos[i].tipo;
+    grafo[barraDe].adjacentes[nadj].estado = ramos[i].estado;
+    grafo[barraDe].adjacentes[nadj].nmed = 0;
+    grafo[barraDe].adjacentes[nadj].losses = 0;
+    grafo[barraDe].adjacentes[nadj].loading = 0;
+    grafo[barraDe].adjacentes[nadj].idram = i;
+    for(j=0;j<3;j++) grafo[barraDe].adjacentes[nadj].S[j] = 0;
+    for(j=0;j<3;j++) grafo[barraDe].adjacentes[nadj].Cur[j] = 0;
+
+    grafo[barraDe].numeroAdjacentes++;
+    if(ramos[i].tipo == 1){
+        grafo[barraDe].adjacentes[nadj].relacao = ramos[i].trafo.Vsec/ramos[i].trafo.Vpri;
+    }
+    grafo[barraDe].adjacentes[nadj].medidores = NULL;
+    grafo[barraDe].adjacentes[nadj].medidores = (TF_DMED**)malloc(30 * sizeof(TF_DMED*));
+    for (j=0;j<30;j++) grafo[barraDe].adjacentes[nadj].medidores[j]  = NULL;
+    
+    nadj = grafo[barraPara].numeroAdjacentes;
+    grafo[barraPara].adjacentes[nadj].ramo = &ramos[i];
+    grafo[barraPara].adjacentes[nadj].idNo = barraDe;
+    grafo[barraPara].adjacentes[nadj].tipo = ramos[i].tipo;
+    grafo[barraPara].adjacentes[nadj].estado = ramos[i].estado;
+    grafo[barraPara].adjacentes[nadj].nmed = 0;
+    grafo[barraPara].adjacentes[nadj].losses = 0;
+    grafo[barraPara].adjacentes[nadj].loading = 0;
+    grafo[barraPara].adjacentes[nadj].idram = i;
+    for(j=0;j<3;j++) grafo[barraPara].adjacentes[nadj].S[j] = 0;
+    for(j=0;j<3;j++) grafo[barraPara].adjacentes[nadj].Cur[j] = 0;
+    
+    grafo[barraPara].numeroAdjacentes++;
+    if(ramos[i].tipo == 1){
+        grafo[barraPara].adjacentes[nadj].relacao = ramos[i].trafo.Vpri/ramos[i].trafo.Vsec;
+    }
+    grafo[barraPara].adjacentes[nadj].medidores = NULL;
+    grafo[barraPara].adjacentes[nadj].medidores = (TF_DMED**)malloc(30 * sizeof(TF_DMED*));
+    for (j=0;j<30;j++) grafo[barraPara].adjacentes[nadj].medidores[j]  = NULL;
+    
+
+
+}
+
 /**
  * @brief Função auxiliar para salvar topologia de alimentador obtida pela busca em profundidade em arquivo externo
  *
@@ -888,6 +1001,14 @@ void montaQuadripoloTrafo(TF_DRAM *ramo, TF_DTRF *trafo){
             c_matIgual(ramo->Ysp, Yiii, 3);
             c_matTransp(ramo->Ysp, 3);
             c_matIgual(ramo->Yss, Yii, 3);
+            
+            ramo->Ypp[2][0] = ramo->Ypp[2][0] + 100*cabs(y); //Sequência zero para manter o quadripólo com posto completo
+            ramo->Ypp[2][1] = ramo->Ypp[2][1] + 100*cabs(y);
+            ramo->Ypp[2][2] = ramo->Ypp[2][2] + 100*cabs(y);
+            
+            ramo->Yss[2][0] = ramo->Yss[2][0] + 100*cabs(y); //Sequência zero para manter o quadripólo com posto completo
+            ramo->Yss[2][1] = ramo->Yss[2][1] + 100*cabs(y);
+            ramo->Yss[2][2] = ramo->Yss[2][2] + 100*cabs(y);
         }
         else if((trafo->lig_pri == 3)&& (trafo->lig_sec == 1)){ //Ligação Y-YN
             c_matIgual(ramo->Ypp, Yii, 3);
