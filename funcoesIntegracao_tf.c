@@ -433,8 +433,11 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
     __complex__ double VTran[3];
     
 
-    
+    //inicializa o indice que percorre a rpn maior
+
     indice=0;
+
+    //pega o nó do inicio do alimentador
 
     iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
     
@@ -442,8 +445,11 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 
     // noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
 
-    
-    noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = iniAlim;    
+    //preenche na posição do nó inicial 
+
+    noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = iniAlim;
+
+
         // while(barraAtual != NULL){
         //     grafo[barraAtual->idNo].V_aux[0] = grafo[barraAtual->idNo].V[0];
         //     grafo[barraAtual->idNo].V_aux[1] = grafo[barraAtual->idNo].V[1];
@@ -452,24 +458,30 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
         //     barraAtual = barraAtual->prox;
         // }
 
+    // percorre aquela rnp em questão a partir do no 1
     for (indice = 1; indice < configuracaoParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
             // varre as rnps de setores
             
+            //pega o no da profundidade imediatamente anterior
             noR = noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];
+            //pega o no atual
             noS = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
             
+            //pega a tensão daquele no inicial
             Valim[0]=grafo[noR-1].V[0];
             Valim[1]=grafo[noR-1].V[1];
             Valim[2]=grafo[noR-1].V[2];            
             
             //pega o id do nó na profundidade anterior
-            // recebe a RNP dos Setores
-            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);//retorna a rnp entre esses dois nos?
-            // Inicializa com a tensão do alimentador
+            
+            // pega a RNP do setor interna, entre aquele nó e o nó da profundidade imediatamente anterior   
+            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
+            
+            //percorre a rpn interna (do setor)
             for (indice1 = 0; indice1 < rnpSetorSR.numeroNos; indice1++) {
+
                 //percorre todos os nos da RNP daquele setor
-                noN = rnpSetorSR.nos[indice1].idNo;
-                
+                noN = rnpSetorSR.nos[indice1].idNo;                
                 grafo[noN-1].V[0]=Valim[0];
                 grafo[noN-1].V[1]=Valim[1];
                 grafo[noN-1].V[2]=Valim[2];
@@ -533,7 +545,8 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
                 //         grafo[noN].V[1] = grafo[no_prev].V[1];
                 //         grafo[noN].V[2] = grafo[no_prev].V[2];
                 // }          
-            }   
+            }
+        //atualiza a profundidade do nó com seu indice       
         noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // preenche a próxima profundidade
     }            
 
@@ -548,6 +561,7 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
     int indiceRNP;
     int iniAlim;
 
+    //Percorre todas as RNPs do nível mais alto da configuracao[indiceConfiguracao] 
 
     for (indiceRNP = 0; indiceRNP < configuracaoParam[indiceConfiguracao].numeroRNP; indiceRNP++)
     {
