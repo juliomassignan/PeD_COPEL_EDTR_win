@@ -417,6 +417,10 @@ typedef struct {
 typedef struct {
   long int idNo;            //Inteiro que identifica cada nó da rede elétrica.
   long int profundidade;    //Profundidade do nó na representação RNP
+  long int prof;
+  long int prof_total;
+  long int idRNPSetores;
+  long int idSetorRNP;
   long int idAlim;          //Identificador do Alimentador
   long int idSubestacao;    //Identificador da Subestação Associada
 
