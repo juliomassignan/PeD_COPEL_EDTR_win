@@ -228,7 +228,7 @@ void correnteJusante(int idRNP, int carga, int iteracao,
         }
     }
         
-
+//isso é a backward
     for (indice = configuracaoParam.rnp[idRNP].numeroNos - 1; indice > 0; indice--) {
         indice2 = indice - 1;
         //busca pelo nó raiz

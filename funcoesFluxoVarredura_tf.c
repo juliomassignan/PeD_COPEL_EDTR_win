@@ -1134,15 +1134,18 @@ void backward(TF_GRAFO *noP, TF_GRAFO *grafo){
     for (i = 0; i < noP->numeroAdjacentes;i ++){
         noAdj = noP->adjacentes[i].idNo;
         
+        //verifica se o nó adjacente é anterior, ou posterior, se for anterior soma
         if ((noP->profundidade < grafo[noAdj].profundidade)&& (grafo[noAdj].idAlim == noP->idAlim)){
             Iacc[0] += noP->adjacentes[i].Cur[0];
             Iacc[1] += noP->adjacentes[i].Cur[1];
             Iacc[2] += noP->adjacentes[i].Cur[2];
         }
+        //se a profundidade for maior 
         else if ((noP->profundidade > grafo[noAdj].profundidade) && (grafo[noAdj].idAlim == noP->idAlim)){
             noMont = noAdj;
             auxNoMont = i;
             radial++;
+            //vai gravar o ultimo nó adjacente (só funciona se a rede for radial) depois n usa isso mais pra nada
         }
     }
     if (noMont == -1){ //Nó raiz - corrente é a soma dos jusantes somente
@@ -1651,6 +1654,9 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador(TF_GRAFO *grafo, long int numeroBarr
     //----------------------------------------------------------------------
     //RNP no formato de vetor
     //
+    //alterar aqui para pegar da RNP setores
+    // colocar a profundidade da configuracao ser a mesma do grafo
+    //atualizar o id setor do grafo
     RNP = aloca_vetor_int(alimentador.numeroNos+1);
     barraAtual = &alimentador.rnp[0];
     while(barraAtual != NULL){
@@ -1688,7 +1694,9 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador(TF_GRAFO *grafo, long int numeroBarr
         //Tensões Anteriores para Conevrgência
         barraAtual = &alimentador.rnp[0];
         k=0;
+        // fazer varrendo rnp setores
         while(barraAtual != NULL){
+            //passar para lista encadeada da rnpSetores (dois laços for)
         //    atualizaInjecoes(&grafo[barraAtual->idNo]); // Carga como potência constanta, se comentar a carga fica como Corrente constante
             for(i=0;i<3;i++){
                 DV[k] = cabs(grafo[barraAtual->idNo].V[i]);
@@ -1713,6 +1721,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador(TF_GRAFO *grafo, long int numeroBarr
         
         
         //Critério de Convergência
+        // fazer percorrendo a rnp
         barraAtual = &alimentador.rnp[0];
         k=0;
         while(barraAtual != NULL){
