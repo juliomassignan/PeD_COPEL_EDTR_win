@@ -20,7 +20,7 @@ all: fp
     funcoesMatematicas_tf.o: funcoesMatematicas_tf.c data_structures_tf.h funcoesMatematicas_tf.h
 	gcc -g -c funcoesMatematicas_tf.c
 	
-    funcoesIntegracao_tf.o: funcoesIntegracao_tf.c data_structures_tf.h funcoesTopologia_tf.h funcoesFluxoVarredura_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h data_structures_modcarga_tf.h funcoesLeituraDados.h funcoesInicializacao.h funcoesAuxiliares.h funcoesRNP.h funcoesProblema.h funcoesSetor.h
+    funcoesIntegracao_tf.o: funcoesIntegracao_tf.c data_structures_tf.h funcoesTopologia_tf.h funcoesFluxoVarredura_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h data_structures_modcarga_tf.h funcoesLeituraDados.h funcoesInicializacao.h funcoesAuxiliares.h funcoesRNP.h funcoesProblema.h funcoesSetor.h funcoesIntegracao_tf.h
 	gcc -g -c funcoesIntegracao_tf.c
 	
     funcoesRNP.o: funcoesRNP.c data_structures.h funcoesRNP.h funcoesAuxiliares.h

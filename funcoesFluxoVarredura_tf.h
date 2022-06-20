@@ -294,7 +294,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos(TF_GRAFO *grafo, long int numeroBarras, 
 TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR alimentador, TF_DRAM *ramos,double Sbase);
 void amostragemVariacaoCarga(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, double percentual);
 
-
+double desbalancoFasorialSeq(__complex__ double *Fasor);
 
 
 #endif	/* FUNCOESFLUXOVARREDURA_H */
