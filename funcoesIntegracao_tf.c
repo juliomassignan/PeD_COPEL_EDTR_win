@@ -432,7 +432,7 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
     int k;
     double IMod, IAng;
     extern BOOL control_REG_OPT;
-    long int noProf[200]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int noProf[1000]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
    __complex__ double iAcumulada;
     RNPSETOR rnpSetorSR;
     __complex__ double Valim[3];
@@ -655,19 +655,19 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
     int indiceRNPsetor;
     int iniAlim;
     int indice1;
-    long int noProf[200];
+    long int noProf[1000];
     RNPSETOR rnpSetorSR;
 
     for(size_t indiceRNP = 0; indiceRNP < configuracoesParam[idConfiguracao].numeroRNP; indiceRNP++)
     {
-       noRaiz =configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[0].idNo;
+       noRaiz = configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[0].idNo;
        grafo_tf[noRaiz-1].idRNPSetores=indiceRNP;
        grafo_tf[noRaiz-1].idSetorRNP=-1;//No raiz não esta na rnp SETOR
        grafo_tf[noRaiz-1].prof=configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[0].profundidade;
        grafo_tf[noRaiz-1].prof_total=grafo_tf[noRaiz-1].prof;
          //pega o nó do inicio do alimentador
 
-        indiceRNPsetor=0;
+        indiceRNPsetor = 0;
         iniAlim=configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[indiceRNPsetor].idNo;
         // noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
         //preenche na posição do nó inicial 
@@ -680,14 +680,14 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
             //pega o no atual
             noS = configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[indiceRNPsetor].idNo; // pega o id do proximo no
 
-            grafo_tf[noR-1].idRNPSetores=indiceRNP;
-            grafo_tf[noR-1].idSetorRNP=indiceRNPsetor;
-            grafo_tf[noR-1].prof=configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[indiceRNPsetor].profundidade - 1;
-            grafo_tf[noR-1].prof_total= grafo_tf[noR-1].prof;
-            grafo_tf[noS-1].idRNPSetores=indiceRNP;
-            grafo_tf[noS-1].idSetorRNP=indiceRNPsetor;
-            grafo_tf[noS-1].prof=configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[indiceRNPsetor].profundidade;
-            grafo_tf[noS-1].prof=grafo_tf[noS-1].prof_total;
+            //grafo_tf[noR-1].idRNPSetores=indiceRNP;
+            //grafo_tf[noR-1].idSetorRNP=indiceRNPsetor;
+            //grafo_tf[noR-1].prof=configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[indiceRNPsetor].profundidade - 1;
+            //grafo_tf[noR-1].prof_total= grafo_tf[noR-1].prof;
+            //grafo_tf[noS-1].idRNPSetores=indiceRNP;
+            //grafo_tf[noS-1].idSetorRNP=indiceRNPsetor;
+            //grafo_tf[noS-1].prof=configuracoesParam[idConfiguracao].rnp[indiceRNP].nos[indiceRNPsetor].profundidade;
+            //grafo_tf[noS-1].prof=grafo_tf[noS-1].prof_total;
 
             rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
 
@@ -707,7 +707,7 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
                         idadj=grafo_tf[noN-1].adjacentes[adj].idNo;
                         if (grafo_tf[idadj].idRNPSetores==grafo_tf[noN-1].idRNPSetores&&grafo_tf[idadj].idSetorRNP!=grafo_tf[noN-1].idSetorRNP)
                         {
-                            grafo_tf[noN-1].prof_total+=grafo_tf[idadj].prof_total+1;
+                            grafo_tf[noN-1].prof_total += grafo_tf[idadj].prof_total+1;
                         }
 
                     }
@@ -1195,7 +1195,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     double tIni;
     double tEnd;
 
-    //compatibiliza_profundidadegrafo_tf(grafo,configuracoesParam,indiceConfiguracao,matrizB);
+    compatibiliza_profundidadegrafo_tf(grafo,configuracoesParam,indiceConfiguracao,matrizB);
     
     
     // varre todos os alimentadores e seta a flag_niveis false para 34.5 e true para 13.8  
