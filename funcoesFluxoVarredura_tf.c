@@ -319,7 +319,7 @@ double desbalancoFasorialSeq(__complex__ double *Fasor){
     int i, j;
     double desbalanco;
    
-    __complex__ double FasorSeq[3], **T, a, a2;
+    __complex__ double FasorSeq[3], **T=NULL, a, a2;
     
     a = 1.0*(cos(120*PI/180) + I*sin(120*PI/180));
     a2 = 1.0*(cos(-120*PI/180) + I*sin(-120*PI/180));

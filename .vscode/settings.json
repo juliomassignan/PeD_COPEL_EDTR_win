@@ -18,6 +18,7 @@
         "data_structures_modcarga_tf.h": "c",
         "funcoesauxiliares.h": "c",
         "funcoesrnp.h": "c",
-        "complex.h": "c"
+        "complex.h": "c",
+        "funcoesintegracao_tf.h": "c"
     }
 }
