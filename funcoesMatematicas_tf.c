@@ -30,18 +30,18 @@ __complex__ double *c_vetAloca(int n){
     return m; 
 }
 //Aloca Matriz
-__complex__ double **c_matAloca(int n){
+complex double **c_matAloca(int n){
     int i,j;
-    __complex__ double **m=NULL;
+    complex double **m=NULL;
     
-    if((m= (__complex__ double**)malloc(n * sizeof(__complex__ double*)))==NULL)
+    if((m= (complex double**)malloc(n * sizeof(complex double*)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para uma matriz !!!!");
         exit(1); 
     }
 
     for (i = 0; i < n; i++){
-        if((m[i] = (__complex__ double*) malloc(n * sizeof(__complex__ double)))==NULL)
+        if((m[i] = (complex double*) malloc(n * sizeof(complex double)))==NULL)
         {
             printf("Erro -- Nao foi possivel alocar espaco de memoria para uma matriz !!!!");
             exit(1); 

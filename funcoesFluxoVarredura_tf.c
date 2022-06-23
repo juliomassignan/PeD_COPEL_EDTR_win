@@ -339,6 +339,11 @@ double desbalancoFasorialSeq(__complex__ double *Fasor){
         FasorSeq[i] = FasorSeq[i]/3;
     }
     desbalanco = cabs(FasorSeq[2])/cabs(FasorSeq[1]);
+    for(i=0;i<3;i++)
+    {
+        free(T[i]);
+    }
+    free(T);
     return(desbalanco);
 }
 
