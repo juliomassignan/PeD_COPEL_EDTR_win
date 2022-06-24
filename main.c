@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
     
     
     fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorSDRParam,grafoSDRParam,configuracaoInicialSDR,idConfiguracaoSDR,rnpSetoresSDR);
-    //fluxoPotencia_Niveis_BFS_Multiplos(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true); 
+    // fluxoPotencia_Niveis_BFS_Multiplos(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true); 
     // true converge FP | false faz iteraçao única (P&D)
     clock_t end2 = clock();
     double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
