@@ -1,11 +1,11 @@
-/**
- * @file funcoesFluxoVarredura.c
- * @author Julio Augusto Druzina Massignan
- * @date 31 jul 2020
- * @brief Contém a implementação das funções utilizadas para o cálculo de fluxo de potência trifásico por Varredura Direta/Inversa por soma de correntes.
- * Este arquivo implementa as funções definidas na biblioteca funcoesFluxoVarredura.h
+/* 
+ * File:   funcoesIntegracao.h
+ * Author: Julio Massignan e Vítor Henrique Pereira de Melo
  *
+ * Created on 31 de Jul de 2022, 14:03
  */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +60,6 @@
  * @warning .
  */
 
-
 void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *ramos_tf,long int nramos_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves)
 {
     
@@ -107,7 +106,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         (*grafoSDRParam)[contador].idAM=grafo_tf[i].idAM+1;
         // preenche o numero de nos adjacentes
         (*grafoSDRParam)[contador].numeroAdjacentes=grafo_tf[i].numeroAdjacentes;
-        // preencher os alica os adjacentes (precisa preencher)
+        // Aloca os adjacentes
         (*grafoSDRParam)[contador].adjacentes=Malloc(NOADJACENTE,11);
 
         //loop para preencher a info dos adjacentes
@@ -116,9 +115,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             
             (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;// preenche o idNo
 
-            //deixar vazio os outro também 
-            // sprintf((*grafoSDRParam)[contador].adjacentes[k].idAresta,"%ld",grafo_tf[i].adjacentes[k].idram);
-            
             // informa preenche a informacao se há medidor nos ramos
             if(grafo_tf[i].adjacentes[k].nmed>0)(*grafoSDRParam)[contador].adjacentes[k].medicao=medidorRamo;
             else (*grafoSDRParam)[contador].adjacentes[k].medicao=semMedidor;
@@ -180,30 +176,8 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         (*grafoSDRParam)[contador].priorizacoes.eusdGrupoB=0; 
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidores=0;
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidoresEspeciais=0;
-        // infos abaixo devem ser lidas
-        // (*grafoSDRParam)[contador].compensacoes.metaDicAnual = dadosCompensacao.metaDicAnual;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaDicMensal = dadosCompensacao.metaDicMensal;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaDicTrimestral = dadosCompensacao.metaDicTrimestral;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaDmicMensal = dadosCompensacao.metaDmicMensal;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaFicAnual = dadosCompensacao.metaFicAnual;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaFicMensal = dadosCompensacao.metaFicMensal;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaFicTrimestral = dadosCompensacao.metaFicTrimestral;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDicAcumAno = dadosCompensacao.resulDicAcumAno;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDicAcumMes = dadosCompensacao.resulDicAcumMes;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDicAcumTrimestre = dadosCompensacao.resulDicAcumTrimestre;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDmicMes = dadosCompensacao.resulDmicMes;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulFicAcumAno = dadosCompensacao.resulFicAcumAno;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulFicAcumMes = dadosCompensacao.resulFicAcumMes;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulFicAcumTrimestre = dadosCompensacao.resulFicAcumTrimestre;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.eusdGrupoA = dadosPriorizacao.eusdGrupoA;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.eusdGrupoB = dadosPriorizacao.eusdGrupoB;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.qtdConsumidores = dadosPriorizacao.qtdConsumidores;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.qtdConsumidoresEspeciais = dadosPriorizacao.qtdConsumidoresEspeciais;// de onde vem essas infos 
-       
-        // (*grafoSDRParam)[i].idSetor= //esta info esta no grafo tf??
 
     }
-
 
     //conta o numero de reguladores
     for (i=0;i<nramos_tf;i++)
@@ -213,10 +187,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             nreg++;
         }
     }
-
-
-    //realiza a alocação da estrutura em grafo para armazenar o SDR e verifica se o processo foi bem sucedido
-    //caso não seja possível realizar a alocação o programa é encerrado
 
 
     //aloca a estrutura com os dados dos reguladores
@@ -234,7 +204,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         if (ramos_tf[i].tipo==regulador)
         {
         // nao preencher
-        //sprintf((*dadosReguladorSDRParam)[k].idRegulador,"%ld",i+1);
         (*dadosReguladorSDRParam)[k].tipoRegulador= comFluxoReverso; //o tipo de todos os reguladores é iniciado como com fluxo reverso
         (*dadosReguladorSDRParam)[k].ampacidade=ramos_tf[i].ampacidade; //preenche a amapacidade
         (*dadosReguladorSDRParam)[k].numeroTaps=ramos_tf[i].regulador.ntaps; // preenche o numero de taps
@@ -242,18 +211,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         }
     }
 
-
-
-
-    // seguindo o padrao do leitura
-    // 
-    //laço for 0 a numerodebarras
-        // converte dados de barras
-        // converte dados de linhas
-        // converte dados de trafos
-        
-    //preencher dadosRegulador
-    //
 }
 
 
@@ -262,12 +219,13 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 /**
  * @brief Função de integracao da MRAN, para preencher a estrutura dadosAlimentadorSDRParam do tipo DADOSALIMENTADOR que será utilizada nas funcoes da MRAN. 
  * 
- * Essa função recebe como parâmetro o vetor @p alimentadores_tf do tipo TF_ALIMENTADOR, com as informacoes dos alimentadores da rede, lidas para o calculo do fluxo de potencia trifasico
+ * Essa função recebe como parâmetro o vetor @p grafo_tf do tipo TF_GRAFO, com as informacoes dos alimentadores da rede, lidas para o calculo do fluxo de potencia trifasico
  * e o long int @p numerosAlimentadores_tf com o numero de alimentadores de acordo com o fluxo trifásico. Em posse destes dados, esta funcao aloca o espaço necessário para a estrutura @p dadosAlimentadorSDRParam
  * e a preenche, com as informacoes necessarias para utilizar as funcoes da rnp. 
  *
  * 
- * @param alimentadores_tf vetor do tipo TF_ALIMENTADOR com as informacoes sobre o alimentador trifasico
+ * @param grafo_tf vetor do tipo TF_GRAFO com as informacoes trifasicas sobre a rede
+ * @param numeroBarras numero inteiro com o numero de barras da rede
  * @param numero_alimentadores numero inteiro que conta o numero de alimentadores presentes no sistema
  * @param dadosAlimentadorSDRParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
  * @return void
@@ -284,36 +242,32 @@ void converteDadosAlimentadores_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras
     
     int k=0;
     extern long int numeroAlimentadores; //variavel global com o numero de alimentadores
-    // numerosAlimentadores_tf[0]=0; //recebe o numero de alimentadores do trifasico
-    int idraiz[numerosAlimentadores_tf];
+    int idraiz[numerosAlimentadores_tf]; //aloca o vetor com as raízes do sistema
     
     for(i=0; i<numeroBarras; i++){ 
-        if(grafo_tf[i].tipo == 2){
-            // idraiz[numerosAlimentadores_tf[0]]=grafo_tf[i].idNo;
+        if(grafo_tf[i].tipo == 2){ // se for nó raíz guarda no grafo
             idraiz[k]=grafo_tf[i].idNo;
-            // numerosAlimentadores_tf[0]++;
             k++;   
         }
     }
 
+
+    //Aloca estrutura dado alimentadores
     if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numerosAlimentadores_tf+1) * sizeof(DADOSALIMENTADOR)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para alimentadores !!!!");
         exit(1); 
     }
+    //Atribui o número de alimentadores de acordo com os dados do trifásico
     numeroAlimentadores=numerosAlimentadores_tf;
-
-
 
     //aloca memoria para a estrutura DADOSALIMENTADOR, caso nao seja possivel encerra o programa
 
     //loop que preenche os dados dos alimentadores de acordo com o trifásico
-
     for ( i = 0; i < numerosAlimentadores_tf; i++)
     {
         contador=i+1;
         (*dadosAlimentadorSDRParam)[contador].barraAlimentador = idraiz[i]+1; // preenche a barraAlimentador com o noRaiz
-        //sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
         (*dadosAlimentadorSDRParam)[contador].idTrafo = idraiz[i]+1;// preenche com idRaiz do no raiz
         (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;// inicia o numero de setores com zero
     }
@@ -322,59 +276,49 @@ void converteDadosAlimentadores_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras
 }
 
 
-void converteDadosAlimentadores_TFtoSDR_alt(TF_ALIMENTADOR *alimentadores_tf,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam){
+//
+/**
+ * @brief Função de integracao da MRAN, para compatibilizar as barras ficticias criadas no código da MRAN nos elementos do fluxo trifásico 
+ * 
+ * Essa função recebe como parâmetro o vetor @p grafoSDR do tipo GRAFO, com as informacoes da rede modificada pela MRAN, @p numeroNos que é um inteiro com o número de nós da rede
+ *. de acordo com estas informacoes ela complementa os nós criados nas seguintes variáveis, que são utilizadas no fluxo trifásico:
+  @p grafo_tf do tipo TF_GRAFo, @p barras do tipo TF_DBAR, @p ramos do tipo TF_DRAM, @p numeroRamos, @p numeroBarras 
+ *
+ * 
+ * @param grafo_tf vetor do tipo TF_GRAFO com as informacoes trifasicas sobre a rede
+ * @param barras vetor do tipo TF_DBAR com as informações trifásicas sobre as barras da rede
+ * @param numeroBarras inteiro com o número de barras da rede trifásica
+ * @param ramos numero inteiro que conta o numero de alimentadores presentes no sistema
+ * @param numeroRamos inteiro que conta o número de ramos da rede
+ * @param grafoSDR vetor do tipo GRAFO, o grafo da rede de acordo com a MRAN 
+ * @param numeroNos inteiro com o número de nós da rede de acordo com a MRAN
+ * @return void
+ * @see 
+ * @note
+ * @warning .
+ */
 
-    int contador, i=0; //variaveis utilizadas para contar e indexar
-
-
-    extern long int numeroAlimentadores ; //variavel global com o numero de alimentadores
-    numeroAlimentadores = numerosAlimentadores_tf; //recebe o numero de alimentadores do trifasico
-
-    //aloca memoria para a estrutura DADOSALIMENTADOR, caso nao seja possivel encerra o programa
-    if (((*dadosAlimentadorSDRParam)= (DADOSALIMENTADOR *)malloc( (numerosAlimentadores_tf+1) * sizeof(DADOSALIMENTADOR)))==NULL)
-    {
-        printf("Erro -- Nao foi possivel alocar espaco de memoria para alimentadores !!!!");
-        exit(1); 
-    }
-
-    //loop que preenche os dados dos alimentadores de acordo com o trifásico
-    for ( i = 0; i < numerosAlimentadores_tf; i++)
-    {
-        contador=i+1;
-        (*dadosAlimentadorSDRParam)[contador].barraAlimentador = alimentadores_tf[i].noRaiz+1; // preenche a barraAlimentador com o noRaiz
-        //sprintf((*dadosAlimentadorSDRParam)[contador].idAlimentador,"%ld",alimentadores_tf[i].idAlim); //passa o id do alimentador, é um int no código do estimador
-        (*dadosAlimentadorSDRParam)[contador].idTrafo = alimentadores_tf[i].idRaiz;// preenche com idRaiz do no raiz
-        (*dadosAlimentadorSDRParam)[contador].numeroSetores=0;// inicia o numero de setores com zero
-
-
-    }
-    
-
-    
-
-
-}
 
 
 void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras, long int *numeroBarras, TF_DRAM **ramos, long int *numeroRamos,GRAFO* grafoSDR, long int numeroNos)
 {
 
-    int aux=numeroBarras[0];
-    int de;
-    int para;
-    int idAdj;
+    int aux=numeroBarras[0]; //variável auxiliar com o número de barras da rede trifásica original
+    int de; // inteiro que armazena a barra de 
+    int para; // inteiro que armazena a barra para
+    int idAdj; //inteiro guardar o id dos adjacentes
 
-    for(int i=aux;i<numeroNos;i++)
+    for(int i=aux;i<numeroNos;i++) // for que começa do final do grafoSDR pois os ultimos nós que são os novos
     {
-        idAdj=grafoSDR[i+1].adjacentes[0].idNo-1;
-        includeDBAR(barras,numeroBarras,(*grafo_tf)[idAdj].Vbase);
-        includeNografoTF(grafo_tf,(*barras),numeroBarras[0]-1);
-        for (size_t j = 0; j < grafoSDR[i+1].numeroAdjacentes; j++)
+        idAdj=grafoSDR[i+1].adjacentes[0].idNo-1; // pega o id do adjacente ao ultimo nó da MRAN
+        includeDBAR(barras,numeroBarras,(*grafo_tf)[idAdj].Vbase);// funcao que incui ele no DBAR
+        includeNografoTF(grafo_tf,(*barras),numeroBarras[0]-1); // funcao que inclui ele no grafo trifásico
+        for (size_t j = 0; j < grafoSDR[i+1].numeroAdjacentes; j++)//for que percorre os adjacentes  dos nós ficticios
         {
-           de=grafoSDR[i+1].idNo-1;
-           para=grafoSDR[i+1].adjacentes[j].idNo-1; 
-           includeDSWTC(ramos,numeroRamos,de,para,grafoSDR[i+1].adjacentes[j].estadoChave);
-           includeAdjGrafoTF((*grafo_tf),(*barras),i,(*ramos),numeroRamos[0]-1);
+           de=grafoSDR[i+1].idNo-1; //salva no de
+           para=grafoSDR[i+1].adjacentes[j].idNo-1; //salva no para 
+           includeDSWTC(ramos,numeroRamos,de,para,grafoSDR[i+1].adjacentes[j].estadoChave); // inclui as novas chaves no ramos
+           includeAdjGrafoTF((*grafo_tf),(*barras),i,(*ramos),numeroRamos[0]-1); //inclui os adjacentes no grafo no barras
         }
         
         
@@ -383,6 +327,24 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
 
 
 }
+
+
+/**
+ * @brief Função de integracao da MRAN, para compatibilizar as saídas do fluxo trifásico com as estruturas da MRAN.
+ * 
+ * Essa função recebe como parâmetro o vetor @p powerflow_result do tipo TF_PFSOLUTION, com as informacoes do fluxo trifásico, @p idIndividuoInicialParam com o id do indivíduo inicial
+ *. @p idIndividuoInicialParam inteiro com o número de configuracoes da MRAN @p configuracao vetor de estrutura do tipo CONFIGURACAO com as informacoes de cada configuracao, que recebera os resultados do fluxo de potencia
+ *
+ * 
+ * @param powerflow_result vetor da estrutura do tipo TF_PFSOLUTION com os resultados do fluxo de potência
+ * @param idIndividuoInicialParam inteiro com o id do indivíduo inicial da MRAN
+ * @param numeroConfiguracoesParam inteiro com o número de configuracoes da MRAN
+ * @param configuracao vetor do tipo CONFIGURACAO com as informacoes de cada configuracao da MRAN
+ * @return void
+ * @see 
+ * @note
+ * @warning .
+ */
 
 
 void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int idIndividuoInicialParam, long int numeroConfiguracoesParam, CONFIGURACAO **configuracao)
@@ -405,56 +367,52 @@ void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int
 
 //Função inicialização do vetor x para sistemas radiais através de uma varredura para compensar os taps fora da nominal (sem o arquivo Vinicial)
 /**
- * @brief Função auxiliar para inicializar as tensões complexas nodais trifásicas de todos os alimentadores através de um processo de varredura direta
+ * @brief Função auxiliar para inicializar as tensões complexas nodais trifásicas de todos os alimentadores através de um processo de varredura direta por RNP de Setores
  * 
- * Essa função inicializa as tensões complexas nodais por fase (fase-neutro) de todas as barras de todos os alimentadores da rede elértrica. 
- * O valor de inicilização é obtido através de uma varredura direta partindo do nó raiz de cada alimentador para compensar possíveis valores de tap
- * fora do nominal (no caso de reguladores e transformadores). Recebe como parâmetros de entrada e saída o grafo da
- * rede elétrica @p grafo com as tensões complexas inicializadas e como parâmertros de entrada os alimentadores @p alimentadores e quantidades
- * totais de barras e alimentadores da rede elétrica @p numeroBarras e @p numeroAlimentadores ,respectivamente. 
+ * Essa função inicializa as tensões complexas nodais por fase (fase-neutro) de todas as barras de um alimentador de acordo com a RNP de setores
+ * O valor de inicilização é obtido através de uma varredura direta utilizando a RNP de setores disponível na  @p configuracaoParam que é um vetor com as configuracoes da rede
+ * que é indexada pelo inteiro @p indiceConfiguracao com o id da configuracao atual, com o vetor @p matrizB do tipo RNPSETORES com as RNPS de setores, @p indiceRNP um inteiro com o índice da RNP de setores atual
+ * @p todosAlimentadores do tipo BOLL que informa se a funcao seerá executada para todos alimentadores, @p root inteiro com o nó raiz do alimentador, @p grafo do tipo TF_GRAFO com as informações da rede trifásica e que recebera as tensoes  
+ * @p numeroAlimentadores inteiro com o número de alimentaores da rede, @p numeroBarras com o número de barras da rede, @p alimentadores estrutura do tipo TF_ALIMENTADOR com os alimentadores da rede.
  * A função retorna @c void.
  * 
- * @param *grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
+ * @param grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
  * @param numeroBarras quatidade total de barras
- * @param *alimentadores ponteiro par os alimentadores da rede elétrica
+ * @param alimentadores ponteiro par os alimentadores da rede elétrica
  * @param numeroAlimentadores quantidade total de alimentadores
+ * @param todosAlimentadores BOLL que indica se deve ser executado para todos os alimentadores
+ * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
+ * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
+ * @param indiceRNP inteiro com o indice da RNP atual
+ * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param root inteiro com o indice do no raiz
+ * @param 
  * @return void
  * @see
  * @note 
- * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
 */
 void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
-BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int indiceRNP,int indiceConfiguracao,int root)
+BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam, RNPSETORES *matrizB,int indiceRNP,int indiceConfiguracao,int root)
 {
 
-    long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3;
-    long int iniAlim;
-    int k;
-    double IMod, IAng;
-    extern BOOL control_REG_OPT;
+    long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3; //inteiros que serão utilizados para contagem e indices de nos
+    long int iniAlim; // inteiro que guarda o inicio do alimentador
+    int k; // contador
     long int noProf[1000]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
-   __complex__ double iAcumulada;
-    RNPSETOR rnpSetorSR;
-    __complex__ double Valim[3];
-    __complex__ double VTran[3];
-
-
-
-    //inicializa o indice que percorre a rpn maior
-
+    RNPSETOR rnpSetorSR; // variavel que guarda a RNP de setores atuais
+   
+    //inicializa o indice que percorre a rpn de setores
     indice=0;
 
-    //pega o nó do inicio do alimentador
+    //pega o nó do inicio da RNP de setores
 
     iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
     
-    
-
+    // coloca ele no vetor noProf
     noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = iniAlim;
 
 
-
-    // percorre aquela rnp em questão a partir do no 1
+    // percorre aquela rnp de setores em questão
     for (indice = 1; indice < configuracaoParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
             // varre as rnps de setores
             
@@ -463,53 +421,63 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
             //pega o no atual
             noS = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // pega o id do proximo no
             
-            //pega a tensão daquele no inicial       
-            
-            //pega o id do nó na profundidade anterior
-            
-            // pega a RNP do setor interna, entre aquele nó e o nó da profundidade imediatamente anterior   
+            // pega a RNP do setor, entre aquele nó e o nó da profundidade imediatamente anterior   
             rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
             
-            //percorre a rpn interna (do setor)
+            //percorre a rpn interna do setor a inicializa as tensoes de todas as barras do setor de acordo com a raiz do alimentador
             for (indice1 = 1; indice1 < rnpSetorSR.numeroNos; indice1++) {
-
                 //percorre todos os nos da RNP daquele setor
                 noN = rnpSetorSR.nos[indice1].idNo;                
                 grafo[noN-1].V[0]=grafo[root-1].V[0];
                 grafo[noN-1].V[1]=grafo[root-1].V[1];
                 grafo[noN-1].V[2]=grafo[root-1].V[2];
-                atualizaInjecoes(&grafo[noN-1]);
+                atualizaInjecoes(&grafo[noN-1]); // inicializa as indecoes de corrente
 
-       
             }
         //atualiza a profundidade do nó com seu indice       
         noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; // preenche a próxima profundidade
     }            
 
-    //faz uma varredura incializando as tensoes em todas as varras da rede antes do fluxo de potencia. 
-    //Talvez não precise ser modificada
-
 }
+
+
+/**
+ * @brief Função que inicializa a tenssão de todos os alimentadores
+ * 
+ * Essa função percorre todos os alimentadores que tem suas tensões incializadas individualmente a partir da fução inicializaTensaoSDR_alimentador_tf
+ * Esta função recebe como parâmetros @p configuracaoParam que é um vetor com as configuracoes da rede que é indexada pelo inteiro @p indiceConfiguracao com o id da configuracao atual, com o vetor @p matrizB do tipo RNPSETORES com as RNPS de setores
+ * @p todosAlimentadores do tipo BOLL que informa se a funcao seerá executada para todos alimentadores, @p grafo do tipo TF_GRAFO com as informações da rede trifásica e que recebera as tensoes  
+ * @p numeroAlimentadores inteiro com o número de alimentaores da rede, @p numeroBarras com o número de barras da rede, @p alimentadores estrutura do tipo TF_ALIMENTADOR com os alimentadores da rede.
+ * 
+ * @param grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
+ * @param numeroBarras quatidade total de barras
+ * @param alimentadores ponteiro par os alimentadores da rede elétrica
+ * @param numeroAlimentadores quantidade total de alimentadores
+ * @param todosAlimentadores BOLL que indica se deve ser executado para todos os alimentadores
+ * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
+ * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
+ * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param 
+ * @return void
+ * @see
+ * @note 
+**/
 
 void inicializaTensaoSDR_alimentadores_tf (TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores,
 BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int indiceConfiguracao)
 {
-    int indiceRNP;
-    int iniAlim,root,noS,noR;
-    long int BarraProf[1000],noProf[1000];
-    RNPSETOR rnpSetorSR;
-     
-
+    int indiceRNP; //indice da RNP, corresponde ao alimentador
+    int iniAlim,root,noS,noR;//indexa os nós 
+    long int BarraProf[1000],noProf[1000]; // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
 
     //Percorre todas as RNPs do nível mais alto da configuracao[indiceConfiguracao] 
 
 
-
-    for (indiceRNP = 0; indiceRNP < configuracaoParam[indiceConfiguracao].numeroRNP; indiceRNP++)
+    for (indiceRNP = 0; indiceRNP < configuracaoParam[indiceConfiguracao].numeroRNP; indiceRNP++) // percorre todas as RPNs de Setores
     {
-        //inicia a tensao do primeiro no do alimentador
-        
-            
+
+        //determina o no raíz do alimentador (incideRNP)    
         iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;    
         noProf[configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[0].profundidade] = iniAlim;
         noS = configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[1].idNo;
@@ -518,8 +486,7 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
         //No raiz do alimentador
         root=rnpSetorSR.nos[0].idNo;   
         
-        iniAlim=configuracaoParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;//compatibilizacao idex sdr itf
-        grafo[root-1].V[0]=grafo[root-1].barra->Vinicial[0];// conferir com o julio se é isso mesmo 
+        grafo[root-1].V[0]=grafo[root-1].barra->Vinicial[0];// inicializa tensão do no raiz 
         grafo[root-1].V[1]=grafo[root-1].barra->Vinicial[1];
         grafo[root-1].V[2]=grafo[root-1].barra->Vinicial[2];
 
@@ -529,6 +496,22 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 
 }
 
+
+/**
+ * @brief Função Avalia configuracao
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * @param 
+ * @return void
+ * @see
+ * @note 
+ * @warning 
+ * Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ * */
 void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam, DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,
         int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam, */int idAntigaConfiguracaoParam, RNPSETORES *matrizB, /*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
@@ -590,34 +573,54 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
 
 }
 
+/**
+ * @brief Função que compatibiliza a profundidade do grafo trifásico com a da RNP de setores
+ * 
+ * Essa função compatibiliza a profunidade na estrutura grafo do tipo TF_GRAFO e que contem as informações sobre a rede trifásica.
+ * Esta função realiza uma varredura fowared pela RNP de setores e pelos setores e insere no grafo as profundidades totais da rede.
+ * Esta função recebe como parâmetros @p grafo_tf que é um vetor do tipo TF_GRAFO com as informações da rede trifásica, do tipo TF_GRAFO com as informações da rede trifásica, 
+ * @p configuracaoParam que é um vetor com as configuracoes da rede que é indexada pelo inteiro @p indiceConfiguracao com o id da configuracao atual, com o vetor @p matrizB do tipo RNPSETORES com as RNPS de setores 
+ * @p indiceRNP trata-se de um inteiro com o alimentador que está sendo preenchido, @p nvar ponteiro para inteiro que retorna o número de variáveis da rede  
+ * 
+ * @param grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
+ * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
+ * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
+ * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param nvar ponteiro para inteiro que retorna o número de variáveis da rede 
+ * @return void
+ * @see
+ * @note 
+**/
+
 
 void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configuracoesParam,int indiceConfiguracao,RNPSETORES *matrizB,long int indiceRNP, int *nvar)
 {
 
-    int noRaiz,noR,noS,noN;
-    int prfundidade;
-    int idadj;
-    int raiz_inter;
-    int indiceRNPsetor;
-    int iniAlim;
-    int n_var=0;
-    long int noProf[1000];
-    long int BarraProf[1000];
-    RNPSETOR rnpSetorSR;
+    int noRaiz,noR,noS,noN; // indexadores dos nós 
+    int idadj; // indexador dos nós adjacentes
+    int raiz_inter; // salva raiz
+    int indiceRNPsetor; // indice da RNP de setor
+    int iniAlim; //inicio do alimentador
+    int n_var=0; // variável que conta o número de variáveis
+    long int noProf[1000]; // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int BarraProf[1000];  // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
     int indice,indice1;
     
+    //determina o nó inicial do alimentador
     iniAlim=configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;    
     noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[0].profundidade] = iniAlim;
     noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[1].idNo;
     noR = noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[1].profundidade - 1];
 
+    // faz uma varredura direta na RNP do setores
     for (indice = 1; indice < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
         noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
         noR = noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];
         rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
         BarraProf[rnpSetorSR.nos[0].profundidade] = rnpSetorSR.nos[0].idNo;
+        //faz uma varredura foward na rnp interna dos setores para inicializar a profundidade de todos os nós como 0
         for (indice1 = 0; indice1 < rnpSetorSR.numeroNos; indice1++) {
-            // int noM = noProf[rnpSetorSR.nos[indice1].profundidade - 1];
             noN = rnpSetorSR.nos[indice1].idNo;
             
             grafo_tf[noN-1].profundidade= 0; 
@@ -628,18 +631,19 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
         noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade] = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
     }
 
+
+    // faz uma varredura direta na RNP de setores
     iniAlim=configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[0].idNo;    
     noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[0].profundidade] = iniAlim;
 
     for (indice = 1; indice < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
-        noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
+        noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo; 
         noR = noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1];
-        rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
-        BarraProf[rnpSetorSR.nos[0].profundidade] = rnpSetorSR.nos[0].idNo;
+        rnpSetorSR = buscaRNPSetor(matrizB, noS, noR); // pega a rnp do setor entre estes dois nós
+        BarraProf[rnpSetorSR.nos[0].profundidade] = rnpSetorSR.nos[0].idNo;// percorre a RNP de setores
         for (indice1 = 1; indice1 < rnpSetorSR.numeroNos; indice1++) {
-            // int noM = noProf[rnpSetorSR.nos[indice1].profundidade - 1];
-            noN = rnpSetorSR.nos[indice1].idNo;
             
+            noN = rnpSetorSR.nos[indice1].idNo;
             grafo_tf[noN-1].profundidade = rnpSetorSR.nos[indice1].profundidade+grafo_tf[rnpSetorSR.nos[0].idNo-1].profundidade; 
             n_var=n_var+6;
             BarraProf[rnpSetorSR.nos[indice1].profundidade] = rnpSetorSR.nos[indice1].idNo;
@@ -649,74 +653,33 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
     }
 
 
-    (*nvar)=n_var+6;
+    (*nvar)=n_var+6; //retorna o numero de variáveis total darede
 
 
 
 }
 
-// Em consutrução
-//Rotina para Cálculo de Fluxo de Potência em múltiplos alimentadores de um sistema utilizando RNP de distribuição na sequeência hierárquica dos níveis de tensão (Primeiro 13.8kV e depois 34.5kV)
-/**
- * @brief Função principal para cálculo de fluxo de potência (Primeiro 13.8kV e depois 34.5kV).
- *
- * Essa função realiza a leitura da pasta com os dados da rede elétrica em arquivos separados. 
- * A pasta e subpasta são indicadas no arquivo "config.txt". A função assume que o nome do arquivo é padrão da e os arquivos 
- * lidos são: DBAR.csv; DSHNT.csv; DGD.csv; DLIN.csv; DTRF.csv; DREG.csv; DSWTC.csv; DSUBESTACAP.csv; e Viniciail.csv . 
- * Todos os arquivos são opcionais de leitura exceto o DBAR.csv. Além disso o arquivo possui como separação dos dados os marcadores especificados.
- * Realiza alocação de memória para armazenar os dados da rede elétrica.
- * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo DBAR @p **barras que armazena dados das barras da rede elétrica e
- * um ponteiro para ponteiro do tipo DBAR @p **barras que armazena dados das barras da rede elétrica. Além disto recebe como 
- * parâmetros de entrada e saída inteiros que indicam: @p numeroBarras a quantidade total de barras na rede; @p numeroRamos a 
- * quantidade total de ramos na rede; e @p numeroAlimentadores a quantidade total de alimentadores na rede.
- * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
- * 
- * Para utilizar a função:
- * @code
- * long int numeroBarras = 0;
- * long int numeroAlimentadores = 0;
- * long int numeroRamos = 0;
- * char *folder = NULL;
- * DBAR *barra = NULL;
- * DRAM *ramo = NULL; 
- * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
- * if (folder !=NULL)
- *      printf("leitura concluida\n");
- * @endcode
- * 
- * @param barra parâmetro de entrada e saída que armazena os dados de barras da rede elétrica
- * @param ramo  parâmetro de entrada e saída que armazena os dados de ramos da rede elétrica
- * @param numeroBarras parâmetro de entrada e saída que armazena a quantidade total de barras da rede elétrica
- * @param numeroRamos parâmetro de entrada e saída que armazena a quantidade total de ramos da rede elétrica
- * @param numeroAlimentadores parâmetro de entrada e saída que armazena a quantidade total de alimentadores da rede elétrica
- * @return char* com string referente ao endereço da pasta com os arquivos da rede elétrica lidos
- * @see leituraDBAR
- * @see leituraDSHNT
- * @see leituraDGD
- * @see leituraDLIN
- * @see leituraDTRF
- * @see leituraDREG
- * @see leituraDSWTC
- * @see leituraDSUBESTACAO
- * @see leituraVinicial
- * @note
- * @warning .
- */
 
 
 
 //Cálculo de Fluxo de Potência para um Alimentador de Distribuição Baseado na Varredura Direta/Inversa Trifasica Utilizando RPN
 /**
- * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa
+ * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa através da RNP de setores,
+ * utiliza as informacoes da rede na estrutura @p grafo do tipo TF_GRAFO, com as informacoes elétricas da rede, respeiando a configuacao topologica disponível na 
+ * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede  
  * 
  * Essa função efetua
  * A função retorna @c TF_PFSOLUTION.
  * 
  * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
- * @param numeroBarras
- * @param alimentador
- * @param ramos
- * @param Sbase
+ * @param numeroBarras quatidade total de barras
+ * @param alimentadores alimentadores da rede elétrica
+ * @param ramos vetor do tipo TF_DRAM com as informações dos ramos da rede
+ * @param Sbase double com a potencia base da rede
+ * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
+ * @param dadosAlimentadorParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
+ * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
  * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
  * @see fluxoPotencia_BFS_Multiplos
  * @note 
@@ -726,38 +689,30 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
         /*int numeroBarrasParam,*/ CONFIGURACAO *configuracoesParam, 
         /*double VFParam,*/ DADOSALIMENTADOR *dadosAlimentadorParam ,int indiceConfiguracao, RNPSETORES *matrizB/*,
         MATRIZCOMPLEXA *ZParam,*/ /* MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado*/ ){
-     int it, nvar, k = 0,i, conv = 0;
-    double *DV=NULL, nDV = 0, loading = 0, cargaAtivaTotal = 0 ;
-    long int *RNP = NULL;
-    BOOL control_action = 0;
-    double fatorDesbalanco;
-    double tempoBFS;
-    int indiceRNP;
-    int iniAlim;
-    int indiceRNPsetores;
-    int indice1, indice;
-    long int noS, noR, noN;
-    int nvar2;
+   
+    int it, nvar, k = 0,i, conv = 0; // declara as variáveis auxiliares da funcao, contadores indexadores e criterio de convergencia
+    double *DV=NULL, nDV = 0, loading = 0, cargaAtivaTotal = 0 ;  // declara as variáveis auxiliares da funcao, contadores indexadores e criterio de convergencia
+    BOOL control_action = 0; //Boleano que indica se os controles foram ativados
+    double fatorDesbalanco; 
+    double tempoBFS; //tempo de execucao
+    int indiceRNP; // indice da rnp de setores
+    int iniAlim; //no inicial 
+    int indiceRNPsetores; // indice da rnpSetor
+    int indice1, indice; //indices 
+    long int noS, noR, noN; // nos para percorrer a rnp
 
-    RNPSETOR rnpSetorSR;
+    RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
 
-    long int noProf[1000];
-    long int root;
-
-    // FILE *teste_barrasin=fopen("testesbarras.csv","w");
+    long int noProf[1000];// vetor auxiliar para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int root;//no raíz
 
 
 
-    TF_FILABARRAS *barraAtual = NULL, *barraProx = NULL;
+
     TF_NOADJACENTE *ramoAdj = NULL;
 
     TF_PFSOLUTION powerflow_result;
-    // recebe um alimentador por vez
 
-    // Vai rodar o fluxo na RNP
-    //----------------------------------------------------------------------
-    //RNP no formato de vetor
-    //
 
     // Determina o inicio do alimentador
     indiceRNP=alimentador.idAlim;
@@ -804,6 +759,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
         
         // fazer varrendo rnp setores
 
+        //percorre a RNP de setores em uma varredura direta
         k=0;
 
         indiceRNPsetores=0;
@@ -819,8 +775,8 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
             noR = noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indiceRNPsetores].profundidade - 1];
             //pega o no atual
             noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indiceRNPsetores].idNo;
-            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR);
-
+            rnpSetorSR = buscaRNPSetor(matrizB, noS, noR); //pega a RNP de um setor
+            // inicializa o critério de convergencia
             for (size_t ind_inter = 1; ind_inter < rnpSetorSR.numeroNos; ind_inter++)
             {
                 noN = rnpSetorSR.nos[ind_inter].idNo;
@@ -839,14 +795,14 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
 
        
         //---------------------------------------------------------------------- 
-        //Backward Sweep 
+        //Varredura inversa do fluxo de potencia 
         for (int indice = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos - 1; indice > 0; indice--) {
             int indice2 = indice - 1;
             //busca pelo nó raiz
             while (indice2 >= 0 && configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice2].profundidade != (configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].profundidade - 1)) indice2--;                
             int idSetorS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
             int idSetorR = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice2].idNo;
-            rnpSetorSR = buscaRNPSetor(matrizB, idSetorS, idSetorR);
+            rnpSetorSR = buscaRNPSetor(matrizB, idSetorS, idSetorR); //retorna a RNP do setor
             for (indice2 = rnpSetorSR.numeroNos - 1; indice2 > 0; indice2--) {
                 int indice3 = indice2 - 1;
                 while (indice3 >= 0 && rnpSetorSR.nos[indice3].profundidade != (rnpSetorSR.nos[indice2].profundidade - 1)) {
@@ -854,14 +810,15 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
                 }
                 int idBarra1 = rnpSetorSR.nos[indice3].idNo;
                 int idBarra2 = rnpSetorSR.nos[indice2].idNo;
-                // chama a etapa backward do BF
-                backward(&grafo[idBarra2-1], grafo);
+                
+                backward(&grafo[idBarra2-1], grafo); // chama a etapa backward do BF
    
             }
 
         }
         
 
+        //etapa de varredura direta
 
         for (int indice = 1; indice < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indice++) {
             noS = configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indice].idNo;
@@ -873,7 +830,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
                 
                 noN = rnpSetorSR.nos[indice1].idNo;
                 
-                control_action = forward(&grafo[noN-1], grafo);
+                control_action = forward(&grafo[noN-1], grafo); //chama a foward do fluxo
                 if (control_action) powerflow_result.tap_change_flag = true;
                 //armazena o nó barra na sua profundidade
                 BarraProf[rnpSetorSR.nos[indice1].profundidade] = rnpSetorSR.nos[indice1].idNo;
@@ -883,15 +840,12 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
         }
 
         
+
+        // faz uma varredura foward para calcular o critério de convergência
         k=0;
-
         indiceRNPsetores=0;
-
         iniAlim=configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indiceRNPsetores].idNo;
-
         noProf[configuracoesParam[indiceConfiguracao].rnp[indiceRNP].nos[indiceRNPsetores].profundidade] = iniAlim;
-
-        
         
         for (indiceRNPsetores = 1; indiceRNPsetores < configuracoesParam[indiceConfiguracao].rnp[indiceRNP].numeroNos; indiceRNPsetores++)
         {
@@ -918,9 +872,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
 
 
         }
-
-        
-        nDV = norma_inf(DV,nvar);
+    nDV = norma_inf(DV,nvar);
         if ((fabs(nDV) < tolerance) && !control_action){
             conv = 1;
             powerflow_result.convergencia = 1;
@@ -936,6 +888,9 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
     // Calcula resultados condensados de fluxo de potência  para o alimentador
     if(powerflow_result.convergencia == 1){
 
+
+
+        //faz uma varredura foward na RNP de setores para calcular os resultados
         
         k=0;
 
@@ -958,12 +913,12 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
             {
             noN = rnpSetorSR.nos[ind_inter].idNo;
 
-            powerflow_result.perdasResistivas += calculaPerdas(&grafo[noN-1], grafo);
-            loading = calculaCarregamento(&grafo[noN-1], grafo, 1000*Sbase);
-            cargaAtivaTotal += creal(cabs(grafo[noN-1].S[0]) + cabs(grafo[noN-1].S[1]) + cabs(grafo[noN-1].S[2]));
+            powerflow_result.perdasResistivas += calculaPerdas(&grafo[noN-1], grafo); // calcula perdas
+            loading = calculaCarregamento(&grafo[noN-1], grafo, 1000*Sbase); // calcula carregamento
+            cargaAtivaTotal += creal(cabs(grafo[noN-1].S[0]) + cabs(grafo[noN-1].S[1]) + cabs(grafo[noN-1].S[2])); // calcula carga ativa total
 
-            if (loading > powerflow_result.maiorCarregamentoCorrente)
-                powerflow_result.maiorCarregamentoCorrente = loading;
+            // deermina o maior carregamento
+            if (loading > powerflow_result.maiorCarregamentoCorrente) powerflow_result.maiorCarregamentoCorrente = loading;
             
 //            Menor tensão por fase
             if (cabs(grafo[noN-1].V[0]) < powerflow_result.menorTensaoABC[0])
@@ -986,13 +941,13 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
                 powerflow_result.menorTensao = cabs(grafo[noN-1].V[2]);
                 powerflow_result.quedaMaxima = (cabs(grafo[root-1].V[2]) - powerflow_result.menorTensao)/cabs(grafo[root-1].V[2]) * 100;
             }
-            
+            //calcula o desbalanço de tensão
             if (grafo[noN-1].fases == ABC){
                 fatorDesbalanco = desbalancoFasorialSeq(grafo[noN-1].V);
                 if (fatorDesbalanco > powerflow_result.desbalancoTensaoMaximo)
                     powerflow_result.desbalancoTensaoMaximo = fatorDesbalanco;
             }
-            
+            // calcula o desbalanço de corrente
             if (grafo[noN-1].fases == ABC){
                 for (int j =0; j < grafo[noN-1].numeroAdjacentes; j++){
                     if (grafo[grafo[noN-1].adjacentes[j].idNo].profundidade < grafo[noN-1].profundidade){
@@ -1013,14 +968,17 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
         }
 
 
-
+        //atribui o carregamento total
         powerflow_result.carregamentoRede = powerflow_result.perdasResistivas + cargaAtivaTotal;
+        //calculo da corrente de neutro da Subestação
         powerflow_result.correnteNeutroSE = cabs(grafo[root-1].adjacentes[0].Cur[0] + grafo[root-1].adjacentes[0].Cur[1] + grafo[root-1].adjacentes[0].Cur[2]);
         
+        //calcula o carregamento da rede
         powerflow_result.carregamentoRedeABC[0] = creal(grafo[root-1].V[0]*conj(grafo[root-1].adjacentes[0].Cur[0]));
         powerflow_result.carregamentoRedeABC[1] = creal(grafo[root-1].V[1]*conj(grafo[root-1].adjacentes[0].Cur[1]));
         powerflow_result.carregamentoRedeABC[2] = creal(grafo[root-1].V[2]*conj(grafo[root-1].adjacentes[0].Cur[2]));
         
+        //desbalanço de corrente na subestação
         if( cabs(grafo[root-1].adjacentes[0].Cur[0] + grafo[root-1].adjacentes[0].Cur[1] + grafo[root-1].adjacentes[0].Cur[2]) != 0 )
             powerflow_result.desbalancoCorrenteAlim = desbalancoFasorialSeq(grafo[root-1].adjacentes[0].Cur);
         else
@@ -1028,9 +986,6 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
     }
     
     free(DV); 
-    free(RNP);
-    free(barraProx);
-    free(barraAtual);
     free(ramoAdj);
     return(powerflow_result);
 }
@@ -1184,27 +1139,51 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica_tf(TF_GRAFO *grafo, lo
     free(DV); free(RNP); free(barraAtual); free(barraProx); free(ramoAdj);
     return(powerflow_result);
 }
-
+//Cálculo de Fluxo de Potência em todos os alimentadores realizada de acordo com o nível de tesão do alimentador
+/**
+ * @brief Função auxiliar para o cálculo de fluxo de potência trifásico nos alimentadores via método de Varredura Direta/Inversa através da RNP de setores,
+ * , realiza a verradura inicialmente nos alimentadores de 13.8kV, realiza depois nos alimentadores de 34.5kV com a carga do alimentador anterior refletida nele
+ * Verifica se há mudança de tap, caso positivo, reinicia o calculo do fluxo nos alimentadores de 13.8kV utiliza as informacoes da rede na estrutura @p grafo do tipo TF_GRAFO, com as informacoes elétricas da rede, respeiando a configuacao topologica disponível na 
+ * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede  
+ * Essa função efetua
+ * A função retorna @c TF_PFSOLUTION.
+ * 
+ * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
+ * @param numeroBarras quatidade total de barras
+ * @param alimentadores alimentadores da rede elétrica
+ * @param interfaceNiveis 
+ * @param numeroInterfaces
+ * @param opt_flow
+ * @param ramos vetor do tipo TF_DRAM com as informações dos ramos da rede
+ * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
+ * @param dadosAlimentadorParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
+ * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
+ * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
+ * @see fluxoPotencia_BFS_Multiplos
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ * 
+ * */
 void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
  long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow,/* long int numeroBarrasParam, */
         DADOSALIMENTADOR *dadosAlimentadorParam, /*DADOSTRAFO *dadosTrafoParam,*/GRAFO *grafoSDRParam,
         CONFIGURACAO *configuracoesParam, long int indiceConfiguracao, RNPSETORES *matrizB/*,
         MATRIZCOMPLEXA *ZParam*//*, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam*/){
 
-    // recebe a rede completa  e chama a fluxoPotencia_BFS_Alimentador_tf
-    //rede completa
-    long int nmed,nvar,nmedTotal;
+    long int nmed,nvar,nmedTotal; // declara as variáveis auxiliares
     int i,j, idAlim, it, n_threads;
-    TF_FILABARRAS *barraAtual = NULL;
     TF_GRAFO *no  = NULL;
     extern BOOL iteration_multiple_level_OPT;
-    BOOL flag_niveis[numeroAlimentadores];
-    int level_iteration =0;
+    BOOL flag_niveis[numeroAlimentadores]; // flag dos alimentadores que devem ser rodados
+    int level_iteration =0; 
     
     BOOL tap_modified = true;      // variable that checks if there is a change on tap position on the upper level of power flow
-    BOOL runPF_alimentador[numeroAlimentadores];
-    for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++) runPF_alimentador[idAlim] = true;
+    BOOL runPF_alimentador[numeroAlimentadores];  // inicia variável informando que todos os alimentadores que vão rodar o fluxo
+    for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++) runPF_alimentador[idAlim] = true; // inicia variável informando que todos os alimentadores que vão rodar o fluxo
     
+
+    //inicializa as variaveis que retonam os resultados
     TF_PFSOLUTION powerflow_result[numeroAlimentadores];
     TF_PFSOLUTION powerflow_result_rede;
     
@@ -1223,23 +1202,21 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     powerflow_result_rede.menorTensaoABC[1] = 0;
     powerflow_result_rede.menorTensaoABC[2] = 0;
     
-    
-    
+    //declara aquivos de saida
     
     FILE *arquivo;
     arquivo = fopen("tempos_alimentadores.txt","w+");
     double tempoAUX;
     
-    //Calculo de fluxo de potência para todos os alimentadores individualmente
-    double tol = 0.000001;
-    clock_t t1 = clock(); 
-        
+    //variaveis para calculo de tempo de execução
+        clock_t t1 = clock(); 
+    
     double tIni1 = omp_get_wtime(); 
     double tIni;
     double tEnd;
 
-    
-    
+    double tol = 0.000001;
+    //Calculo de fluxo de potência para todos os alimentadores individualmente
     // varre todos os alimentadores e seta a flag_niveis false para 34.5 e true para 13.8  
     // Prepara vetor booleano com flag de níveis
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
@@ -1274,7 +1251,6 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
             // Run lowest level - Multiplos Niveis - Primeiro os de 13.8 kV e alimentadores indicados como jusante
             if (flag_niveis[idAlim]){// este if calcula primeiro os fluxos para os alimentadores de 13.8 // verificar o alimentador pelo no raiz
                 if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_tf(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase,configuracoesParam,dadosAlimentadorParam,0,matrizB);
-                // if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
                 
                 else powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_IteracaoUnica(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
                 
@@ -1344,7 +1320,6 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
             // Run highest level - Multiplos Niveis - Segunda rodada com alimentadores a montante - 34.5kV
             if (!flag_niveis[idAlim]){
                 if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_tf(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase,configuracoesParam,dadosAlimentadorParam,0,matrizB);
-                // if (opt_flow) powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
                 else powerflow_result[idAlim] = fluxoPotencia_BFS_Alimentador_IteracaoUnica(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
                 
                 runPF_alimentador[idAlim] = false;     // finished calculating power flow on the feeder
@@ -1433,22 +1408,11 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
 
     //Função Atualiza SEs
         
-         
-    
-
-//    FILE *arq_alim;
-//    arq_alim = fopen("resultadoAlim.csv","a+");
-//    
-//    fprintf(arq_alim,"ID\tNUMERO_NOS\tBARRA\tTENSAO_NOM\tNOS\tITERACOES\tMENOR_TENSAO_A\tMENOR_TENSAO_B\tMENOR_TENSAO_C\tCARGA_TOTAL_A\tCARGA_TOTAL_B\tCARGA_TOTAL_C\tPERDAS\tCARREGAMENTO_REDE\tCARREG_CORRENTE\tMENRO_TENSAO\tQUEDA_MAX\tDESBALANCO_TENSAO\tDESBALANCO_CORRENTE\tDESBALANCO_ALIM\n");
+    //caculos de resultados
     int id_menorV, id_maxCar, id_maxCurNeutro, id_maxQueda, id_itmax, id_maxDesbalanco, id_maxDesbalancoCorrente, id_maxDesbalancoCorrenteAlim;
     powerflow_result_rede.iteracoes = 0;
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
-//        if ((idAlim == 18) || (idAlim ==94)){
-//            fprintf(arq_alim,"%d\t%d\t%ld\t%.1lf\t%ld\t%d",idAlim,powerflow_result[idAlim].convergencia,alimentadores[idAlim].noRaiz,grafo[alimentadores[idAlim].noRaiz].Vbase*sqrt(3)/1000,alimentadores[idAlim].numeroNos,powerflow_result[idAlim].iteracoes);
-//            fprintf(arq_alim,"\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf",powerflow_result[idAlim].menorTensaoABC[0],powerflow_result[idAlim].menorTensaoABC[1],powerflow_result[idAlim].menorTensaoABC[2], powerflow_result[idAlim].carregamentoRedeABC[0],powerflow_result[idAlim].carregamentoRedeABC[1],powerflow_result[idAlim].carregamentoRedeABC[2]);
-//            fprintf(arq_alim,"\t%lf\t%lf\t%lf\t%lf\t%lf", powerflow_result[idAlim].perdasResistivas* Sbase,powerflow_result[idAlim].carregamentoRede* Sbase,powerflow_result[idAlim].maiorCarregamentoCorrente,powerflow_result[idAlim].menorTensao, powerflow_result[idAlim].quedaMaxima);
-//            fprintf(arq_alim,"\t%lf\t%lf\t%lf\n", powerflow_result[idAlim].desbalancoTensaoMaximo * 100, powerflow_result[idAlim].desbalancoCorrenteMaximo *100, powerflow_result[idAlim].desbalancoCorrenteAlim*100);
-//        }
+      
         powerflow_result_rede.perdasResistivas += powerflow_result[idAlim].perdasResistivas;
         powerflow_result_rede.carregamentoRede += powerflow_result[idAlim].carregamentoRede;
         powerflow_result_rede.carregamentoRedeABC[0] += powerflow_result[idAlim].carregamentoRedeABC[0];
@@ -1459,33 +1423,33 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
         
         if (powerflow_result[idAlim].iteracoes > powerflow_result_rede.iteracoes){
             id_itmax = idAlim;
-            powerflow_result_rede.iteracoes = powerflow_result[idAlim].iteracoes;
+            powerflow_result_rede.iteracoes = powerflow_result[idAlim].iteracoes;// numero de iteracoes
         }
         if (powerflow_result[idAlim].maiorCarregamentoCorrente > powerflow_result_rede.maiorCarregamentoCorrente){
             id_maxCar = idAlim;
-            powerflow_result_rede.maiorCarregamentoCorrente = powerflow_result[idAlim].maiorCarregamentoCorrente;
+            powerflow_result_rede.maiorCarregamentoCorrente = powerflow_result[idAlim].maiorCarregamentoCorrente; // maior carregamento de corrente
         }
         if (powerflow_result[idAlim].correnteNeutroSE > powerflow_result_rede.correnteNeutroSE){
             id_maxCurNeutro = idAlim;
             double Ibase =  Sbase / (sqrt(3) * grafo[alimentadores[idAlim].idRaiz].Vbase);
-            powerflow_result_rede.correnteNeutroSE = powerflow_result[idAlim].correnteNeutroSE * Ibase;
+            powerflow_result_rede.correnteNeutroSE = powerflow_result[idAlim].correnteNeutroSE * Ibase; // maior corrente de neutro das SE da rede
         }
 
-        if (powerflow_result[idAlim].menorTensao < powerflow_result_rede.menorTensao){
+        if (powerflow_result[idAlim].menorTensao < powerflow_result_rede.menorTensao){ // menor tensão da rede
             id_menorV = idAlim;
             powerflow_result_rede.menorTensao = powerflow_result[idAlim].menorTensao;
         }
-        if (powerflow_result[idAlim].quedaMaxima > powerflow_result_rede.quedaMaxima){
+        if (powerflow_result[idAlim].quedaMaxima > powerflow_result_rede.quedaMaxima){ //maior queda de tensao da rede
             id_maxQueda = idAlim;
             powerflow_result_rede.quedaMaxima = powerflow_result[idAlim].quedaMaxima;
         }
 
-        if (powerflow_result[idAlim].desbalancoTensaoMaximo > powerflow_result_rede.desbalancoTensaoMaximo){
+        if (powerflow_result[idAlim].desbalancoTensaoMaximo > powerflow_result_rede.desbalancoTensaoMaximo){ // maior desbalanço da rede
             id_maxDesbalanco = idAlim;
             powerflow_result_rede.desbalancoTensaoMaximo = powerflow_result[idAlim].desbalancoTensaoMaximo;
         }
 
-        if (powerflow_result[idAlim].desbalancoCorrenteMaximo > powerflow_result_rede.desbalancoCorrenteMaximo){
+        if (powerflow_result[idAlim].desbalancoCorrenteMaximo > powerflow_result_rede.desbalancoCorrenteMaximo){ // maior desbalanço de corrente da rede
             id_maxDesbalancoCorrente = idAlim;
             powerflow_result_rede.desbalancoCorrenteMaximo = powerflow_result[idAlim].desbalancoCorrenteMaximo;
         }
@@ -1496,7 +1460,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
         } 
             
     }
-    for (int idInterfaces = 0; idInterfaces < numeroInterfaces; idInterfaces++){
+    for (int idInterfaces = 0; idInterfaces < numeroInterfaces; idInterfaces++){ // carregamento total da rede por fase e trifasico
     if (interfaceNiveis[idInterfaces][2] == 0){ //Para mútliplos níveis, até o momento somente dois
         idAlim = grafo[interfaceNiveis[idInterfaces][0]].idAlim;
         powerflow_result_rede.carregamentoRede -= powerflow_result[idAlim].carregamentoRede;
@@ -1506,19 +1470,16 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     }
     }
     
-//    fclose(arq_alim);
-    
+    //impressão de resultados
     powerflow_result_rede.carregamentoRede = powerflow_result_rede.carregamentoRedeABC[0] + powerflow_result_rede.carregamentoRedeABC[1] + powerflow_result_rede.carregamentoRedeABC[2];
     printf("Numero maximo de iteracoes: %d  (alim: %d  / %ld)\n", powerflow_result_rede.iteracoes, id_itmax,numeroAlimentadores);
     printf("Vmin: %lf p.u. (alim: %d)\n", powerflow_result_rede.menorTensao, id_menorV);
-//    printf("tensão mínima por fase: %.4lf \t %.4lf \t %.4lf kW\n", powerflow_result[18].menorTensaoABC[0] , powerflow_result[18].menorTensaoABC[1], powerflow_result[18].menorTensaoABC[2] );
     printf("quedaMax: %lf  %%  (alim: %d)\n", powerflow_result_rede.quedaMaxima,id_maxQueda);
     printf("maior carregamentoCorrente: %lf %%  (alim: %d)\n", powerflow_result_rede.maiorCarregamentoCorrente,id_maxCar);
     printf("carregamentoRede: %lf kW\n", powerflow_result_rede.carregamentoRede * Sbase);
     printf("carregamentoRede por fase: %.2lf kW \t %.2lf kW\t %.2lf kW\n", powerflow_result_rede.carregamentoRedeABC[0] * Sbase, powerflow_result_rede.carregamentoRedeABC[1] * Sbase, powerflow_result_rede.carregamentoRedeABC[2] * Sbase);
     printf("perdas totais: %lf kW\n", powerflow_result_rede.perdasResistivas * Sbase);
     printf("maximo desbalanco de tensão: %lf %%  (alim: %d)\n", powerflow_result_rede.desbalancoTensaoMaximo *100, id_maxDesbalanco);
-//    printf("maximo desbalanco de corrente: %lf %%  (alim: %d)\n", powerflow_result_rede.desbalancoCorrenteMaximo *100, id_maxDesbalanco);
     printf("maximo desbalanco de corrente de saida de alimentador: %lf %%  (alim: %d)\n", powerflow_result_rede.desbalancoCorrenteAlim *100, id_maxDesbalancoCorrenteAlim);
     printf("maxima corrente de neutro de saida de alimentador: %.2lf A  (alim: %d)\n", powerflow_result_rede.correnteNeutroSE *100, id_maxCurNeutro);
     
