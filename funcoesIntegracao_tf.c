@@ -1,6 +1,6 @@
 /**
- * @file funcoesFluxoVarredura.c
- * @author Julio Augusto Druzina Massignan
+ * @file funcoesIntegracao.c
+ * @author Julio Augusto Druzina Massignan e Vitor Henrique Pereira de Melo
  * @date 31 jul 2020
  * @brief Contém a implementação das funções utilizadas para o cálculo de fluxo de potência trifásico por Varredura Direta/Inversa por soma de correntes.
  * Este arquivo implementa as funções definidas na biblioteca funcoesFluxoVarredura.h
@@ -117,7 +117,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;// preenche o idNo
 
             //deixar vazio os outro também 
-            // sprintf((*grafoSDRParam)[contador].adjacentes[k].idAresta,"%ld",grafo_tf[i].adjacentes[k].idram);
+           
             
             // informa preenche a informacao se há medidor nos ramos
             if(grafo_tf[i].adjacentes[k].nmed>0)(*grafoSDRParam)[contador].adjacentes[k].medicao=medidorRamo;
@@ -180,27 +180,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         (*grafoSDRParam)[contador].priorizacoes.eusdGrupoB=0; 
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidores=0;
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidoresEspeciais=0;
-        // infos abaixo devem ser lidas
-        // (*grafoSDRParam)[contador].compensacoes.metaDicAnual = dadosCompensacao.metaDicAnual;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaDicMensal = dadosCompensacao.metaDicMensal;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaDicTrimestral = dadosCompensacao.metaDicTrimestral;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaDmicMensal = dadosCompensacao.metaDmicMensal;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaFicAnual = dadosCompensacao.metaFicAnual;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaFicMensal = dadosCompensacao.metaFicMensal;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.metaFicTrimestral = dadosCompensacao.metaFicTrimestral;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDicAcumAno = dadosCompensacao.resulDicAcumAno;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDicAcumMes = dadosCompensacao.resulDicAcumMes;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDicAcumTrimestre = dadosCompensacao.resulDicAcumTrimestre;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulDmicMes = dadosCompensacao.resulDmicMes;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulFicAcumAno = dadosCompensacao.resulFicAcumAno;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulFicAcumMes = dadosCompensacao.resulFicAcumMes;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].compensacoes.resulFicAcumTrimestre = dadosCompensacao.resulFicAcumTrimestre;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.eusdGrupoA = dadosPriorizacao.eusdGrupoA;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.eusdGrupoB = dadosPriorizacao.eusdGrupoB;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.qtdConsumidores = dadosPriorizacao.qtdConsumidores;// de onde vem essas infos
-        // (*grafoSDRParam)[contador].priorizacoes.qtdConsumidoresEspeciais = dadosPriorizacao.qtdConsumidoresEspeciais;// de onde vem essas infos 
-       
-        // (*grafoSDRParam)[i].idSetor= //esta info esta no grafo tf??
+
 
     }
 
@@ -234,7 +214,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         if (ramos_tf[i].tipo==regulador)
         {
         // nao preencher
-        //sprintf((*dadosReguladorSDRParam)[k].idRegulador,"%ld",i+1);
         (*dadosReguladorSDRParam)[k].tipoRegulador= comFluxoReverso; //o tipo de todos os reguladores é iniciado como com fluxo reverso
         (*dadosReguladorSDRParam)[k].ampacidade=ramos_tf[i].ampacidade; //preenche a amapacidade
         (*dadosReguladorSDRParam)[k].numeroTaps=ramos_tf[i].regulador.ntaps; // preenche o numero de taps
@@ -245,15 +224,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 
 
 
-    // seguindo o padrao do leitura
-    // 
-    //laço for 0 a numerodebarras
-        // converte dados de barras
-        // converte dados de linhas
-        // converte dados de trafos
-        
-    //preencher dadosRegulador
-    //
 }
 
 
@@ -289,7 +259,6 @@ void converteDadosAlimentadores_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras
     
     for(i=0; i<numeroBarras; i++){ 
         if(grafo_tf[i].tipo == 2){
-            // idraiz[numerosAlimentadores_tf[0]]=grafo_tf[i].idNo;
             idraiz[k]=grafo_tf[i].idNo;
             // numerosAlimentadores_tf[0]++;
             k++;   
