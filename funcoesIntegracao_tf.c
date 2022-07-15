@@ -512,16 +512,45 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
  * @warning 
  * Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  * */
-void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, int rnpA, int rnpP, long int idNovaConfiguracaoParam, DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,
-        int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam, */int idAntigaConfiguracaoParam, RNPSETORES *matrizB, /*MATRIZCOMPLEXA *ZParam,*/
+void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
+        int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam, int idAntigaConfiguracaoParam,*/ RNPSETORES *matrizB, /*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
-        TF_GRAFO *grafo, TF_ALIMENTADOR *alimentadores, 
-        TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow)
+        TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
+        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow)
 {
     long int contador;
     double quedaMaxima, menorTensao, VF, perdasTotais;
     perdasTotais = 0;
 
+
+
+    inicializaTensaoSDR_alimentadores_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadoresParam,1,configuracoesParam,matrizB,idNovaConfiguracaoParam);
+
+
+    //Impressão de resultados em arquivos
+    int ppt_aux = 0;
+    for (int idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
+            if (ppt_aux == 0){
+                salvaTensoesNodais("stateVT.txt","w+",alimentador_tf[idAlim],grafo_tf);
+                salvaCorrentesRamos("loadingI.txt", "w+", alimentador_tf[idAlim],grafo_tf, numeroBarras_tf, Sbase);
+                ppt_aux=1;
+            }
+            else{
+                salvaTensoesNodais("stateVT.txt","a+",alimentador_tf[idAlim],grafo_tf);
+                salvaCorrentesRamos("loadingI.txt", "a+", alimentador_tf[idAlim],grafo_tf, numeroBarras_tf, Sbase);
+            }
+    }
+
+    clock_t start2 = clock();
+    
+    
+    fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramos_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB);
+    // fluxoPotencia_Niveis_BFS_Multiplos(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true); 
+    // true converge FP | false faz iteraçao única (P&D)
+    clock_t end2 = clock();
+    double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
+    printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores_tf, numeroBarras_tf);
+    printf("\nTempo: %lf\n\n",  edtr_time);
     //if (idNovaConfiguracaoParam != idAntigaConfiguracaoParam) {
     // if (copiarDadosEletricos) {
             // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
@@ -541,14 +570,14 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
             // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra;
     // }
     //}
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosParam + 1) * sizeof (__complex__ double));
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = 100000;
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = 0;
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = 0;
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = 0;
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = 0;
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.ponderacao = 0;
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.quedaMaxima = 0;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosParam + 1) * sizeof (__complex__ double));
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = 100000;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = 0;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = 0;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = 0;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = 0;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.ponderacao = 0;
+    // configuracoesParam[idNovaConfiguracaoParam].objetivo.quedaMaxima = 0;
 
 
     
@@ -1167,7 +1196,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica_tf(TF_GRAFO *grafo, lo
  * */
 void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
  long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow,/* long int numeroBarrasParam, */
-        DADOSALIMENTADOR *dadosAlimentadorParam, /*DADOSTRAFO *dadosTrafoParam,*/GRAFO *grafoSDRParam,
+        DADOSALIMENTADOR *dadosAlimentadorParam, /*DADOSTRAFO *dadosTrafoParam,GRAFO *grafoSDRParam,*/
         CONFIGURACAO *configuracoesParam, long int indiceConfiguracao, RNPSETORES *matrizB/*,
         MATRIZCOMPLEXA *ZParam*//*, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam*/){
 

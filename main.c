@@ -199,33 +199,7 @@ int main(int argc, char** argv) {
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
     //incializaTensoesVarredura(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf);
     
-    inicializaTensaoSDR_alimentadores_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,1,configuracaoInicialSDR,rnpSetoresSDR,idConfiguracaoSDR);
-
-        //Impressão de resultados em arquivos
-    int ppt_aux = 0;
-    for (int idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
-            if (ppt_aux == 0){
-                salvaTensoesNodais("stateVT.txt","w+",alimentador_tf[idAlim],grafo_tf);
-                salvaCorrentesRamos("loadingI.txt", "w+", alimentador_tf[idAlim],grafo_tf, numeroBarras_tf, Sbase);
-                ppt_aux=1;
-            }
-            else{
-                salvaTensoesNodais("stateVT.txt","a+",alimentador_tf[idAlim],grafo_tf);
-                salvaCorrentesRamos("loadingI.txt", "a+", alimentador_tf[idAlim],grafo_tf, numeroBarras_tf, Sbase);
-            }
-    }
-
-    clock_t start2 = clock();
-    
-    
-    fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorSDRParam,grafoSDRParam,configuracaoInicialSDR,idConfiguracaoSDR,rnpSetoresSDR);
-    // fluxoPotencia_Niveis_BFS_Multiplos(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true); 
-    // true converge FP | false faz iteraçao única (P&D)
-    clock_t end2 = clock();
-    double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
-    printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores_tf, numeroBarras_tf);
-    printf("\nTempo: %lf\n\n",  edtr_time);
-
+    avaliaConfiguracaoSDR_tf(true,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,rnpSetoresSDR,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true);
     
     //--------------------------------------------------------------------------
     // Tempo Real
