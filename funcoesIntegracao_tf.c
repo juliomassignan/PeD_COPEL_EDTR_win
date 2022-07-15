@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-/**
- * @file funcoesIntegracao.c
- * @author Julio Augusto Druzina Massignan e Vitor Henrique Pereira de Melo
- * @date 31 jul 2020
- * @brief Contém a implementação das funções utilizadas para o cálculo de fluxo de potência trifásico por Varredura Direta/Inversa por soma de correntes.
- * Este arquivo implementa as funções definidas na biblioteca funcoesFluxoVarredura.h
-=======
 /* 
  * File:   funcoesIntegracao.h
  * Author: Julio Massignan e Vítor Henrique Pereira de Melo
->>>>>>> refs/remotes/origin/Linux2.1
  *
  * Created on 31 de Jul de 2022, 14:03
  */
@@ -124,12 +115,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
             
             (*grafoSDRParam)[contador].adjacentes[k].idNo=grafo_tf[i].adjacentes[k].idNo+1;// preenche o idNo
 
-<<<<<<< HEAD
-            //deixar vazio os outro também 
-           
-            
-=======
->>>>>>> refs/remotes/origin/Linux2.1
             // informa preenche a informacao se há medidor nos ramos
             if(grafo_tf[i].adjacentes[k].nmed>0)(*grafoSDRParam)[contador].adjacentes[k].medicao=medidorRamo;
             else (*grafoSDRParam)[contador].adjacentes[k].medicao=semMedidor;
@@ -191,10 +176,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         (*grafoSDRParam)[contador].priorizacoes.eusdGrupoB=0; 
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidores=0;
         (*grafoSDRParam)[contador].priorizacoes.qtdConsumidoresEspeciais=0;
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/Linux2.1
 
     }
 
@@ -230,12 +211,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
         }
     }
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> refs/remotes/origin/Linux2.1
 }
 
 
@@ -270,11 +245,7 @@ void converteDadosAlimentadores_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras
     int idraiz[numerosAlimentadores_tf]; //aloca o vetor com as raízes do sistema
     
     for(i=0; i<numeroBarras; i++){ 
-<<<<<<< HEAD
-        if(grafo_tf[i].tipo == 2){
-=======
         if(grafo_tf[i].tipo == 2){ // se for nó raíz guarda no grafo
->>>>>>> refs/remotes/origin/Linux2.1
             idraiz[k]=grafo_tf[i].idNo;
             k++;   
         }
