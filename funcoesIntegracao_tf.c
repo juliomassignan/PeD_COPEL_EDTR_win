@@ -516,12 +516,15 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
         int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam, int idAntigaConfiguracaoParam,*/ RNPSETORES *matrizB, /*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
-        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow)
+        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow, long int numeroTrafosParam)
 {
     long int contador;
-    double quedaMaxima, menorTensao, VF, perdasTotais;
+    double quedaMaxima, menorTensao, VFparam, perdasTotais;
     perdasTotais = 0;
 
+    TF_PFSOLUTION *powerflowresult_alim=NULL;
+    TF_PFSOLUTION powerflowresult_rede;
+    TF_RESULTSPKG resultados_fp_tf;
 
 
     inicializaTensaoSDR_alimentadores_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadoresParam,1,configuracoesParam,matrizB,idNovaConfiguracaoParam);
@@ -544,42 +547,52 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, CONFIGURACAO *configuraco
     clock_t start2 = clock();
     
     
-    fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramos_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB);
-    // fluxoPotencia_Niveis_BFS_Multiplos(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramo_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true); 
+    resultados_fp_tf=fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramos_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB);
     // true converge FP | false faz iteraçao única (P&D)
     clock_t end2 = clock();
     double edtr_time = (double)(end2 - start2) / CLOCKS_PER_SEC;
     printf("\nNumero Alimentadores: %d \t Numero Barras: %d \t\t\n\n", numeroAlimentadores_tf, numeroBarras_tf);
     printf("\nTempo: %lf\n\n",  edtr_time);
-    //if (idNovaConfiguracaoParam != idAntigaConfiguracaoParam) {
+    // if (idNovaConfiguracaoParam != idAntigaConfiguracaoParam) {
     // if (copiarDadosEletricos) {
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
-            // for (contador = 1; contador <= numeroBarrasParam; contador++) {
-                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.iJusante[contador];
-                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.corrente[contador];
-                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.potencia[contador];
-                // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra[contador];
-            // }
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = malloc((numeroBarrasParam + 1) * sizeof (__complex__ double));
+    //         for (contador = 1; contador <= numeroBarrasParam; contador++) {
+    //             configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.iJusante[contador];
+    //             configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.corrente[contador];
+    //             configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.potencia[contador];
+    //             configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra[contador] = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra[contador];
+    //         }
     // } else { //não mantém os dados elétricos individualmente, somente copia os ponteiros para os vetores com dados elétricos
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.iJusante;
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.corrente;
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.potencia;
-            // configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra;
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.iJusante = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.iJusante;
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.corrente = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.corrente;
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.potencia = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.potencia;
+    //         configuracoesParam[idNovaConfiguracaoParam].dadosEletricos.vBarra = configuracoesParam[idAntigaConfiguracaoParam].dadosEletricos.vBarra;
     // }
-    //}
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosParam + 1) * sizeof (__complex__ double));
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = 100000;
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = 0;
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = 0;
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = 0;
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = 0;
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.ponderacao = 0;
-    // configuracoesParam[idNovaConfiguracaoParam].objetivo.quedaMaxima = 0;
+    // }
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosParam + 1) * sizeof (__complex__ double));
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = resultados_fp_tf.rede.menorTensao;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = cabs(resultados_fp_tf.rede.maiorCarregamentoPotencia);
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = resultados_fp_tf.rede.maiorCarregamentoCorrente;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = resultados_fp_tf.rede.maiorCarregamentoTrafo;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.perdasResistivas = resultados_fp_tf.rede.perdasResistivas;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.ponderacao = 0;
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.quedaMaxima = resultados_fp_tf.rede.quedaMaxima;
+    
+    //preenche resultados por alimentador
+    for (int i=0;i<configuracoesParam[idNovaConfiguracaoParam].numeroRNP;i++)
+    {
+        configuracoesParam[idNovaConfiguracaoParam].rnp[i].fitnessRNP.potenciaAlimentador = resultados_fp_tf.alim[i].carregamentoRede;
+        configuracoesParam[idNovaConfiguracaoParam].rnp[i].fitnessRNP.maiorCarregamentoCorrente = resultados_fp_tf.alim[i].maiorCarregamentoCorrente;
+        configuracoesParam[idNovaConfiguracaoParam].rnp[i].fitnessRNP.carregamentoRede=resultados_fp_tf.alim[i].carregamentoRede;
+        configuracoesParam[idNovaConfiguracaoParam].rnp[i].fitnessRNP.perdasResistivas = resultados_fp_tf.alim[i].perdasResistivas;
+    }
 
 
+    VFparam=cabs(grafo_tf[0].Vbase);
+    calculaPonderacao(configuracoesParam,idNovaConfiguracaoParam,VFparam);
     
     if (todosAlimentadores) //calcula os valores de fitness para todos os alimentadores
     {
@@ -729,7 +742,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
     int indiceRNPsetores; // indice da rnpSetor
     int indice1, indice; //indices 
     long int noS, noR, noN; // nos para percorrer a rnp
-
+    complex carregamentoNo;
     RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
 
     long int noProf[1000];// vetor auxiliar para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
@@ -764,6 +777,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
     powerflow_result.tap_change_flag = false;
     powerflow_result.convergencia = 0;
     powerflow_result.maiorCarregamentoCorrente = 0;
+    powerflow_result.maiorCarregamentoPotencia = 0;
     powerflow_result.perdasResistivas = 0;
     powerflow_result.maiorCarregamentoTrafo = 0;
     powerflow_result.carregamentoRede = 0;
@@ -909,7 +923,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
             break;
         }
     }
-
+    carregamentoNo=0;
             
     //calculo de resultados
     
@@ -944,11 +958,11 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
 
             powerflow_result.perdasResistivas += calculaPerdas(&grafo[noN-1], grafo); // calcula perdas
             loading = calculaCarregamento(&grafo[noN-1], grafo, 1000*Sbase); // calcula carregamento
-            cargaAtivaTotal += creal(cabs(grafo[noN-1].S[0]) + cabs(grafo[noN-1].S[1]) + cabs(grafo[noN-1].S[2])); // calcula carga ativa total
-
+            cargaAtivaTotal += creal(grafo[noN-1].S[0]) + creal(grafo[noN-1].S[1]) + creal(grafo[noN-1].S[2]); // calcula carga ativa total
+            carregamentoNo = grafo[noN-1].S[0]+ grafo[noN-1].S[1] + grafo[noN-1].S[2];
             // deermina o maior carregamento
             if (loading > powerflow_result.maiorCarregamentoCorrente) powerflow_result.maiorCarregamentoCorrente = loading;
-            
+            if (creal(carregamentoNo)>creal(powerflow_result.maiorCarregamentoPotencia)) powerflow_result.maiorCarregamentoPotencia =carregamentoNo;
 //            Menor tensão por fase
             if (cabs(grafo[noN-1].V[0]) < powerflow_result.menorTensaoABC[0])
                 powerflow_result.menorTensaoABC[0] = cabs(grafo[noN-1].V[0]);
@@ -1194,12 +1208,12 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica_tf(TF_GRAFO *grafo, lo
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  * 
  * */
-void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
- long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow,/* long int numeroBarrasParam, */
+TF_RESULTSPKG fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase,
+        long int **interfaceNiveis,long int numeroInterfaces, BOOL opt_flow,/* long int numeroBarrasParam, */
         DADOSALIMENTADOR *dadosAlimentadorParam, /*DADOSTRAFO *dadosTrafoParam,GRAFO *grafoSDRParam,*/
         CONFIGURACAO *configuracoesParam, long int indiceConfiguracao, RNPSETORES *matrizB/*,
-        MATRIZCOMPLEXA *ZParam*//*, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam*/){
-
+        MATRIZCOMPLEXA *ZParam*//*, int *indiceRegulador, DADOSREGULADOR *dadosRegulador, MATRIZMAXCORRENTE * maximoCorrenteParam*/)
+{
     long int nmed,nvar,nmedTotal; // declara as variáveis auxiliares
     int i,j, idAlim, it, n_threads;
     TF_GRAFO *no  = NULL;
@@ -1213,9 +1227,15 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     
 
     //inicializa as variaveis que retonam os resultados
-    TF_PFSOLUTION powerflow_result[numeroAlimentadores];
+    //TF_PFSOLUTION powerflow_result[numeroAlimentadores];
     TF_PFSOLUTION powerflow_result_rede;
+    TF_PFSOLUTION powerflow_result[numeroAlimentadores];
+
+    TF_RESULTSPKG resultado;
     
+
+
+
     powerflow_result_rede.convergencia = 0;
     powerflow_result_rede.maiorCarregamentoCorrente = 0;
     powerflow_result_rede.perdasResistivas = 0;
@@ -1230,7 +1250,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     powerflow_result_rede.menorTensaoABC[0] = 0;
     powerflow_result_rede.menorTensaoABC[1] = 0;
     powerflow_result_rede.menorTensaoABC[2] = 0;
-    
+    powerflow_result[idAlim].maiorCarregamentoPotencia =0;
     //declara aquivos de saida
     
     FILE *arquivo;
@@ -1454,6 +1474,14 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
             id_itmax = idAlim;
             powerflow_result_rede.iteracoes = powerflow_result[idAlim].iteracoes;// numero de iteracoes
         }
+
+        if (creal(powerflow_result[idAlim].maiorCarregamentoPotencia)>creal(powerflow_result_rede.maiorCarregamentoPotencia))
+        {
+            powerflow_result_rede.maiorCarregamentoPotencia=powerflow_result[idAlim].maiorCarregamentoPotencia;
+        }
+
+
+
         if (powerflow_result[idAlim].maiorCarregamentoCorrente > powerflow_result_rede.maiorCarregamentoCorrente){
             id_maxCar = idAlim;
             powerflow_result_rede.maiorCarregamentoCorrente = powerflow_result[idAlim].maiorCarregamentoCorrente; // maior carregamento de corrente
@@ -1528,7 +1556,8 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
             }
     }
     
-
-
+    resultado.alim=powerflow_result;
+    resultado.rede = powerflow_result_rede;
+    return resultado;
 
 }

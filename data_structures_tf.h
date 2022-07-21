@@ -117,6 +117,27 @@ typedef struct {
     
 } TF_DLOAD;
 
+//
+/*Dados das subestações*/
+/**
+ * @brief Define a estrutura de dados das subestações
+ * 
+ * 
+ */
+
+typedef struct 
+{
+    long int ID; //identificação da subestação
+    long int idTrafoSE; //idtrafo
+    double V_pri; //Tensão do primário 
+    double V_sec; // Tensão do secundário 
+    double Snom; // potencia nominal
+} TF_DTRFSE;
+
+
+
+
+
 // 
 /*Dados das shunts de barra*/
 /**
@@ -483,6 +504,7 @@ typedef struct {
     int convergencia;       //Status de convergência do cálculo de fluxo de potência
     int iteracoes;          //Número de iterações para obter convergência
     BOOL tap_change_flag;       // Flag de mudança de tap no alimentador
+    complex maiorCarregamentoPotencia; //maior carregamento em potencia da rede
     double maiorCarregamentoCorrente;   //Maior valor de carregamento em percentual 
     double perdasResistivas;            //Valor total de perdas na rede elétrica
     double maiorCarregamentoTrafo;      //Carregamento em percentual das subestações
@@ -504,7 +526,12 @@ typedef struct {
 
 
 
+typedef struct {
 
+    TF_PFSOLUTION * alim;
+    TF_PFSOLUTION rede;
+
+} TF_RESULTSPKG;
 
 
 // ----------------------------------------------
@@ -531,7 +558,7 @@ typedef struct {
     char COD_CH[15]; //Código COPEL da Chave início Alimentador
     char nome[40];   //nome do alimentador    
     char sigla_SE[7];   //sigla da subestação
-
+    long int noRaiz; // Identificador do no raiz do alimentador
     TF_ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
     int ID_SE;       // identificador da subestação
     int ID_TR;       // identificador do trafo da Se
@@ -539,6 +566,21 @@ typedef struct {
     // Sumário de cálculo
     TF_PFSOLUTION *powerflow_summary;
 } TF_DALIM;
+
+// /**
+//  * @brief Define a estrutura de dados que comporta os dados de cada alimentador
+//  * 
+//  */
+// typedef struct
+// {
+//     long int ID; //id do alimentador
+//     long int noRaiz; //id do nó raiz
+//     long int idSE; //id da subestação
+//     long int idTrafoSE; // id do trafo da subestação
+//     double Vnom; //Tensão nominal do alimentador
+// }TF_DALIM;
+
+
 
 // 
 /*Dados estáticos de subestações do sistema de distribuição*/

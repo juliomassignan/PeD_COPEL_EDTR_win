@@ -344,6 +344,54 @@ void leituraDREG(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR 
  */
 void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR **barras, long int *numeroBarras);
 
+
+//------------------------------------------------------------------------------
+// Leitura de dados de DALIM
+/**
+ * @brief Função auxiliar para a leitura do arquivo DALIM.csv, referente às informações dos alimentadores 
+ *
+ * Essa função realiza a leitura do arquivo DTRFSE.csv que contém os dados relativos aos alimentadores do sistema. 
+ * Armazena estes dados dentro da estrutura de dados TF_DALIM (que indica um alimentador da rede elétrica).
+ * Também é responsável pela alocação de memória necessária para armazenar as informações referentes aos alimentadores da rede elétrica.
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DALIM, @p **DALIM onde são armazenados dados dos alimentadores
+ * um parâmetro de entrada e saída @p numeroAlim para indicar a quantidade total de alimentadores no circuito
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DALIM,
+ * A função retorna @c void.
+ * 
+ * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
+ * @param DALIM é um ponteiro para o ponteiro da estrutura do tipo do TF_DALIM, onde são retornadas as informações dos alimentadors da rede
+ * @param numeroAlim retorna a quantidade total de alimentadores
+ * @return void.
+ * @see leituraDados
+ * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void leituraDALIM(FILE *arquivo, TF_DALIM **DALIM, long int *numeroAlim);
+
+
+//------------------------------------------------------------------------------
+// Leitura de dados de DTRFSE
+/**
+ * @brief Função auxiliar para a leitura do arquivo DTRFSE.csv, referente às informações das subestações 
+ *
+ * Essa função realiza a leitura do arquivo DTRFSE.csv que contém os dados relativos às subestações do sistema. 
+ * Armazena estes dados dentro da estrutura de dados TF_DTRFSE (que indica uma subestação da rede elétrica).
+ * Também é responsável pela alocação de memória necessária para armazenar as informações referentes as subestações da rede elétrica.
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DTRFSE, @p **DSE onde são armazenados dados das subestações
+ * um parâmetro de entrada e saída @p numeroSEs para indicar a quantidade total de Subestações, e
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DTRFSE,
+ * A função retorna @c void.
+ * 
+ * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
+ * @param DSE é um ponteiro para o ponteiro da estrutura do tipo do TF_DTRFSE, onde são retornadas as informações das subestações da rede elétrica.
+ * @param numeroSEs retorna a quantidade total de subestações
+ * @return void.
+ * @see leituraDados
+ * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs);
+
 /**
  * @brief Função auxiliar para a leitura do arquivo Vinicial.csv, referente às informações de inicialização do cálculo de fluxo de potência.
  *

@@ -199,7 +199,7 @@ int main(int argc, char** argv) {
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
     //incializaTensoesVarredura(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf);
     
-    avaliaConfiguracaoSDR_tf(true,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,rnpSetoresSDR,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true);
+    avaliaConfiguracaoSDR_tf(true,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,rnpSetoresSDR,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTrafos);
     
     //--------------------------------------------------------------------------
     // Tempo Real

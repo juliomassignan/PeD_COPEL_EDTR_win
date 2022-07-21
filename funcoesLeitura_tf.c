@@ -1442,6 +1442,122 @@ void leituraDSWTC(FILE *arquivo, TF_DRAM **ramos, long int *numeroRamos, TF_DBAR
 
 
 //------------------------------------------------------------------------------
+// Leitura de dados de DTRFSE
+/**
+ * @brief Função auxiliar para a leitura do arquivo DTRFSE.csv, referente às informações das subestações 
+ *
+ * Essa função realiza a leitura do arquivo DTRFSE.csv que contém os dados relativos às subestações do sistema. 
+ * Armazena estes dados dentro da estrutura de dados TF_DTRFSE (que indica uma subestação da rede elétrica).
+ * Também é responsável pela alocação de memória necessária para armazenar as informações referentes as subestações da rede elétrica.
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DTRFSE, @p **DSE onde são armazenados dados das subestações
+ * um parâmetro de entrada e saída @p numeroSEs para indicar a quantidade total de Subestações, e
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DTRFSE,
+ * A função retorna @c void.
+ * 
+ * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
+ * @param DSE é um ponteiro para o ponteiro da estrutura do tipo do TF_DTRFSE, onde são retornadas as informações das subestações da rede elétrica.
+ * @param numeroSEs retorna a quantidade total de subestações
+ * @return void.
+ * @see leituraDados
+ * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
+{
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
+
+    
+    //Aloca na memória espaço para os trafos
+    while ((carac = fgetc(arquivo)) != EOF) {
+      if (carac == '\n')
+        numLinhas++;
+    }
+    rewind(arquivo);
+    (*numeroSEs)=numLinhas;
+    if (((*DSE) = (TF_DTRFSE *)malloc(numLinhas * sizeof(TF_DTRFSE)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para as chaves !!!!");
+        exit(1); 
+    }
+        
+    // Le o arquivo até o fim
+    while( (fgets(blocoLeitura, 2000, arquivo))!= NULL ){
+        dados = blocoLeitura;
+        
+        (*DSE)[contador].ID = (getfield_int(dados,1));
+        (*DSE)[contador].idTrafoSE = (getfield_int(dados,2));
+        (*DSE)[contador].V_pri = (getfield_double(dados,3));
+        (*DSE)[contador].V_sec = (getfield_int(dados,4));
+        (*DSE)[contador].Snom  = (getfield_double(dados,5));
+        contador++;
+    }
+    
+}
+
+
+
+//------------------------------------------------------------------------------
+// Leitura de dados de DALIM
+/**
+ * @brief Função auxiliar para a leitura do arquivo DALIM.csv, referente às informações dos alimentadores 
+ *
+ * Essa função realiza a leitura do arquivo DTRFSE.csv que contém os dados relativos aos alimentadores do sistema. 
+ * Armazena estes dados dentro da estrutura de dados TF_DALIM (que indica um alimentador da rede elétrica).
+ * Também é responsável pela alocação de memória necessária para armazenar as informações referentes aos alimentadores da rede elétrica.
+ * Recebe como parâmetro de entrada e saída um ponteiro para ponteiro do tipo TF_DALIM, @p **DALIM onde são armazenados dados dos alimentadores
+ * um parâmetro de entrada e saída @p numeroAlim para indicar a quantidade total de alimentadores no circuito
+ * como parâmetros de entrada um ponteiro do arquivo @p arquivo a ser lido, um ponteiro para ponteiro do tipo DALIM,
+ * A função retorna @c void.
+ * 
+ * @param arquivo ponteiro para o arquivo onde está sendo realizada a leitura.
+ * @param DALIM é um ponteiro para o ponteiro da estrutura do tipo do TF_DALIM, onde são retornadas as informações dos alimentadors da rede
+ * @param numeroAlim retorna a quantidade total de alimentadores
+ * @return void.
+ * @see leituraDados
+ * @note As barras já devem ter sido alocadas para associar ramos que conectam as barras da rede elétrica.
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void leituraDALIM(FILE *arquivo, TF_DALIM **DALIM, long int *numeroAlim)
+{
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
+
+    
+    //Aloca na memória espaço para os trafos
+    while ((carac = fgetc(arquivo)) != EOF) {
+      if (carac == '\n')
+        numLinhas++;
+    }
+    rewind(arquivo);
+    (*numeroAlim)=numLinhas;
+    if (((*DALIM) = (TF_DALIM *)malloc(numLinhas * sizeof(TF_DALIM)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para as chaves !!!!");
+        exit(1); 
+    }
+        
+    // Le o arquivo até o fim
+    while( (fgets(blocoLeitura, 2000, arquivo))!= NULL ){
+        dados = blocoLeitura;
+        
+        (*DALIM)[contador].ID = (getfield_int(dados,1));// Identificação do alimentador
+        (*DALIM)[contador].ID_TR = (getfield_int(dados,2));// identificação do transformador
+        (*DALIM)[contador].ID_SE = (getfield_int(dados,3));// identificação da subestação
+        (*DALIM)[contador].noRaiz = (getfield_int(dados,4));// identificação do no raiz
+        (*DALIM)[contador].Vpri = (getfield_int(dados,5)); // tensão nominal do alimentador
+        (*DALIM)[contador].Snominal  = (getfield_double(dados,6)); // potencia nominal do alimentador
+        contador++;
+    }
+    
+}
+
+
+//------------------------------------------------------------------------------
 // Leitura de valores de tensão de inicialização do estimador
 /**
  * @brief Função auxiliar para a leitura do arquivo Vinicial.csv, referente às informações de inicialização do cálculo de fluxo de potência.
