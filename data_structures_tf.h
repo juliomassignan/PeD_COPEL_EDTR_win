@@ -132,6 +132,7 @@ typedef struct
     double V_pri; //Tensão do primário 
     double V_sec; // Tensão do secundário 
     double Snom; // potencia nominal
+    char sigla_SE[7];   //sigla da subestação
 } TF_DTRFSE;
 
 
@@ -551,20 +552,20 @@ typedef struct {
  */
 typedef struct {
     long int ID; //Identificador da subestação
-    TF_ESTADO estado;  // Estado do alimentador (energizada ou não)
     int tipo;       // livre
-    double Snominal; // Potência nominal do trafo do alimentador
     double Vpri;     // Tensão no nível primário do alimentador
     char COD_CH[15]; //Código COPEL da Chave início Alimentador
     char nome[40];   //nome do alimentador    
-    char sigla_SE[7];   //sigla da subestação
-    long int noRaiz; // Identificador do no raiz do alimentador
-    TF_ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
+    long int noRaiz; // Identificador do no raiz do alimentador (comparar por aqui, apagar depois)
+    
     int ID_SE;       // identificador da subestação
     int ID_TR;       // identificador do trafo da Se
     
+
+    TF_ESTADO estado;  // Estado do alimentador (energizada ou não)
     // Sumário de cálculo
     TF_PFSOLUTION *powerflow_summary;
+    TF_ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
 } TF_DALIM;
 
 // /**

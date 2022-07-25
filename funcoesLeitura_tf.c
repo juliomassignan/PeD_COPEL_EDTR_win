@@ -930,6 +930,49 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
 }
 
 //------------------------------------------------------------------------------
+// Leitura de dados de dados qualitativos de dados de subestação e alimentadores
+/**
+ 
+ * @param ....
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void leituraQualiSE(char *folder, long int *numeroSE, TF_DTRFSE **SES, long int *numeroDALIM, TF_DALIM **DALIM){
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    int i, j, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    int contador,carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
+    FILE *arquivo;
+    char text_aux[500];
+    long int **interfaceNiveis = NULL;
+
+    
+    // Leitura dos dados de medidores
+    //strcpy(text_aux,folder);
+    sprintf(text_aux,"%s",folder);
+    arquivo = fopen(strcat(text_aux,"DSES.csv"),"r");
+    numeroSE[0]=0;
+    numeroDALIM[0]=0;
+    if(arquivo != NULL)
+    {
+        leituraDTRFSE(arquivo,SES,numeroSE);
+        fclose(arquivo);
+    }
+    sprintf(text_aux,"%s",folder);
+    arquivo = fopen(strcat(text_aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
+    if(arquivo != NULL)
+    {
+        leituraDALIM(arquivo,DALIM,numeroDALIM);
+        fclose(arquivo);
+    }
+
+  
+ 
+}
+
+//------------------------------------------------------------------------------
 // Leitura de dados de GDs
 /**
  * @brief Função auxiliar para a leitura do arquivo DGD.csv, referente às informações dos geradores distribuídos. 
@@ -1487,11 +1530,14 @@ void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
     while( (fgets(blocoLeitura, 2000, arquivo))!= NULL ){
         dados = blocoLeitura;
         
-        (*DSE)[contador].ID = (getfield_int(dados,1));
-        (*DSE)[contador].idTrafoSE = (getfield_int(dados,2));
-        (*DSE)[contador].V_pri = (getfield_double(dados,3));
-        (*DSE)[contador].V_sec = (getfield_int(dados,4));
-        (*DSE)[contador].Snom  = (getfield_double(dados,5));
+        (*DSE)[contador].ID = (getfield_int(dados,1)); // ID - Identificação da subestação
+        (*DSE)[contador].idTrafoSE = (getfield_int(dados,2)); //idTrafoSE - identificação do transformador da subestação
+        (*DSE)[contador].V_pri = (getfield_double(dados,3)); // V_pri - Tensão do primério da subestação
+        (*DSE)[contador].V_sec = (getfield_double(dados,4)); // V_sec - Tensão do secundário da subestação
+        (*DSE)[contador].Snom  = (getfield_double(dados,5)); // Snom - Potência Nominal
+        strcpy((*DSE)[contador].sigla_SE,getfield(dados,6)); // sigla_SE - Sigla da subestação
+
+
         contador++;
     }
     
@@ -1550,7 +1596,11 @@ void leituraDALIM(FILE *arquivo, TF_DALIM **DALIM, long int *numeroAlim)
         (*DALIM)[contador].ID_SE = (getfield_int(dados,3));// identificação da subestação
         (*DALIM)[contador].noRaiz = (getfield_int(dados,4));// identificação do no raiz
         (*DALIM)[contador].Vpri = (getfield_int(dados,5)); // tensão nominal do alimentador
-        (*DALIM)[contador].Snominal  = (getfield_double(dados,6)); // potencia nominal do alimentador
+        (*DALIM)[contador].tipo=0;       // livre
+        strcpy((*DALIM)[contador].COD_CH,getfield(dados,6)); //Código COPEL da Chave início Alimentador
+        strcpy((*DALIM)[contador].nome,getfield(dados,7));   //nome do alimentador    
+
+
         contador++;
     }
     

@@ -392,6 +392,18 @@ void leituraDALIM(FILE *arquivo, TF_DALIM **DALIM, long int *numeroAlim);
  */
 void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs);
 
+//------------------------------------------------------------------------------
+// Leitura de dados de dados qualitativos de dados de subestação e alimentadores
+/**
+ 
+ * @param ....
+ * @return void.
+ * @see leituraDados
+ * @note 
+ * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ */
+void leituraQualiSE(char *folder, long int *numeroSE, TF_DTRFSE **SES, long int *numeroDALIM, TF_DALIM **DALIM);
+
 /**
  * @brief Função auxiliar para a leitura do arquivo Vinicial.csv, referente às informações de inicialização do cálculo de fluxo de potência.
  *

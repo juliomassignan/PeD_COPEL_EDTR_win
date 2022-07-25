@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
     long int numeroNos=0;
     long int **numeroMedidas = NULL,**numeroMedidas_PMU_tf = NULL,**numeroVirtuais_tf = NULL;
     long int **interfaceNiveis_tf = NULL;
+    long int numeroSES_tf=0,numeroDALIM_tf=0;
     long int numeroInterfaces_tf = 0;
     long int i = 0;
     char *folder = NULL;
@@ -74,8 +75,11 @@ int main(int argc, char** argv) {
     TF_GRAFO *grafo_tf = NULL;
     TF_DMED *medida_tf = NULL;
     TF_ALIMENTADOR *alimentador_tf = NULL, *areas_tf = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
-
+    TF_DTRFSE *DSES_tf=NULL;
+    TF_DALIM *DALIM_tf=NULL;
     TF_AREA_MEDICAO *areasMedicao_tf = NULL;
+    TF_PFSOLUTION powerflow_result_rede;
+    TF_PFSOLUTION *powerflow_result_alim=NULL;
     
     // compatibilizacao com a MRAM
     GRAFO *grafoSDRParam=NULL;//DEIXAR SÓ SDR
@@ -85,6 +89,7 @@ int main(int argc, char** argv) {
     DADOSALIMENTADOR *dadosAlimentadorSDRParam=NULL;
     LISTACHAVES *listaChavesSDR=NULL;
     CONFIGURACAO *configuracaoInicialSDR=NULL;
+    
     long int idConfiguracaoSDR=0;
     // Para estimação de demanda e simulações com séries temporais
     TF_CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
@@ -121,7 +126,9 @@ int main(int argc, char** argv) {
     
     // Leitura de Interface entre Níveis de Tensão - Subestações de 34.5 / 13.8 kV
     interfaceNiveis_tf = leituraDINTERSE(folder,"DINTERSE.csv", &numeroInterfaces_tf, &barra_tf,&numeroBarras_tf,&ramo_tf,&numeroRamos_tf);
-    
+    // Leitura dos arquivos opcionais DALIM.csv e DSES.csv
+    leituraQualiSE(folder,&numeroSES_tf,&DSES_tf,&numeroDALIM_tf,&DALIM_tf);
+
     clock_t a2 = clock();
     double tempo_A = (double)(a2 - a1) / CLOCKS_PER_SEC;
     printf("\nTempo Leitura: %lf\n\n",  tempo_A);
@@ -130,7 +137,6 @@ int main(int argc, char** argv) {
     // Cria estrutura de dados da rede elétrica
     geraGrafo(&grafo_tf, barra_tf, numeroBarras_tf,ramo_tf,numeroRamos_tf); 
     
- // Suprime barras de passagem - Aceleração de cálculo
  
 
     
@@ -138,9 +144,6 @@ int main(int argc, char** argv) {
     // Compatibilização com MRAN
     converteGrafo_TFtoSDR(grafo_tf,numeroBarras_tf,ramo_tf,numeroRamos_tf,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroTrafos, &numeroChaves);
     converteDadosAlimentadores_TFtoSDR(grafo_tf,numeroBarras_tf,numeroAlimentadores_tf,&dadosAlimentadorSDRParam);
-    // converteDadosAlimentadores_TFtoSDR_alt(alimentador_tf,numeroAlimentadores_tf,&dadosAlimentadorSDRParam);
-    //--------------------------------------------------------------------------
-    // atualizaEstadoChaves(grafoSDR,numeroBarras); 
     
     //Atualiza os estados das chaves de acordo com ESTADOS_CHS    
     LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras_tf);
@@ -161,15 +164,12 @@ int main(int argc, char** argv) {
     gravaDadosBarras(numeroBarras_tf, grafoSDRParam);
     salvaLinhas(numeroBarras_tf, grafoSDRParam);
     salvaChavesAMontante(listaChavesSDR, configuracaoInicialSDR[idConfiguracaoSDR],grafoSetoresSDR);
-    //gravaBarrasRT(dadosReguladorSDRParam, numeroReguladores, grafoSDRParam, numeroBarras);
-    //gravaDadosTrafo(numeroTrafos, dadosTrafoSDR);
 
     //==============Termino Compatibilizacao======================
 
 
     // Cria as listas encadeadas radiais dos alimentadores
     buscaProfundidadeAlimentadores(grafo_tf, numeroBarras_tf, &alimentador_tf, numeroAlimentadores_tf); 
-    //    for(i=0; i<numeroAlimentadores; i++) supressaoBarrasPassagem(grafo_tf, alimentador,i, ramo_tf);
 
     // Transforma em pu e cria matrizes de admitância iniciais
     calculaPU(grafo_tf, numeroBarras_tf, ramo_tf, numeroRamos_tf, Sbase);
@@ -177,8 +177,6 @@ int main(int argc, char** argv) {
     //Atualiza a posição de taps
     atualizaTaps(ramo_tf, numeroRamos_tf); //terminar o tap fixo de trafos de potência
 
-    //gravaBarrasRT(dadosReguladorSDRParam, numeroReguladores, grafoSDRParam, numeroBarras);
-    //gravaDadosTrafo(numeroTrafos, dadosTrafoSDR);
 
     
     //--------------------------------------------------------------------------
@@ -197,9 +195,8 @@ int main(int argc, char** argv) {
     
     // Fluxo de Potência via Varredura Direta/Inversa Trifásica por Níveis de Tensão
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
-    //incializaTensoesVarredura(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf);
     
-    avaliaConfiguracaoSDR_tf(true,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,rnpSetoresSDR,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTrafos);
+    avaliaConfiguracaoSDR_tf(true,true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,rnpSetoresSDR,-1,-1,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTrafos);
     
     //--------------------------------------------------------------------------
     // Tempo Real

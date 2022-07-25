@@ -593,7 +593,7 @@ void fluxoCargaAlimentador(int numeroBarrasParam, CONFIGURACAO *configuracoesPar
 }
 
 
-
+//calculo do carregamento do trafo da SE
 void carregamentoTrafo(DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam, 
         int numeroAlimentadoresParam, DADOSALIMENTADOR *dadosAlimentadorParam, 
         CONFIGURACAO *configuracoesParam, int idNovaConfiguracaoParam, 

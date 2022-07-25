@@ -511,6 +511,59 @@ void buscaProfundidadeAlimentadores(TF_GRAFO *grafo, long int numeroBarras, TF_A
     printf("\n");
 }
 
+
+/**
+ * @brief Função principal para rassociar circuitos os circuitos de alimentadores às informações qualitativas de DALIM
+ *
+ * A função retorna @c void .
+ * 
+ * 
+ * @param DALIM estrutura de dados com as informações qualitativas dos alimentadores
+ * @param numeroDalim quantidade total de DALIM
+ * @param alimentador estrutura de dados dos alimentadores
+ * @param numeroAlimentadores quantidade total de alimentadores
+ * @return void
+ * @note 
+ * @warning 
+ */
+void associaAlimentadorDALIM(TF_DALIM *DALIM, long int numeroDalim, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores) {
+    int i,j, idAlim = 0;
+    TF_FILABARRAS * lista_barras = NULL;
+    TF_FILABARRAS *barraAtual = NULL;
+    FILE *arquivo;
+    
+
+    
+
+
+    //Atribui profundidade alimentadores 
+    for(i=0; i<numeroAlimentadores; i++)
+    {   
+        barraAtual = &alimentadores[i].rnp[0];
+        for(j=0;j<numeroDalim;j++)
+        {
+            if (alimentadores[i].noRaiz == DALIM[j].noRaiz)
+            {
+                DALIM[j].circuito=&alimentadores[i];
+            }
+            if (barraAtual->prox==NULL)
+            {
+                DALIM[j].estado=aberto;
+
+            }
+            else
+            {
+                DALIM[j].estado=fechado;
+            }
+        }
+        
+           
+    }
+    
+    
+    
+}
+
 // Gera estrutura de dados do grafo que representa a rede elétricas
 /**
  * @brief Função principal que cria estrutura de dados para representar o grafo da rede elétrica e armazenar as condições topológicas e operacionais 
