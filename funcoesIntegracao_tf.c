@@ -1645,12 +1645,12 @@ void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimeta
         {
             idTrafo = alimentador_tf[indiceJ-1].DTRFSE->idTrafoSE;
             //a sequencia de rnps obedece a mesma sequencia de alimentadores com a diferença de uma posição 
-            configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] += configuracoesParam[idNovaConfiguracaoParam].rnp[indiceJ-1].fitnessRNP.potenciaAlimentador;
+            configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] += configuracoesParam[idNovaConfiguracaoParam].rnp[indiceJ-1].fitnessRNP.potenciaAlimentador;
         }
         for (indiceI = 1; indiceI <= numeroalimetadores_tf; indiceI++) //verifica se o trafo está sobrecarregado
          {     
            idTrafo = alimentador_tf[indiceJ-1].DTRFSE->idTrafoSE;  
-           potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo]) / (alimentador_tf[indiceI-1].DTRFSE->Snom* 10000); //(10000=1MVA/100) em porcentagem
+           potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[indiceI-1].DTRFSE->Snom* 10000); //(10000=1MVA/100) em porcentagem
             if (carregamentoTrafo < potencia)
                 carregamentoTrafo = potencia;
           //
@@ -1660,34 +1660,32 @@ void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimeta
         configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = carregamentoTrafo;
         
     }
-
-
     else //atualiza os valores considerando apenas os alimentadores que tiveram modificação
     {
         configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = configuracoesParam[idAntigaConfiguracaoParam].objetivo.maiorCarregamentoTrafo;
             
         // faz para a RNPORIGEM
         idTrafo = alimentador_tf[idRNPOrigem].DTRFSE->idTrafoSE;
-        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo];
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1];
         //verifica se o alimentador da RNP do alimentador de origem pertence a esse trafo. O indice do alimentador é o indice do vetor da rnp acrescido de 1. 
 
-        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
-        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
         
-        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo]) / (alimentador_tf[idRNPOrigem].DTRFSE[idTrafo].Snom * 10000);
+        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[idRNPOrigem].DTRFSE[idTrafo].Snom * 10000);
         if (configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo < potencia)
         configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = potencia;
 
         //verifica se o alimentador da RNP do alimentador de destino pertence a esse trafo. O indice do alimentador é o indice do vetor da rnp acrescido de 1.
         idTrafo = alimentador_tf[idRNPDestino].DTRFSE->idTrafoSE;
-        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo];
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo];
 
-        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
-        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
         
         //calcula a potencia que está sendo utilizada em porcentagem da capacidade
 
-        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo]) / (alimentador_tf[idRNPDestino].DTRFSE[idTrafo].Snom * 10000);
+        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[idRNPDestino].DTRFSE[idTrafo].Snom * 10000);
         if (configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo < potencia)
         configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = potencia;
             
