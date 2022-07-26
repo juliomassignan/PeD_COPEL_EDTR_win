@@ -526,43 +526,42 @@ void buscaProfundidadeAlimentadores(TF_GRAFO *grafo, long int numeroBarras, TF_A
  * @note 
  * @warning 
  */
-void associaAlimentadorDALIM(TF_DALIM *DALIM, long int numeroDalim, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores) {
-    int i,j, idAlim = 0;
-    TF_FILABARRAS * lista_barras = NULL;
-    TF_FILABARRAS *barraAtual = NULL;
-    FILE *arquivo;
-    
+// void associaAlimentadorDALIM(TF_DALIM *DALIM, long int numeroDalim, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores) {
+//     int i,j, idAlim = 0;
+//     TF_FILABARRAS * lista_barras = NULL;
+//     TF_FILABARRAS *barraAtual = NULL;
+//     FILE *arquivo;
 
     
 
 
-    //Atribui profundidade alimentadores 
-    for(i=0; i<numeroAlimentadores; i++)
-    {   
-        barraAtual = &alimentadores[i].rnp[0];
-        for(j=0;j<numeroDalim;j++)
-        {
-            if (alimentadores[i].noRaiz == DALIM[j].noRaiz)
-            {
-                DALIM[j].circuito=&alimentadores[i];
-            }
-            if (barraAtual->prox==NULL)
-            {
-                DALIM[j].estado=aberto;
+//     //Atribui profundidade alimentadores 
+//     for(i=0; i<numeroAlimentadores; i++)
+//     {   
+//         barraAtual = &alimentadores[i].rnp[0];
+//         for(j=0;j<numeroDalim;j++)
+//         {
+//             if (alimentadores[i].noRaiz == DALIM[j].noRaiz)
+//             {
+//                 DALIM[j].circuito=&alimentadores[i];
+//             }
+//             if (barraAtual->prox==NULL)
+//             {
+//                 DALIM[j].estado=aberto;
 
-            }
-            else
-            {
-                DALIM[j].estado=fechado;
-            }
-        }
+//             }
+//             else
+//             {
+//                 DALIM[j].estado=fechado;
+//             }
+//         }
         
            
-    }
+//     }
     
     
     
-}
+// }
 
 // Gera estrutura de dados do grafo que representa a rede elétricas
 /**

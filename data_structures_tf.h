@@ -21,7 +21,7 @@
 //TROCAR BOOL por TF_BOOL
 #include "data_structures.h"
 
-
+#include "data_structures_tf.h"
 
 //------------------------------------------------------------------------------
 //
@@ -373,6 +373,44 @@ typedef struct {
     
 } TF_DMED;
 
+//-----------------------------------------------------
+//ESTRUTURAS DE DADOS PARA ARMAZENAR RESULTADOS DE INTERESSE E INTERFACES COM OUTRAS FUNCIONALIDADES
+//
+//
+//
+//-----------------------------------------------------
+// 
+/*Dados de resultados condensados do cálculo de fluxo de potência*/
+/**
+ * @brief Dados de resultados condensados do cálculo de fluxo de potência para caracterizar as principais características de alimentadores e do sistema
+ *   
+ * Estrutura de dados para interface entre os resultados de cálculo de fluxo de potência e demais funcionalidades
+ *   Pode ser utilizada para armazenar as principais características em alimentadores individuais ou em subestações e sistema completo
+ */
+typedef struct {
+    int convergencia;       //Status de convergência do cálculo de fluxo de potência
+    int iteracoes;          //Número de iterações para obter convergência
+    BOOL tap_change_flag;       // Flag de mudança de tap no alimentador
+    complex maiorCarregamentoPotencia; //maior carregamento em potencia da rede
+    double maiorCarregamentoCorrente;   //Maior valor de carregamento em percentual 
+    double perdasResistivas;            //Valor total de perdas na rede elétrica
+    double maiorCarregamentoTrafo;      //Carregamento em percentual das subestações
+    double carregamentoRede;            //Carregamento total dos alimentadores
+    double menorTensao;                 //Valor de menor tensão na rede elétrica
+    double quedaMaxima;                 //Queda de tensão em percentual em relação à subestação (nó raiz)
+    double desbalancoTensaoMaximo;      //Valor máximo de desbalanço de tensão na rede elétrica
+    double desbalancoCorrenteMaximo;     //Valor máximo de desbalanço de corrente nos ramos da rede elétrica
+    double desbalancoCorrenteAlim;      //Valor máximo de desbalanço de corrente na saída dos alimentadores   
+    double correnteNeutroSE;            // Corrente de neutro na saída do alimentador
+    
+    double menorTensaoABC[3];                 //Valor de menor tensão na rede elétrica por fase
+    double quedaMaximaABC[3];                 //Queda de tensão em percentual em relação à subestação (nó raiz) por fase
+    double carregamentoRedeABC[3];            //Carregamento total dos alimentadores por fase
+    
+    
+    
+} TF_PFSOLUTION;
+
 
 
 //------------------------------------------------------------------------------
@@ -391,6 +429,24 @@ typedef struct Fila_tf {
     struct Fila_tf * prox;     //Ponteiro para o próximo nó na lista
 } TF_FILABARRAS; 
 
+typedef struct {
+    long int ID; //Identificador da subestação
+    int tipo;       // livre
+    double Vpri;     // Tensão no nível primário do alimentador
+    char COD_CH[15]; //Código COPEL da Chave início Alimentador
+    char nome[40];   //nome do alimentador    
+    long int noRaiz; // Identificador do no raiz do alimentador (comparar por aqui, apagar depois)
+    
+    int ID_SE;       // identificador da subestação
+    int ID_TR;       // identificador do trafo da Se
+    
+
+    TF_ESTADO estado;  // Estado do alimentador (energizada ou não)
+    // Sumário de cálculo
+    TF_PFSOLUTION *powerflow_summary;
+    // TF_ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
+} TF_DALIM;
+
 
 /**
  * @brief Estrutura de dados para representar circuitos alimentadores e respectiva topologia armazenada em lista encadeada através de RNP
@@ -401,6 +457,8 @@ typedef struct {
     long int idRaiz;    //Identificação sequencial do nó raiz ou início do alimentador
     long int idAlim;    //Identificação sequencial do alimentador
     long int numeroNos; //Quantidade de nós do alimentador
+    TF_DALIM *dalim;  // dados do alimentador
+    TF_DTRFSE *DTRFSE; // dados dos trafos das subestações
     TF_FILABARRAS rnp[1];  //Ponteiro para o início da lista encadeada (RNP) da topologia do alimentador
 } TF_ALIMENTADOR;
 
@@ -487,44 +545,6 @@ typedef struct {
     long int idSetorRNP;
 } TF_GRAFO;
 
-//-----------------------------------------------------
-//ESTRUTURAS DE DADOS PARA ARMAZENAR RESULTADOS DE INTERESSE E INTERFACES COM OUTRAS FUNCIONALIDADES
-//
-//
-//
-//-----------------------------------------------------
-// 
-/*Dados de resultados condensados do cálculo de fluxo de potência*/
-/**
- * @brief Dados de resultados condensados do cálculo de fluxo de potência para caracterizar as principais características de alimentadores e do sistema
- *   
- * Estrutura de dados para interface entre os resultados de cálculo de fluxo de potência e demais funcionalidades
- *   Pode ser utilizada para armazenar as principais características em alimentadores individuais ou em subestações e sistema completo
- */
-typedef struct {
-    int convergencia;       //Status de convergência do cálculo de fluxo de potência
-    int iteracoes;          //Número de iterações para obter convergência
-    BOOL tap_change_flag;       // Flag de mudança de tap no alimentador
-    complex maiorCarregamentoPotencia; //maior carregamento em potencia da rede
-    double maiorCarregamentoCorrente;   //Maior valor de carregamento em percentual 
-    double perdasResistivas;            //Valor total de perdas na rede elétrica
-    double maiorCarregamentoTrafo;      //Carregamento em percentual das subestações
-    double carregamentoRede;            //Carregamento total dos alimentadores
-    double menorTensao;                 //Valor de menor tensão na rede elétrica
-    double quedaMaxima;                 //Queda de tensão em percentual em relação à subestação (nó raiz)
-    double desbalancoTensaoMaximo;      //Valor máximo de desbalanço de tensão na rede elétrica
-    double desbalancoCorrenteMaximo;     //Valor máximo de desbalanço de corrente nos ramos da rede elétrica
-    double desbalancoCorrenteAlim;      //Valor máximo de desbalanço de corrente na saída dos alimentadores   
-    double correnteNeutroSE;            // Corrente de neutro na saída do alimentador
-    
-    double menorTensaoABC[3];                 //Valor de menor tensão na rede elétrica por fase
-    double quedaMaximaABC[3];                 //Queda de tensão em percentual em relação à subestação (nó raiz) por fase
-    double carregamentoRedeABC[3];            //Carregamento total dos alimentadores por fase
-    
-    
-    
-} TF_PFSOLUTION;
-
 
 
 typedef struct {
@@ -550,23 +570,6 @@ typedef struct {
  * 
  *  
  */
-typedef struct {
-    long int ID; //Identificador da subestação
-    int tipo;       // livre
-    double Vpri;     // Tensão no nível primário do alimentador
-    char COD_CH[15]; //Código COPEL da Chave início Alimentador
-    char nome[40];   //nome do alimentador    
-    long int noRaiz; // Identificador do no raiz do alimentador (comparar por aqui, apagar depois)
-    
-    int ID_SE;       // identificador da subestação
-    int ID_TR;       // identificador do trafo da Se
-    
-
-    TF_ESTADO estado;  // Estado do alimentador (energizada ou não)
-    // Sumário de cálculo
-    TF_PFSOLUTION *powerflow_summary;
-    TF_ALIMENTADOR *circuito;  //ponteiro para o circuito alimentador associado
-} TF_DALIM;
 
 // /**
 //  * @brief Define a estrutura de dados que comporta os dados de cada alimentador

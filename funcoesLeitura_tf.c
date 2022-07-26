@@ -939,7 +939,7 @@ long int **leituraDINTERSE(char *folder,char *file, long int *numeroInterfaces, 
  * @note 
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void leituraQualiSE(char *folder, long int *numeroSE, TF_DTRFSE **SES, long int *numeroDALIM, TF_DALIM **DALIM){
+void leituraQualiSE(char *folder, long int *numeroSE, TF_DTRFSE **DTRFSE, long int *numeroDALIM, TF_DALIM **DALIM){
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     int i, j, aux, k; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
@@ -952,12 +952,12 @@ void leituraQualiSE(char *folder, long int *numeroSE, TF_DTRFSE **SES, long int 
     // Leitura dos dados de medidores
     //strcpy(text_aux,folder);
     sprintf(text_aux,"%s",folder);
-    arquivo = fopen(strcat(text_aux,"DSES.csv"),"r");
+    arquivo = fopen(strcat(text_aux,"DTRFSE.csv"),"r");
     numeroSE[0]=0;
     numeroDALIM[0]=0;
     if(arquivo != NULL)
     {
-        leituraDTRFSE(arquivo,SES,numeroSE);
+        leituraDTRFSE(arquivo,DTRFSE,numeroSE);
         fclose(arquivo);
     }
     sprintf(text_aux,"%s",folder);
@@ -1536,9 +1536,8 @@ void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
         (*DSE)[contador].V_sec = (getfield_double(dados,4)); // V_sec - Tensão do secundário da subestação
         (*DSE)[contador].Snom  = (getfield_double(dados,5)); // Snom - Potência Nominal
         strcpy((*DSE)[contador].sigla_SE,getfield(dados,6)); // sigla_SE - Sigla da subestação
-
-
         contador++;
+        
     }
     
 }

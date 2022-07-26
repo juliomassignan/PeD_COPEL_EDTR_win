@@ -60,14 +60,13 @@
  * @warning .
  */
 
-void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *ramos_tf,long int nramos_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroTrafos, long int *numeroChaves)
+void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *ramos_tf,long int nramos_tf,GRAFO **grafoSDRParam,DADOSREGULADOR **dadosReguladorSDRParam,long int* numeroBarras, long int *numeroChaves)
 {
     
     int i,k,contador; // variaveis utilizadas como indexadores e contadores em loops
     int nreg=0; // variável que conta o numero de reguladores
 
-    (*numeroChaves)=0; // variável que conta o numero de chaves e é inicializada com zero
-    (*numeroTrafos)=0; // variavel que conta o numero de trafos e é inicializada com zero
+    (*numeroChaves)=0; // variável que conta o numero de chaves e é inicializada com zero // variavel que conta o numero de trafos e é inicializada com zero
     
     (*numeroBarras)=numeroBarras_tf; //que conta o numero de barras e é inicializada com o numero de barras trifasicas
     
@@ -127,7 +126,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
                 (*grafoSDRParam)[contador].adjacentes[k].subTipoAresta=outrosSubTipo;
                 if (grafo_tf[i].adjacentes[k].tipo==trafo)
                 {
-                  (*numeroTrafos)=(*numeroTrafos)+1;
+                //   (*numeroTrafos)=(*numeroTrafos)+1;
                 }
             }   
             //preenche a informacao dos ramos tipo regulador
@@ -512,10 +511,10 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
  * Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  * */
 void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
-        int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam, int idAntigaConfiguracaoParam,*/ RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
+        int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
-        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow, long int numeroTrafosParam)
+        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow, long int numeroTrafosParam, long int numeroTrafosSE)
 {
     long int contador;
     long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3; //inteiros que serão utilizados para contagem e indices de nos
@@ -550,7 +549,7 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
     } 
     else if(FirstEXEC == 0){ //calcula os valores de fitness para dois alimentadores específicos
 
-        // fluxoPotencia_alimentador_P_A_tf(grafo_tf,,numeroBarras_tf,alimentador_tf,ramos_tf,Sbase,configuracoesParam,dadosAlimentadorParam,idNovaConfiguracaoParam,matrizB,RNP_P,RNP_A,numeroInterfaces_tf,interfaceNiveis_tf);
+        fluxoPotencia_alimentador_P_A_tf(grafo_tf,numeroBarras_tf,alimentador_tf,ramos_tf,Sbase,configuracoesParam,dadosAlimentadorParam,idNovaConfiguracaoParam,matrizB,RNP_P,RNP_A,numeroInterfaces_tf,interfaceNiveis_tf,powerflow_result_rede,powerflow_result_alim);
     }
     else{
          printf("Erro -- Deve-se Executar para todos alimentadores ao menos uma vez !!!!");
@@ -580,6 +579,8 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
 
     VFparam=cabs(grafo_tf[0].Vbase);
     calculaPonderacao(configuracoesParam,idNovaConfiguracaoParam,VFparam);
+    carregamentoTrafo_tf(alimentador_tf,numeroAlimentadores_tf,numeroTrafosSE,configuracoesParam,idNovaConfiguracaoParam,idAntigaConfiguracaoParam,todosAlimentadores,RNP_P,RNP_A);
+
     
 }
 
@@ -1568,9 +1569,9 @@ long int numeroInterfaces, long int **interfaceNiveis )
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  * 
  * */
-TF_RESULTSPKG fluxoPotencia_alimentador_P_A_tf(TF_GRAFO *grafo_tf, TF_RESULTSPKG *last_result ,long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, TF_DRAM *ramos_tf,double Sbase,
+void fluxoPotencia_alimentador_P_A_tf(TF_GRAFO *grafo_tf ,long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, TF_DRAM *ramos_tf,double Sbase,
         /*int numeroBarrasParam,*/ CONFIGURACAO *configuracoesParam, 
-        /*double VFParam,*/ DADOSALIMENTADOR *dadosAlimentadorParam ,int indiceConfiguracao, RNPSETORES *matrizB, long int RNP_P, long int RNP_A /*,
+        /*double VFParam,*/ DADOSALIMENTADOR *dadosAlimentadorParam ,int indiceConfiguracao, RNPSETORES *matrizB, long int RNP_P, long int RNP_A, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim/*,
         MATRIZCOMPLEXA *ZParam,*/ /* MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado*/,
 long int numeroInterfaces, long int **interfaceNiveis )
 {
@@ -1578,8 +1579,7 @@ long int numeroInterfaces, long int **interfaceNiveis )
         long int noProf[1000];
 
 
-        TF_RESULTSPKG resultado;
-        resultado = (*last_result);
+     
 
         RNPSETOR rnpSetorSR;
 
@@ -1599,7 +1599,7 @@ long int numeroInterfaces, long int **interfaceNiveis )
 
         inicializaTensaoSDR_alimentador_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores,configuracoesParam,matrizB,RNP_P,indiceConfiguracao,root);
 
-        resultado.alim[RNP_P]=fluxoPotencia_BFS_Alimentador_tf(grafo_tf, numeroBarras_tf, alimentador_tf[RNP_P], ramos_tf, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
+        (*powerflow_result_alim)[RNP_P]=fluxoPotencia_BFS_Alimentador_tf(grafo_tf, numeroBarras_tf, alimentador_tf[RNP_P], ramos_tf, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
         
         // determina o no raiz do alimentador A
         iniAlim=configuracoesParam[indiceConfiguracao].rnp[RNP_A].nos[0].idNo;    
@@ -1615,13 +1615,145 @@ long int numeroInterfaces, long int **interfaceNiveis )
         grafo_tf[root-1].V[2]=grafo_tf[root-1].barra->Vinicial[2];
 
         inicializaTensaoSDR_alimentador_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores,configuracoesParam,matrizB,RNP_A,indiceConfiguracao,root);        
-        resultado.alim[RNP_A]=fluxoPotencia_BFS_Alimentador_tf(grafo_tf, numeroBarras_tf, alimentador_tf[RNP_P], ramos_tf, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
+        (*powerflow_result_alim)[RNP_A]=fluxoPotencia_BFS_Alimentador_tf(grafo_tf, numeroBarras_tf, alimentador_tf[RNP_P], ramos_tf, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
 
-        resultado.rede=compilaResultadosRede(resultado.alim,numeroAlimentadores,alimentador_tf,grafo_tf,numeroBarras_tf,Sbase,numeroInterfaces,interfaceNiveis);
+        (*powerflow_result_rede)=compilaResultadosRede((*powerflow_result_alim),numeroAlimentadores,alimentador_tf,grafo_tf,numeroBarras_tf,Sbase,numeroInterfaces,interfaceNiveis);
 
         
 
-    return resultado;
 
 }
 
+
+
+void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimetadores_tf, long int numerotrafosSE,
+        CONFIGURACAO *configuracoesParam, int idNovaConfiguracaoParam, 
+        int idAntigaConfiguracaoParam, BOOL todosAlimentadores, int idRNPOrigem, int idRNPDestino)
+{
+  int indiceI,indiceJ;
+  int idTrafo;
+  double potencia;
+  double carregamentoTrafo;
+  carregamentoTrafo=0;
+//realiza o cálculo para todos os alimentadores
+    if (todosAlimentadores) {
+        for(indiceI = 1; indiceI <= numerotrafosSE; indiceI++)
+        {
+            configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[indiceI] = 0+I*0;
+        }
+        for(indiceJ = 1; indiceJ<=numeroalimetadores_tf; indiceJ++) // calcula a potencia de cada trafo
+        {
+            idTrafo = alimentador_tf[indiceJ-1].DTRFSE->idTrafoSE;
+            //a sequencia de rnps obedece a mesma sequencia de alimentadores com a diferença de uma posição 
+            configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] += configuracoesParam[idNovaConfiguracaoParam].rnp[indiceJ-1].fitnessRNP.potenciaAlimentador;
+        }
+        for (indiceI = 1; indiceI <= numeroalimetadores_tf; indiceI++) //verifica se o trafo está sobrecarregado
+         {     
+           idTrafo = alimentador_tf[indiceJ-1].DTRFSE->idTrafoSE;  
+           potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo]) / (alimentador_tf[indiceI-1].DTRFSE->Snom* 10000); //(10000=1MVA/100) em porcentagem
+            if (carregamentoTrafo < potencia)
+                carregamentoTrafo = potencia;
+          //
+        // printf("capacidade %.2lf potencia do trafo  %lf carregamento %.2lf \n", dadosTrafoParam[indiceI].capacidade, cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[indiceI])/1000000, potencia);
+        } 
+        
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = carregamentoTrafo;
+        
+    }
+
+
+    else //atualiza os valores considerando apenas os alimentadores que tiveram modificação
+    {
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = configuracoesParam[idAntigaConfiguracaoParam].objetivo.maiorCarregamentoTrafo;
+            
+        // faz para a RNPORIGEM
+        idTrafo = alimentador_tf[idRNPOrigem].DTRFSE->idTrafoSE;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo];
+        //verifica se o alimentador da RNP do alimentador de origem pertence a esse trafo. O indice do alimentador é o indice do vetor da rnp acrescido de 1. 
+
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
+        
+        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo]) / (alimentador_tf[idRNPOrigem].DTRFSE[idTrafo].Snom * 10000);
+        if (configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo < potencia)
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = potencia;
+
+        //verifica se o alimentador da RNP do alimentador de destino pertence a esse trafo. O indice do alimentador é o indice do vetor da rnp acrescido de 1.
+        idTrafo = alimentador_tf[idRNPDestino].DTRFSE->idTrafoSE;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo];
+
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
+        
+        //calcula a potencia que está sendo utilizada em porcentagem da capacidade
+
+        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo]) / (alimentador_tf[idRNPDestino].DTRFSE[idTrafo].Snom * 10000);
+        if (configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo < potencia)
+        configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = potencia;
+            
+    }
+}
+
+
+
+//
+/**
+ * @brief Função para integrar as informações dos dados dos alimentadores e da subestação em cada alimentador 
+ *
+ * Essa função recebe como parâmetro o grafo do tipo TF_GRAFO, do fluxo de potência trifásico e realiza a conversão de suas informações para 
+ * para preencher o grafo @p **grafoSDRParam do tipo GRAFO. A partir do grafo trifásico também é preenchida a estrutura @p **dadosReguladorSDRParam , do tipo DADOSREGULADOR. Ambas estruturas são alocadas nessa funcao
+ * Além disso, ela retorna número de nós da rede @p numeroBarras , o número de transformadores em @p numeroTrafos , e o número de chaves em @p numeroChaves , que são ponteiros para long int.
+ * Todas estas informacoes serao necessarias para utilizar as funcoes da MRAN e o fluxo de potência por varredura de RNP
+ * @param grafo_tf grafo trifásico da rede com as informações que serão fornecidas nesta função
+ * @param  numeroBarras_tf inteiro com o número de barras da rede, segundo o fluxo trifásico
+ * @param ramos_tf vetor do tipo TF_DRAM com as informações dos ramos da rede, ulizada para preencher o grafoSDR e dadosRegulador
+ * @param nramos_tf inteiro que conta o número de ramos da rede
+ * @param grafoSDRParam ponteiro para um vetor do tipo GRAFO, retorna o grafo da rede a ser utilizado na MRAN 
+ * @param dadosReguladorSDRParam ponteiro para um vetor do tipo DADOSREGULADOR com as informacoes dos reguladores a ser utilizado na MRAN
+ * @param numeroBarras retorna o número de nos no grafo grafoSDRParam 
+ * @param numeroTrafos retorna o número de trafos
+ * @param numeroChaves retorna o numero de chaves na rede
+ * @return void.
+ * @see leituraBarras
+ * @see leituraLinhas
+ * @see leituraTrafos
+ * @see leituraDados
+ * @see geraGrafo
+ * @note
+ * @warning .
+ */
+
+void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long int numeroDALIM, long int numeroAlim_tf ,TF_ALIMENTADOR **alimentador_tf, long int *numeroTrafos)
+{
+
+    long int i,j;
+
+    for (i=0;i<numeroDALIM;i++)
+    {
+        
+        for (j=0;j<numeroAlim_tf;j++)
+        {
+            if(DALIM[i].noRaiz==(*alimentador_tf)[j].noRaiz)
+            {
+                (*alimentador_tf)[j].dalim=&DALIM[i];
+                break;
+            }
+        }
+    }
+
+    for (i=0;i<numeroTFSES;i++)
+    {
+        
+        for (j=0;j<numeroAlim_tf;j++)
+        {
+            if(DTRFSE[i].idTrafoSE==(*alimentador_tf)[j].dalim->ID_TR)
+            {
+                (*alimentador_tf)[j].DTRFSE=&DTRFSE[i];
+                break;
+            }
+        }
+    }
+
+    numeroTrafos[0]=numeroTFSES;
+
+}
