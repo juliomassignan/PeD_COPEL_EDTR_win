@@ -514,7 +514,7 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
         int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
-        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow, long int numeroTrafosParam, long int numeroTrafosSE)
+        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow,long int numeroTrafosSE)
 {
     long int contador;
     long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3; //inteiros que serão utilizados para contagem e indices de nos
@@ -558,7 +558,7 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
  
 
  
-    configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosParam + 1) * sizeof (__complex__ double));
+    configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosSE + 1) * sizeof (__complex__ double));
     configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = (*powerflow_result_rede).menorTensao;
     configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = cabs((*powerflow_result_rede).maiorCarregamentoPotencia);
     configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoCorrente = (*powerflow_result_rede).maiorCarregamentoCorrente;
@@ -1700,19 +1700,14 @@ void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimeta
 /**
  * @brief Função para integrar as informações dos dados dos alimentadores e da subestação em cada alimentador 
  *
- * Essa função recebe como parâmetro o grafo do tipo TF_GRAFO, do fluxo de potência trifásico e realiza a conversão de suas informações para 
- * para preencher o grafo @p **grafoSDRParam do tipo GRAFO. A partir do grafo trifásico também é preenchida a estrutura @p **dadosReguladorSDRParam , do tipo DADOSREGULADOR. Ambas estruturas são alocadas nessa funcao
- * Além disso, ela retorna número de nós da rede @p numeroBarras , o número de transformadores em @p numeroTrafos , e o número de chaves em @p numeroChaves , que são ponteiros para long int.
- * Todas estas informacoes serao necessarias para utilizar as funcoes da MRAN e o fluxo de potência por varredura de RNP
- * @param grafo_tf grafo trifásico da rede com as informações que serão fornecidas nesta função
- * @param  numeroBarras_tf inteiro com o número de barras da rede, segundo o fluxo trifásico
- * @param ramos_tf vetor do tipo TF_DRAM com as informações dos ramos da rede, ulizada para preencher o grafoSDR e dadosRegulador
- * @param nramos_tf inteiro que conta o número de ramos da rede
- * @param grafoSDRParam ponteiro para um vetor do tipo GRAFO, retorna o grafo da rede a ser utilizado na MRAN 
- * @param dadosReguladorSDRParam ponteiro para um vetor do tipo DADOSREGULADOR com as informacoes dos reguladores a ser utilizado na MRAN
- * @param numeroBarras retorna o número de nos no grafo grafoSDRParam 
- * @param numeroTrafos retorna o número de trafos
- * @param numeroChaves retorna o numero de chaves na rede
+ * Essa função recebe como parâmetro o @p *DTRFSE do tipo TF_DTRFSE, com as informações dos transformadores da subestação, @p DALIM do tipo TF_DALIM, com as informações do arquivo DALIM.csv
+ * o @p numeroTFSES um inteiro com o numero de trafos de subestação, @p numeroDALIM um inteiro com número de alimentadores no arquivo DALIM.csv, @p **alimentador_tf estrutura com os dados dos
+ * alimentadores trifásicos e que será preenchida
+ * @param DTRFSE Estrutura do tipo TF_DTRFSE com as informações dos transformadores das subestações
+ * @param  DALIM Estrutura do tipo TF_DALIM com as informações sobre os alimentadores disponivilizadas no arquivo DALIM.csv
+ * @param numeroTFSES Inteiro com o número de transformadores na subestação
+ * @param numeroDALIM Inteiro com o número de alimentadores no arquivo DALIM
+ * @param alimentadores alimentadores da rede elétrica
  * @return void.
  * @see leituraBarras
  * @see leituraLinhas
@@ -1723,7 +1718,7 @@ void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimeta
  * @warning .
  */
 
-void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long int numeroDALIM, long int numeroAlim_tf ,TF_ALIMENTADOR **alimentador_tf, long int *numeroTrafos)
+void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long int numeroDALIM, long int numeroAlim_tf ,TF_ALIMENTADOR **alimentador_tf)
 {
 
     long int i,j;
@@ -1753,7 +1748,5 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
             }
         }
     }
-
-    numeroTrafos[0]=numeroTFSES;
 
 }

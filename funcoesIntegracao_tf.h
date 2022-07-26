@@ -249,7 +249,7 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
         int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
-        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow, long int numeroTrafosParam, long int numeroTrafosSE);
+        TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow,long int numeroTrafosSE);
 
 
 
@@ -268,4 +268,4 @@ long int numeroInterfaces, long int **interfaceNiveis );
 
 
 
-void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long int numeroDALIM, long int numeroAlim_tf ,TF_ALIMENTADOR **alimentador_tf, long int *numeroTrafos);
+void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long int numeroDALIM, long int numeroAlim_tf ,TF_ALIMENTADOR **alimentador_tf);

@@ -64,7 +64,6 @@ int main(int argc, char** argv) {
     long int idConfiguracaoAntiga=0;
     long int i = 0;
     char *folder = NULL;
-    long int numeroTrafos=0;//dados da MRAN
     long int numeroChaves=0;//dados da MRAM
     extern int numeroSetores; //dados da MRAM
     
@@ -174,7 +173,7 @@ int main(int argc, char** argv) {
 
     // Insert the substation data in the feeder structure 
 
-    trafoSB_info(DTRFSES_tf,DALIM_tf,numeroTRFSES_tf,numeroDALIM_tf,numeroAlimentadores_tf,&alimentador_tf,&numeroTrafos);
+    trafoSB_info(DTRFSES_tf,DALIM_tf,numeroTRFSES_tf,numeroDALIM_tf,numeroAlimentadores_tf,&alimentador_tf);
 
     // Transforma em pu e cria matrizes de admitância iniciais
     calculaPU(grafo_tf, numeroBarras_tf, ramo_tf, numeroRamos_tf, Sbase);
@@ -201,7 +200,7 @@ int main(int argc, char** argv) {
     // Fluxo de Potência via Varredura Direta/Inversa Trifásica por Níveis de Tensão
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
     
-    avaliaConfiguracaoSDR_tf(true,true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTrafos,numeroTRFSES_tf);
+    avaliaConfiguracaoSDR_tf(true,true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
     
     //--------------------------------------------------------------------------
     // Tempo Real
