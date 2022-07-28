@@ -496,14 +496,35 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 
 
 /**
- * @brief Função Avalia configuracao
+ * @brief Função Avalia configuracao, realiza o cálculo do fluxo de potência para uma configuracao específica e compila os resultados, 
+ * recebe como parâmetros @p todosAlimentadores, um booleano que indica se o fluxo deve ser resolvido para todos os alimentadores ou apenas para dois
+ * @p FirstEXEC um boleano que indica se é a primeira execução do fluxo de potência, @p *powerflow_result_rede uma estrutura do tipo TF_PFSOLUTION que armazena
+ * os resultados todais da rede, @p powerflow_result_alim um vetor com os resultados de todos os alimentadores, @p configuracoesParam do tipo CONFIGURACAO
+ * com as informações das rnps e os resultados das configuracoes da rede, @p idNovaConfiguracaoParam um inteiro com a identificação da configuração atual,
+ * @p grafo_tf uma estrutura do tipo TF_GRAFO com as informações elétricas do grafo da rede, @p numeroBarras_tf com o número de barras totais de acordo com a rede trifásica
+ * @p alimentador_tf vetor do tipo TF_ALIMENTADOR, @p numeroAlimentadores_tf inteiro com o número de alimentadores na rede, @p ramos_tf estrutura do tipo TF_DRAM
+ * com as informações sobre os ramos da rede trifásica, @p Sbase double com a potência base da rede, @p interfaceNiveis_tf matriz de inteiro utilizada para fazer
+ * a interface entre niveis, @p numeroInterfaces_tf inteiro com o númeor de interfaces na rede, @p opt_flow boleano da opção de fluxo de potência @p numeroTrafosSE
+ * numero de trafos na subestação 
+ *  
  * 
  * 
- * 
- * 
- * 
- * 
- * @param 
+ * @param todosAlimentadores boleano que indica se o fluxo será realizado em todos os alimentadores
+ * @param FirstEXEC booleano que indica se é a primeira execução
+ * @param powerflow_result_rede estrutura do tipo TF_PFSOLUTION que guarda os resultados do fluxo de potência da rede
+ * @param powerflow_result_alim vetor do tipo TF_PFSOLUTION que guarda os resultados do fluxo de potência dos alimentadores
+ * @param configuracoesParam vetor do tipo CONFIGURACAO que guarda as informacoes das configuracoes
+ * @param idNovaConfiguracaoParam inteiro com o indice da configuracao atual
+ * @param dadosAlimentadorParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
+ * @param grafo_tf vetor do tipo TF_GRAFO com as informacoes trifasicas sobre a rede
+ * @param numeroBarras_tf inteiro com o número de barras da rede, segundo o fluxo trifásico
+ * @param alimentador_tf estrutura do tipo TF_ALIMENTADOR com as informações sobre os alimentadores 
+ * @param numeroAlimentadores_tf inteiro com o numero de alimentadores trifásicos
+ * @param ramos_tf vetor do tipo TF_DRAM com as informações dos ramos da rede, ulizada para preencher o grafoSDR e dadosRegulador
+ * @param Sbase potencia base do sistema
+ * @param interfaceNiveis_tf matriz de inteiros com o número de interfaces na rede
+ * @param  opt_flow boleano
+ * @param numeroTrafosSE numero de transformadores de subestacao
  * @return void
  * @see
  * @note 
@@ -511,22 +532,18 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
  * Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  * */
 void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
-        int numeroAlimentadoresParam, /*int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
-        /*MATRIZMAXCORRENTE *maximoCorrenteParam,*/ long int numeroBarrasParam, BOOL copiarDadosEletricos,
+        /* int numeroAlimentadoresParam,int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
+        /*MATRIZMAXCORRENTE *maximoCorrenteParam, long int numeroBarrasParam, /*BOOL copiarDadosEletricos,*/
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
         TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow,long int numeroTrafosSE)
-{
-    long int contador;
-    long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3; //inteiros que serão utilizados para contagem e indices de nos
-    long int iniAlim, root; // inteiro que guarda o inicio do alimentador
-    int k; // contador
-    long int noProf[1000]; 
-    double quedaMaxima, menorTensao, VFparam, perdasTotais;
-    perdasTotais = 0;
 
+{    
+    double VFparam,perdasTotais = 0; //variáveis para calculo de resultados
 
 
     RNPSETOR rnpSetorSR;
+
+    // aloca memoria para a estrutura de resultados
 
     if (FirstEXEC == 1)
     {
@@ -542,22 +559,23 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
 
     if (todosAlimentadores) //calcula os valores de fitness para todos os alimentadores
     {   
-        inicializaTensaoSDR_alimentadores_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadoresParam,1,configuracoesParam,matrizB,idNovaConfiguracaoParam);
+        inicializaTensaoSDR_alimentadores_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,1,configuracoesParam,matrizB,idNovaConfiguracaoParam);
         fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramos_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB,powerflow_result_rede,powerflow_result_alim);
         // true converge FP | false faz iteraçao única (P&D)
         
     } 
-    else if(FirstEXEC == 0){ //calcula os valores de fitness para dois alimentadores específicos
+    else if(FirstEXEC == 0){ //calcula os valores de fitness para dois alimentadores específicos RNP_P e RNP_A
 
         fluxoPotencia_alimentador_P_A_tf(grafo_tf,numeroBarras_tf,alimentador_tf,ramos_tf,Sbase,configuracoesParam,dadosAlimentadorParam,idNovaConfiguracaoParam,matrizB,RNP_P,RNP_A,numeroInterfaces_tf,interfaceNiveis_tf,powerflow_result_rede,powerflow_result_alim);
     }
     else{
-         printf("Erro -- Deve-se Executar para todos alimentadores ao menos uma vez !!!!");
+        printf("Erro -- Deve-se Executar para todos alimentadores ao menos uma vez !!!!");
         exit(1); 
     }
  
 
  
+    //salva os resultados dentro da configuracao
     configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosSE + 1) * sizeof (__complex__ double));
     configuracoesParam[idNovaConfiguracaoParam].objetivo.menorTensao = (*powerflow_result_rede).menorTensao;
     configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoRede = cabs((*powerflow_result_rede).maiorCarregamentoPotencia);
@@ -567,7 +585,7 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
     configuracoesParam[idNovaConfiguracaoParam].objetivo.ponderacao = 0;
     configuracoesParam[idNovaConfiguracaoParam].objetivo.quedaMaxima = (*powerflow_result_rede).quedaMaxima;
     
-    //preenche resultados por alimentador
+    //salva os resultados dentro da configuracao por alimentador
     for (int i=0;i<configuracoesParam[idNovaConfiguracaoParam].numeroRNP;i++)
     {
         configuracoesParam[idNovaConfiguracaoParam].rnp[i].fitnessRNP.potenciaAlimentador = (*powerflow_result_alim)[i].carregamentoRede;
@@ -577,8 +595,9 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
     }
 
 
-    VFparam=cabs(grafo_tf[0].Vbase);
-    calculaPonderacao(configuracoesParam,idNovaConfiguracaoParam,VFparam);
+    VFparam=cabs(grafo_tf[0].Vbase);//define o VFparam (verificar)
+    calculaPonderacao(configuracoesParam,idNovaConfiguracaoParam,VFparam); //Calcula a ponderacao
+    //calcula o carregamento do trafo
     carregamentoTrafo_tf(alimentador_tf,numeroAlimentadores_tf,numeroTrafosSE,configuracoesParam,idNovaConfiguracaoParam,idAntigaConfiguracaoParam,todosAlimentadores,RNP_P,RNP_A);
 
     

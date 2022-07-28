@@ -1,6 +1,6 @@
 all: fp 
     fp: main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o funcoesSetor.o funcoesInicializacao.o funcoesProblema.o
-	gcc -g -o fp main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o  funcoesSetor.o funcoesInicializacao.o funcoesProblema.o -lm -lstdc++ -fopenmp
+	gcc -g -o -W fp main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o  funcoesSetor.o funcoesInicializacao.o funcoesProblema.o -lm -lstdc++ -fopenmp
 	
     funcoesCalculoEletrico_tf.o: funcoesCalculoEletrico_tf.c data_structures_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h
 	gcc -g -c funcoesCalculoEletrico_tf.c

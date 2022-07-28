@@ -546,15 +546,6 @@ typedef struct {
 } TF_GRAFO;
 
 
-
-typedef struct {
-
-    TF_PFSOLUTION * alim;
-    TF_PFSOLUTION rede;
-
-} TF_RESULTSPKG;
-
-
 // ----------------------------------------------
 //
 // Elementos agregadores

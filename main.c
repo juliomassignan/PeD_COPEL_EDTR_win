@@ -200,8 +200,7 @@ int main(int argc, char** argv) {
     // Fluxo de Potência via Varredura Direta/Inversa Trifásica por Níveis de Tensão
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
     
-    
-    avaliaConfiguracaoSDR_tf(true,true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,numeroAlimentadores,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,numeroBarras_tf,true,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
+    avaliaConfiguracaoSDR_tf(true,true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
     
     //--------------------------------------------------------------------------
     // Tempo Real
