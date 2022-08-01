@@ -573,7 +573,13 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
         exit(1); 
     }
  
-
+    printf("ID,maior potencia,carregamento\n");
+    for (size_t i = 0; i < numeroAlimentadores; i++)
+    {
+        printf("%d, %f,%f\n",i+1,creal((*powerflow_result_alim)[i].maiorCarregamentoPotencia),(*powerflow_result_alim)[i].carregamentoRede);
+    }
+    
+    
  
     //salva os resultados dentro da configuracao
     configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo = malloc((numeroTrafosSE + 1) * sizeof (__complex__ double));
@@ -600,6 +606,12 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
     //calcula o carregamento do trafo
     carregamentoTrafo_tf(alimentador_tf,numeroAlimentadores_tf,numeroTrafosSE,configuracoesParam,idNovaConfiguracaoParam,idAntigaConfiguracaoParam,todosAlimentadores,RNP_P,RNP_A);
 
+    
+    printf("carregamentoTrafo\n\n");
+    for (size_t i = 0; i < numeroTrafosSE; i++)
+    {
+           printf("%d, %f,%f\n",i+1,creal(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[i+1]),configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo);
+    }
     
 }
 
@@ -1700,20 +1712,19 @@ void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimeta
     if (todosAlimentadores) {
         for(indiceI = 1; indiceI <= numerotrafosSE; indiceI++)
         {
-            configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[indiceI] = 0+I*0;
+            configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[indiceI] = 0+I*0; //inicia a potencia de todos os trafos
         }
         for(indiceJ = 1; indiceJ<=numeroalimetadores_tf; indiceJ++) // calcula a potencia de cada trafo
         {
-            idTrafo = alimentador_tf[indiceJ-1].DTRFSE->idTrafoSE; // conferir esse id e fazer testes de validação
+            idTrafo = alimentador_tf[indiceJ-1].DTRFSE->i; // conferir esse id e fazer testes de validação
             //a sequencia de rnps obedece a mesma sequencia de alimentadores com a diferença de uma posição 
             configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] += configuracoesParam[idNovaConfiguracaoParam].rnp[indiceJ-1].fitnessRNP.potenciaAlimentador;
         }
         for (indiceI = 1; indiceI <= numeroalimetadores_tf; indiceI++) //verifica se o trafo está sobrecarregado
          {     
-           idTrafo = alimentador_tf[indiceJ-1].DTRFSE->idTrafoSE;  
-           potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[indiceI-1].DTRFSE->Snom* 10000); //(10000=1MVA/100) em porcentagem
-            if (carregamentoTrafo < potencia)
-                carregamentoTrafo = potencia;
+           idTrafo = alimentador_tf[indiceI-1].DTRFSE->i;  
+           potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[indiceI-1].DTRFSE->Snom); //(10000=1MVA/100) em porcentagem
+           if (carregamentoTrafo < potencia)carregamentoTrafo = potencia;
           //
         // printf("capacidade %.2lf potencia do trafo  %lf carregamento %.2lf \n", dadosTrafoParam[indiceI].capacidade, cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[indiceI])/1000000, potencia);
         } 
@@ -1726,19 +1737,19 @@ void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimeta
         configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = configuracoesParam[idAntigaConfiguracaoParam].objetivo.maiorCarregamentoTrafo;
             
         // faz para a RNPORIGEM
-        idTrafo = alimentador_tf[idRNPOrigem].DTRFSE->idTrafoSE;
+        idTrafo = alimentador_tf[idRNPOrigem].DTRFSE->i;
         configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1];
         //verifica se o alimentador da RNP do alimentador de origem pertence a esse trafo. O indice do alimentador é o indice do vetor da rnp acrescido de 1. 
 
         configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
         configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] += configuracoesParam[idNovaConfiguracaoParam].rnp[idRNPOrigem].fitnessRNP.potenciaAlimentador;
         
-        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[idRNPOrigem].DTRFSE[idTrafo].Snom * 10000);
+        potencia = cabs(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1]) / (alimentador_tf[idRNPOrigem].DTRFSE[idTrafo].Snom);
         if (configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo < potencia)
         configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo = potencia;
 
         //verifica se o alimentador da RNP do alimentador de destino pertence a esse trafo. O indice do alimentador é o indice do vetor da rnp acrescido de 1.
-        idTrafo = alimentador_tf[idRNPDestino].DTRFSE->idTrafoSE;
+        idTrafo = alimentador_tf[idRNPDestino].DTRFSE->i;
         configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] = configuracoesParam[idAntigaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo];
 
         configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[idTrafo+1] -= configuracoesParam[idAntigaConfiguracaoParam].rnp[idRNPDestino].fitnessRNP.potenciaAlimentador;
@@ -1790,10 +1801,11 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
         }
     }
 
-    for (i=0;i<numeroTFSES;i++)
-    {
+   
         
-        for (j=0;j<numeroAlim_tf;j++)
+    for (j=0;j<numeroAlim_tf;j++)
+    {
+        for (i=0;i<numeroTFSES;i++)
         {
             if(DTRFSE[i].idTrafoSE==(*alimentador_tf)[j].dalim->ID_TR)
             {

@@ -128,6 +128,7 @@ typedef struct {
 typedef struct 
 {
     long int ID; //identificação da subestação
+    long int i;
     long int idTrafoSE; //idtrafo
     double V_pri; //Tensão do primário 
     double V_sec; // Tensão do secundário 
@@ -436,7 +437,7 @@ typedef struct {
     char COD_CH[15]; //Código COPEL da Chave início Alimentador
     char nome[40];   //nome do alimentador    
     long int noRaiz; // Identificador do no raiz do alimentador (comparar por aqui, apagar depois)
-    
+    long int i;
     int ID_SE;       // identificador da subestação
     int ID_TR;       // identificador do trafo da Se
     

@@ -19,6 +19,7 @@
         "funcoesauxiliares.h": "c",
         "funcoesrnp.h": "c",
         "complex.h": "c",
-        "funcoesintegracao_tf.h": "c"
+        "funcoesintegracao_tf.h": "c",
+        "algorithm": "c"
     }
 }

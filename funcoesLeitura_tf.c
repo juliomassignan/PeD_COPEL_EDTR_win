@@ -1531,6 +1531,7 @@ void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
         dados = blocoLeitura;
         
         (*DSE)[contador].ID = (getfield_int(dados,1)); // ID - Identificação da subestação
+        (*DSE)[contador].i = contador;
         (*DSE)[contador].idTrafoSE = (getfield_int(dados,2)); //idTrafoSE - identificação do transformador da subestação
         (*DSE)[contador].V_pri = (getfield_double(dados,3)); // V_pri - Tensão do primério da subestação
         (*DSE)[contador].V_sec = (getfield_double(dados,4)); // V_sec - Tensão do secundário da subestação
@@ -1591,6 +1592,7 @@ void leituraDALIM(FILE *arquivo, TF_DALIM **DALIM, long int *numeroAlim)
         dados = blocoLeitura;
         
         (*DALIM)[contador].ID = (getfield_int(dados,1));// Identificação do alimentador
+        (*DALIM)[contador].i= contador;
         (*DALIM)[contador].ID_TR = (getfield_int(dados,2));// identificação do transformador
         (*DALIM)[contador].ID_SE = (getfield_int(dados,3));// identificação da subestação
         (*DALIM)[contador].noRaiz = (getfield_int(dados,4));// identificação do no raiz
