@@ -57,25 +57,6 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
 void converteDadosAlimentadores_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras,long int numerosAlimentadores_tf, DADOSALIMENTADOR **dadosAlimentadorSDRParam );
 
 
-/**
- * @brief Função de integracao da MRAN, para compatibilizar as saídas do fluxo trifásico com as estruturas da MRAN.
- * 
- * Essa função recebe como parâmetro o vetor @p powerflow_result do tipo TF_PFSOLUTION, com as informacoes do fluxo trifásico, @p idIndividuoInicialParam com o id do indivíduo inicial
- *. @p idIndividuoInicialParam inteiro com o número de configuracoes da MRAN @p configuracao vetor de estrutura do tipo CONFIGURACAO com as informacoes de cada configuracao, que recebera os resultados do fluxo de potencia
- *
- * 
- * @param powerflow_result vetor da estrutura do tipo TF_PFSOLUTION com os resultados do fluxo de potência
- * @param idIndividuoInicialParam inteiro com o id do indivíduo inicial da MRAN
- * @param numeroConfiguracoesParam inteiro com o número de configuracoes da MRAN
- * @param configuracao vetor do tipo CONFIGURACAO com as informacoes de cada configuracao da MRAN
- * @return void
- * @see 
- * @note
- * @warning .
- */
-
-
-void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int idIndividuoInicialParam, long int numeroConfiguracoesParam, CONFIGURACAO **configuracao);
 
 /**
  * @brief Função que compatibiliza a profundidade do grafo trifásico com a da RNP de setores
@@ -282,9 +263,9 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
  * */
 
 
-void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
-        /* int numeroAlimentadoresParam,int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
-        /*MATRIZMAXCORRENTE *maximoCorrenteParam, long int numeroBarrasParam, /*BOOL copiarDadosEletricos,*/
+void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,
+        int numeroAlimentadoresParam,int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,
+        MATRIZMAXCORRENTE *maximoCorrenteParam, long int numeroBarrasParam, BOOL copiarDadosEletricos,*/
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
         TF_DRAM *ramos_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, BOOL opt_flow,long int numeroTrafosSE);
 
@@ -371,5 +352,40 @@ long int numeroInterfaces, long int **interfaceNiveis );
  * 
  * */
 
+void carregamentoTrafo_tf(TF_ALIMENTADOR *alimentador_tf, long int numeroalimetadores_tf, long int numerotrafosSE,
+        CONFIGURACAO *configuracoesParam, int idNovaConfiguracaoParam, 
+        int idAntigaConfiguracaoParam, BOOL todosAlimentadores, int idRNPOrigem, int idRNPDestino);
+
+/**
+ * @brief Função para integrar as informações dos dados dos alimentadores e da subestação em cada alimentador 
+ *
+ * Essa função recebe como parâmetro o @p *DTRFSE do tipo TF_DTRFSE, com as informações dos transformadores da subestação, @p DALIM do tipo TF_DALIM, com as informações do arquivo DALIM.csv
+ * o @p numeroTFSES um inteiro com o numero de trafos de subestação, @p numeroDALIM um inteiro com número de alimentadores no arquivo DALIM.csv, @p **alimentador_tf estrutura com os dados dos
+ * alimentadores trifásicos e que será preenchida
+ * @param DTRFSE Estrutura do tipo TF_DTRFSE com as informações dos transformadores das subestações
+ * @param  DALIM Estrutura do tipo TF_DALIM com as informações sobre os alimentadores disponivilizadas no arquivo DALIM.csv
+ * @param numeroTFSES Inteiro com o número de transformadores na subestação
+ * @param numeroDALIM Inteiro com o número de alimentadores no arquivo DALIM
+ * @param alimentadores alimentadores da rede elétrica
+ * @return void.
+ * @note
+ * @warning .
+ */
 
 void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long int numeroDALIM, long int numeroAlim_tf ,TF_ALIMENTADOR **alimentador_tf);
+
+//Alocada na estrutrura de resultados do fluxo de potencia
+/**
+ * @brief Função auxiliar para alocação memória da estrutura TF_PFSOLUTION
+ *
+ * Essa função realiza a alocação de memória de forma apropriada para a estrutura DBAR.
+ * A função retorna @c void .
+ * 
+ * @param pfresult ponteiro para TF_PFSOLUTION a ser alocado o espaço de memória
+ * @return void
+ * @see
+ * @note 
+ * @warning
+ */
+
+void aloca_pfresult(TF_PFSOLUTION **pfresult);

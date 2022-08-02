@@ -485,6 +485,9 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
             fclose(arquivo);
     }
     
+
+   return(folder);
+    
 }
 
 //------------------------------------------------------------------------------

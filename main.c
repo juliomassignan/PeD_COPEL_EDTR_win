@@ -111,7 +111,9 @@ int main(int argc, char** argv) {
     // summary_powerflow.dad    : resultados sumarizados de fluxo de potência convergido
     // log_edtr.txt             : arquivo de log do estimador de demanda
     // DBAR.csv                 : resultados de estimação de demanda - Potência ativa e reativa trifásica nas barras de carga
-    //
+    // stateVT.csv              : tensões nodais nas barras dos sistema
+    // loadingI.csv             : Carregamento de corrente nas barras do sistema
+    // lista_desconexas.dad     : Lista de barras que não estão associadas a nenhum alimentador
     // --------------------------------------------------------------------------------
     
     // Leitura dos dados da rede elétrica - Assume que já identação de barras está pré-mapeado e ordenado de 0 até NB corretamente
@@ -190,7 +192,6 @@ int main(int argc, char** argv) {
 
     // função avalia configuracao
     avaliaConfiguracaoSDR_tf(true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
-
         
     //Liberação de Memória
     free_BARRA(barra_tf,numeroBarras_tf);

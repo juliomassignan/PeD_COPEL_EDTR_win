@@ -400,7 +400,6 @@ void buscaProfundidadeAlimentadores(TF_GRAFO *grafo, long int numeroBarras, TF_A
     FILE *arquivo;
     long int numero_nos;
     
-    arquivo = fopen("lista_alimentador.dad","w+");
     BOOL visitado[numeroBarras];
     
     if (((*alimentadores)= (TF_ALIMENTADOR *)malloc( numeroAlimentadores * sizeof(TF_ALIMENTADOR)))==NULL)
@@ -426,55 +425,13 @@ void buscaProfundidadeAlimentadores(TF_GRAFO *grafo, long int numeroBarras, TF_A
     //Atribui profundidade alimentadores 
     for(i=0; i<numeroAlimentadores; i++)
     {
-        //buscaLargura(grafo, (*alimentadores), i, (*alimentadores)[i].noRaiz, visitado);
         barraAtual = &(*alimentadores)[i].rnp[0];
         numero_nos = 1;
         buscaProfundidade(barraAtual,(*alimentadores)[i].noRaiz,0,visitado,grafo,i,&numero_nos);
         (*alimentadores)[i].numeroNos = numero_nos;
-//         TF_FILABARRAS *barraAtual = &(*alimentadores)[i].rnp[0];
-//         while(barraAtual != NULL){
-//             grafo[barraAtual->idNo].Vbase = grafo[(*alimentadores)[i].noRaiz].Vbase;
-//                if (barraAtual->idNo == 223406)
-//                     printf("\nAlimentador encontrado: %d\n",i);
-//             barraAtual = barraAtual->prox;
-//        }
-//        printf("\n alimentador %d Raiz: %d   Nos: %d  %.1lf kV",i,(*alimentadores)[i].idRaiz,(*alimentadores)[i].numeroNos,grafo[(*alimentadores)[i].noRaiz].Vbase*sqrt(3)/1000);
-//        if (grafo[(*alimentadores)[i].noRaiz].Vbase*sqrt(3)/1000 == 34.5)
-        //   printf("\n alimentador %d Raiz: %d   Nos: %d  %.1lf kV",i,(*alimentadores)[i].idRaiz,(*alimentadores)[i].numeroNos,grafo[(*alimentadores)[i].noRaiz].Vbase*sqrt(3)/1000);  
-           
     }
     
     
-//    //    Atualiza a tensão base de acordo com a busca em profundidade
-//    arquivo = fopen("lista_barra_alimentador.dad","w+");
-//    
-//    for(i=0; i<numeroAlimentadores; i++)
-//    {
-//        TF_FILABARRAS *barraAtual = &(*alimentadores)[i].rnp[0];
-//        double Vbase = grafo[barraAtual->idNo].Vbase;
-//        while(barraAtual != NULL)
-//        {
-//            grafo[barraAtual->idNo].Vbase = Vbase;
-////            if(barraAtual->idNo == 1864) {
-////                printf("\nAlim: %d\n", i);
-////                printf("\nAlim: %d\n", i);
-////                getchar();
-////            }
-//            fprintf(arquivo,"\n%ld  \t\t\t%d",grafo[barraAtual->idNo].barra->ID, i);
-//            barraAtual = barraAtual->prox;          
-//            
-//        }
-//        
-//    }
-//    
-//    fclose(arquivo);
-    
-    
-    
-//     imprimeAlimentador(arquivo,grafo, numeroBarras, (*alimentadores), 254);
-    // printf("\n");
-    // imprimeAlimentador(arquivo,grafo, numeroBarras, (*alimentadores), 90);
-     fclose(arquivo);
     arquivo = fopen("lista_desconexas.dad","w+");
     //Imprime Barras desconexas - que não estão associadas a nenhum alimentador
     for(i=0; i<numeroBarras; i++){ 
@@ -483,32 +440,8 @@ void buscaProfundidadeAlimentadores(TF_GRAFO *grafo, long int numeroBarras, TF_A
         }
     }
     fclose(arquivo);
+   
     
-    arquivo = fopen("lista_34_5.dad","w+");
-    //Imprime Barras do nível de 34.5
-    for(i=0; i<numeroAlimentadores; i++)
-    {
-        if (grafo[(*alimentadores)[i].noRaiz].Vbase*sqrt(3)/1000 == 34.5){
-            TF_FILABARRAS *barraAtual = &(*alimentadores)[i].rnp[0];
-            while(barraAtual != NULL)
-            {
-                fprintf(arquivo,"\n%ld",grafo[barraAtual->idNo].barra->ID);
-                barraAtual = barraAtual->prox;
-            }
-        }
-        
-    }    
-    fclose(arquivo);
-    
-    arquivo = fopen("lista_SEs.dad","w+");
-    //Imprime Barras do nível de 34.5
-    for(i=0; i<numeroAlimentadores; i++)
-    {
-        fprintf(arquivo,"\n%ld",grafo[(*alimentadores)[i].noRaiz].barra->ID);
-    }    
-    fclose(arquivo);
-    
-    printf("\n");
 }
 
 

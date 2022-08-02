@@ -296,6 +296,7 @@ void amostragemVariacaoCarga(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTA
 
 double desbalancoFasorialSeq(__complex__ double *Fasor);
 
-
+void salvaTensoesNodais(const char *filename, const char *modo, TF_ALIMENTADOR alimentador, TF_GRAFO *grafo);
+void salvaCorrentesRamos(const char *filename, const char *modo, TF_ALIMENTADOR alimentador, TF_GRAFO *grafo, long int numeroBarras, double Sbase);
 #endif	/* FUNCOESFLUXOVARREDURA_H */
 

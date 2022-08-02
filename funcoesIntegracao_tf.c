@@ -328,41 +328,7 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
 }
 
 
-/**
- * @brief Função de integracao da MRAN, para compatibilizar as saídas do fluxo trifásico com as estruturas da MRAN.
- * 
- * Essa função recebe como parâmetro o vetor @p powerflow_result do tipo TF_PFSOLUTION, com as informacoes do fluxo trifásico, @p idIndividuoInicialParam com o id do indivíduo inicial
- *. @p idIndividuoInicialParam inteiro com o número de configuracoes da MRAN @p configuracao vetor de estrutura do tipo CONFIGURACAO com as informacoes de cada configuracao, que recebera os resultados do fluxo de potencia
- *
- * 
- * @param powerflow_result vetor da estrutura do tipo TF_PFSOLUTION com os resultados do fluxo de potência
- * @param idIndividuoInicialParam inteiro com o id do indivíduo inicial da MRAN
- * @param numeroConfiguracoesParam inteiro com o número de configuracoes da MRAN
- * @param configuracao vetor do tipo CONFIGURACAO com as informacoes de cada configuracao da MRAN
- * @return void
- * @see 
- * @note
- * @warning .
- */
 
-
-void preenche_powerflowresult_SDRalim (TF_PFSOLUTION* powerflow_result, long int idIndividuoInicialParam, long int numeroConfiguracoesParam, CONFIGURACAO **configuracao)
-{
-    int i,contador;
-
-    for (i=0;i<(idIndividuoInicialParam+numeroConfiguracoesParam);i++)
-    {
-        (*configuracao)[i].objetivo.maiorCarregamentoCorrente=powerflow_result[i].maiorCarregamentoCorrente;
-        (*configuracao)[i].objetivo.perdasResistivas=powerflow_result[i].perdasResistivas;
-        (*configuracao)[i].objetivo.maiorCarregamentoTrafo=powerflow_result[i].maiorCarregamentoTrafo;
-        (*configuracao)[i].objetivo.menorTensao=powerflow_result[i].menorTensao;
-        (*configuracao)[i].objetivo.quedaMaxima=powerflow_result[i].quedaMaxima;
-
-        
-    }
-    
-
-}
 
 //Função inicialização do vetor x para sistemas radiais através de uma varredura para compensar os taps fora da nominal (sem o arquivo Vinicial)
 /**
@@ -395,7 +361,6 @@ void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, 
 
     long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3; //inteiros que serão utilizados para contagem e indices de nos
     long int iniAlim; // inteiro que guarda o inicio do alimentador
-    int k; // contador
     long int noProf[1000]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
     RNPSETOR rnpSetorSR; // variavel que guarda a RNP de setores atuais
    
@@ -578,12 +543,10 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, TF_PFSOLUTION *powerflow_
         configuracoesParam[idNovaConfiguracaoParam].rnp[i].fitnessRNP.perdasResistivas = (*powerflow_result_alim)[i].perdasResistivas;
     }
 
-
-    VFparam=cabs(grafo_tf[0].Vbase);//define o VFparam (verificar)
+    VFparam=cabs(grafo_tf[0].Vbase);//define o VFparam
     calculaPonderacao(configuracoesParam,idNovaConfiguracaoParam,VFparam); //Calcula a ponderacao
     //calcula o carregamento do trafo
     carregamentoTrafo_tf(alimentador_tf,numeroAlimentadores_tf,numeroTrafosSE,configuracoesParam,idNovaConfiguracaoParam,idAntigaConfiguracaoParam,todosAlimentadores,RNP_P,RNP_A);
-
     
 }
 
@@ -1198,27 +1161,12 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++) runPF_alimentador[idAlim] = true; // inicia variável informando que todos os alimentadores que vão rodar o fluxo
     
 
-    //inicializa as variaveis que retonam os resultados
-    //TF_PFSOLUTION powerflow_result[numeroAlimentadores];
-
-
-    
-
-
 
 
     //declara aquivos de saida
     
     FILE *arquivo;
-    arquivo = fopen("tempos_alimentadores.txt","w+");
-    double tempoAUX;
-    
-    //variaveis para calculo de tempo de execução
-    clock_t t1 = clock(); 
-    
-    double tIni1 = omp_get_wtime(); 
-    double tIni;
-    double tEnd;
+
 
     double tol = 0.000001;
     //Calculo de fluxo de potência para todos os alimentadores individualmente
@@ -1251,7 +1199,6 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){//varre a lista de alimentadores
         if (runPF_alimentador[idAlim]){//está hard coded como true para todos nesta versao
             // run power flow for feeder if true, selected on list
-            tIni = omp_get_wtime();
             
             // Run lowest level - Multiplos Niveis - Primeiro os de 13.8 kV e alimentadores indicados como jusante
             if (flag_niveis[idAlim]){// este if calcula primeiro os fluxos para os alimentadores de 13.8 // verificar o alimentador pelo no raiz
@@ -1261,10 +1208,8 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
                 
                 runPF_alimentador[idAlim] = false;     // finished calculating power flow on the feeder
                 
-                fprintf(arquivo,"\n %d \t13.8\t%ld\t%d\t%.12lf\t%lf",i,alimentadores[idAlim].numeroNos,(*powerflow_result_alim)[idAlim].iteracoes,tempoAUX,(*powerflow_result_alim)[idAlim].menorTensao );
             }
-            tEnd = omp_get_wtime(); 
-            tempoAUX = tEnd - tIni;
+
         }
     }//Fim do loop dos alimentadores  
     // terminou de calcular para todos os alimentadores de 13.8
@@ -1320,20 +1265,13 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
         if (runPF_alimentador[idAlim]){
             // run power flow for feeder if true, selected on list
-            tIni = omp_get_wtime();
             
             // Run highest level - Multiplos Niveis - Segunda rodada com alimentadores a montante - 34.5kV
             if (!flag_niveis[idAlim]){
                 if (opt_flow) (*powerflow_result_alim)[idAlim] = fluxoPotencia_BFS_Alimentador_tf(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
                 else (*powerflow_result_alim)[idAlim] = fluxoPotencia_BFS_Alimentador_IteracaoUnica(grafo, numeroBarras, alimentadores[idAlim], ramos, Sbase);
-                
                 runPF_alimentador[idAlim] = false;     // finished calculating power flow on the feeder
-                fprintf(arquivo,"\n %d \t34.5\t%ld\t%d\t%.12lf\t%lf",i,alimentadores[idAlim].numeroNos,(*powerflow_result_alim)[idAlim].iteracoes,tempoAUX, (*powerflow_result_alim)[idAlim].menorTensao );
-
-                
             }
-            tEnd = omp_get_wtime(); 
-            tempoAUX = tEnd - tIni;
             
             //verfica a mudança de tap, a partir do power_flow result se mudou o tap em algum dos alimentadores
             //-----------------------------------------------------------------------
@@ -1365,8 +1303,6 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
             //-----------------------------------------------------------------------
         }
     }//Fim do loop dos alimentadores  
-    tEnd = omp_get_wtime();
-    printf("\nTempo BFS: %lf\n", tEnd - tIni1);
     
     // Força uma iteração entre níveis
     if (level_iteration == 0){
@@ -1409,7 +1345,6 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
     
     
     
-    fclose(arquivo);
 
     //Função Atualiza SEs
         
@@ -1533,7 +1468,7 @@ long int numeroInterfaces, long int **interfaceNiveis )
     powerflow_result_rede.carregamentoRede = powerflow_result_rede.carregamentoRedeABC[0] + powerflow_result_rede.carregamentoRedeABC[1] + powerflow_result_rede.carregamentoRedeABC[2];
     
 
-    printf("Numero maximo de iteracoes: %d  (alim: %d  / %ld)\n", powerflow_result_rede.iteracoes, id_itmax,numeroAlimentadores);
+    printf("Numero maximo de iteracoes: %d  (alim: %d  / %d)\n", powerflow_result_rede.iteracoes, id_itmax,numeroAlimentadores);
     printf("Vmin: %lf p.u. (alim: %d)\n", powerflow_result_rede.menorTensao, id_menorV);
     printf("quedaMax: %lf  %%  (alim: %d)\n", powerflow_result_rede.quedaMaxima,id_maxQueda);
     printf("maior carregamentoCorrente: %lf %%  (alim: %d)\n", powerflow_result_rede.maiorCarregamentoCorrente,id_maxCar);
@@ -1756,7 +1691,6 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
 
     for (i=0;i<numeroDALIM;i++)
     {
-        
         for (j=0;j<numeroAlim_tf;j++)
         {
             if(DALIM[i].noRaiz==(*alimentador_tf)[j].noRaiz)
