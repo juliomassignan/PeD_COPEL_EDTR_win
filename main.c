@@ -51,38 +51,37 @@ double Sbase = 1000000; //Variável global com a potência base da rede elétric
  * 
  */
 int main(int argc, char** argv) {
-    long int estampa_tempo = 0;
-    long int numeroBarras_tf = 0;
-    long int numeroAlimentadores_tf = 0;
-    long int numeroAreas_tf = 0, numeroSubestacoes_tf = 0;
-    long int numeroRamos_tf = 0;
-    long int numeroNos=0;
-    long int **numeroMedidas = NULL,**numeroMedidas_PMU_tf = NULL,**numeroVirtuais_tf = NULL;
-    long int **interfaceNiveis_tf = NULL;
-    long int numeroTRFSES_tf=0,numeroDALIM_tf=0;
-    long int numeroInterfaces_tf = 0;
+    //lista de variáveis do modelo trifásico
+    long int numeroBarras_tf = 0;               // numero total de barras do sistemaa
+    long int numeroAlimentadores_tf = 0;        // numero total de alimentadores
+    long int numeroRamos_tf = 0;                // numero total de ramos                   
+    long int **interfaceNiveis_tf = NULL;       // matriz com informações de interface 34,5/13.8
+    long int numeroTRFSES_tf=0;                 // numero de transformadores de subestação
+    long int numeroDALIM_tf=0;                  // numero de alimentadores agregados em subestações
+    long int numeroInterfaces_tf = 0;           // numero de interfaces 34,5/13.8
+    char *folder = NULL;                        // ponteiro para local pasta dos arquivos de dados de entrada
+ 
+
+
+    // Estruturas de dados da rede elétrica do modelo trifásico
+    TF_DBAR *barra_tf = NULL;                   // Estrutura de dados com dados de barras
+    TF_DRAM *ramo_tf = NULL;                    // Estrutura de dados com dados de ramos
+    TF_GRAFO *grafo_tf = NULL;                  // Estrutura de dados com o grafo da rede elétrica 
+    TF_ALIMENTADOR *alimentador_tf = NULL;      // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
+    TF_DTRFSE *DTRFSES_tf=NULL;                 // Estrutura de dados com dados dos transformadores das subestações
+    TF_DALIM *DALIM_tf=NULL;                    // Estrutura de dados com dados de alimentadores
+    TF_PFSOLUTION powerflow_result_rede;        // Estrutura de dados com dados de resultados dos fluxos de potência por alimentador
+    TF_PFSOLUTION *powerflow_result_alim=NULL;  // Estrutura de dados com dados de resultados gerais do fluxo de potência
+    
+    //lista de variáveis do modelo MRAN
+    long int numeroNos=0;                       
     long int idConfiguracaoAntiga=0;
-    long int i = 0;
-    char *folder = NULL;
-    long int numeroChaves=0;//dados da MRAM
-    extern int numeroSetores; //dados da MRAM
-    
-    // Estruturas de dados da rede elétrica
-    TF_DBAR *barra_tf = NULL;
-    TF_DRAM *ramo_tf = NULL;
-    TF_DSUBESTACAO *subestacoes_tf = NULL;
-    TF_DALIM *static_alimentador_tf = NULL;     // salva dados estáticos para relacionar alimentadores com subestações
-    TF_GRAFO *grafo_tf = NULL;
-    TF_DMED *medida_tf = NULL;
-    TF_ALIMENTADOR *alimentador_tf = NULL, *areas_tf = NULL;    // A estrutura alimentador guarda as conectividade de alimentadores (circuito completo)
-    TF_DTRFSE *DTRFSES_tf=NULL;
-    TF_DALIM *DALIM_tf=NULL;
-    TF_AREA_MEDICAO *areasMedicao_tf = NULL;
-    TF_PFSOLUTION powerflow_result_rede;
-    TF_PFSOLUTION *powerflow_result_alim=NULL;
-    
+    long int numeroChaves=0;
+    extern int numeroSetores; 
+    long int idConfiguracaoSDR=0;
+
     // compatibilizacao com a MRAM
-    GRAFO *grafoSDRParam=NULL;//DEIXAR SÓ SDR
+    GRAFO *grafoSDRParam=NULL;
     GRAFOSETORES *grafoSetoresSDR=NULL;
     RNPSETORES *rnpSetoresSDR=NULL;
     DADOSREGULADOR *dadosReguladorSDRParam=NULL;
@@ -90,28 +89,23 @@ int main(int argc, char** argv) {
     LISTACHAVES *listaChavesSDR=NULL;
     CONFIGURACAO *configuracaoInicialSDR=NULL;
     
-    long int idConfiguracaoSDR=0;
-    // Para estimação de demanda e simulações com séries temporais
-    TF_CURVA_TRAFO *curvasTrafos = NULL;       //Curva de carga dos trafos de distribuição agregadas
-    long int flag_mod = 0;                  //FLAG para rodar a modelagem de cargas
+    
 
     // --------------------------------------------------------------------------------
     //Os arquivos lidos são:
     // config.txt               : Pasta com arquivos da rede elétrica e curvas agregadas
-    //              - 3F_DBAR.csv  : Dados de barras da rede elétrica
-    //              - 3F_DSHNT.csv : Dados de bancos de capacitor da rede elétrica
-    //              - 3F_DLIN.csv  : Dados de ramais trifásicos da rede elétrica
-    //              - 3F_DTRF.csv  : Dados de transformadores da rede elétrica
-    //              - 3F_DREG.csv  : Dados de reguladores de tensão da rede elétrica
-    //              - 3F_DSWTCH.csv: Dados de chaves da rede elétrica
+    //              - DBAR.csv  : Dados de barras da rede elétrica
+    //              - DSHNT.csv : Dados de bancos de capacitor da rede elétrica
+    //              - DLIN.csv  : Dados de ramais trifásicos da rede elétrica
+    //              - DTRF.csv  : Dados de transformadores da rede elétrica
+    //              - DREG.csv  : Dados de reguladores de tensão da rede elétrica
+    //              - DSWTCH.csv: Dados de chaves da rede elétrica
+    //              - DALIM.csv : Dados dos alimentadores da rede elétrica
+    //              - DTRFSE.csv: Dados dos transformadores das subestações
     //
     //              Arquivos opcionais:
     //              - DINTERSE.csv : Dados de Interfaces entre dois níveis (ex. 34.5 p/ 13.8kV  e estações de chaves - 34.5/34.5)
-    //
-    // config_sase.txt         : Pasta com arquivos de dados de automação
-    //              - 3F_DSTAT.csv : dados atualizados de medidas de estado, status de chaves ou tap de reguladores provenientes do SCADA ou
-    //              - 3F_DMED.csv  : dados atualizados de medidas analógicas  provenientes do SCADA
-    //
+    //              - Vinicial.csv : Dados das tensões iniciais do fluxo de potência
     
     //Saída
     // summary_powerflow.dad    : resultados sumarizados de fluxo de potência convergido
@@ -121,34 +115,35 @@ int main(int argc, char** argv) {
     // --------------------------------------------------------------------------------
     
     // Leitura dos dados da rede elétrica - Assume que já identação de barras está pré-mapeado e ordenado de 0 até NB corretamente
-    clock_t a1 = clock();
     folder = leituraDados(&barra_tf,&ramo_tf,&numeroBarras_tf,&numeroRamos_tf,&numeroAlimentadores_tf);
     
     // Leitura de Interface entre Níveis de Tensão - Subestações de 34.5 / 13.8 kV
     interfaceNiveis_tf = leituraDINTERSE(folder,"DINTERSE.csv", &numeroInterfaces_tf, &barra_tf,&numeroBarras_tf,&ramo_tf,&numeroRamos_tf);
+   
     // Leitura dos arquivos opcionais DALIM.csv e DSES.csv
     leituraQualiSE(folder,&numeroTRFSES_tf,&DTRFSES_tf,&numeroDALIM_tf,&DALIM_tf);
 
-    clock_t a2 = clock();
-    double tempo_A = (double)(a2 - a1) / CLOCKS_PER_SEC;
-    printf("\nTempo Leitura: %lf\n\n",  tempo_A);
-    
-    
     // Cria estrutura de dados da rede elétrica
     geraGrafo(&grafo_tf, barra_tf, numeroBarras_tf,ramo_tf,numeroRamos_tf); 
     
- 
-
-    
     //--------------------------------------------------------------------------
-    // Compatibilização com MRAN
+    //--------------------------------------------------------------------------
+    //
+    //                        Compatibilização com MRAN
+    //
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    // insere as informacoes do grafo trifásico no grafo da MRAN
     converteGrafo_TFtoSDR(grafo_tf,numeroBarras_tf,ramo_tf,numeroRamos_tf,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroChaves);
+    // insere as informacoes da estrutura alimentadores trifásico na alimentadores da MRAN
     converteDadosAlimentadores_TFtoSDR(grafo_tf,numeroBarras_tf,numeroAlimentadores_tf,&dadosAlimentadorSDRParam);
     
-    //Atualiza os estados das chaves de acordo com ESTADOS_CHS    
+    
     LISTASETORES * lista_setores = buscaSetores(grafoSDRParam, dadosAlimentadorSDRParam, numeroBarras_tf);
     constroiListaChaves(grafoSDRParam, &listaChavesSDR, numeroChaves, numeroBarras_tf);
     constroiListaAdjacenciaSetores(&grafoSDRParam, lista_setores, &listaChavesSDR, &grafoSetoresSDR, &numeroChaves, &numeroNos);
+    
+    // compatibiliza as chaves ficticias criadas na MRAN 
     compatibiliza_chaveSetoresFicticia_tf(&grafo_tf,&barra_tf,&numeroBarras_tf,&ramo_tf,&numeroRamos_tf,grafoSDRParam,numeroNos);
 
     constroiRNPSetores(lista_setores, grafoSDRParam, &rnpSetoresSDR, numeroBarras_tf); 
@@ -165,14 +160,18 @@ int main(int argc, char** argv) {
     salvaLinhas(numeroBarras_tf, grafoSDRParam);
     salvaChavesAMontante(listaChavesSDR, configuracaoInicialSDR[idConfiguracaoSDR],grafoSetoresSDR);
 
-    //==============Termino Compatibilizacao======================
-
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    //
+    //                         Termino Compatibilizacao                      
+    //
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
 
     // Cria as listas encadeadas radiais dos alimentadores
     buscaProfundidadeAlimentadores(grafo_tf, numeroBarras_tf, &alimentador_tf, numeroAlimentadores_tf); 
 
-    // Insert the substation data in the feeder structure 
-
+    // Insere os dados da subestação na estrutura de alimentadores trifásicos
     trafoSB_info(DTRFSES_tf,DALIM_tf,numeroTRFSES_tf,numeroDALIM_tf,numeroAlimentadores_tf,&alimentador_tf);
 
     // Transforma em pu e cria matrizes de admitância iniciais
@@ -181,60 +180,29 @@ int main(int argc, char** argv) {
     //Atualiza a posição de taps
     atualizaTaps(ramo_tf, numeroRamos_tf); //terminar o tap fixo de trafos de potência
 
-
     
     //--------------------------------------------------------------------------
-    // Cálculo de Fluxo de Potência Trifásico
-    
-    clock_t a3 = clock();
-    double tempo_B = (double)(a3 - a2) / CLOCKS_PER_SEC;
-    printf("\nTempo Processamento Modelo: %lf\n\n",  tempo_B);
-    
-    //Simulacoes com Curvas de Carga - Considera o valor de P e Q de arquivo de curva previamente agregada
-    if (flag_mod == 3){ 
-        leituraCurvasAgregadas(folder, &curvasTrafos,barra_tf,numeroBarras_tf); //Leitura de curvas de cargas agregadas
-        estampa_tempo  = 10;
-        inicializaPQcurvas(barra_tf, curvasTrafos, numeroBarras_tf,  estampa_tempo, VALOR_ESPERADO, Sbase); 
-    }         
-    
     // Fluxo de Potência via Varredura Direta/Inversa Trifásica por Níveis de Tensão
     //           O fluxo de potência está como cargas em corrente constante devido à implementação da COPEL
     
-    avaliaConfiguracaoSDR_tf(true,true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
-    
-    //--------------------------------------------------------------------------
-    // Tempo Real
-    //               Estimação de Demanda
-    
-    
-    // Leitura do arquivo DSTAT  e atualiza a topologia da rede elétrica
-    // leitura do arquvio e atualizaçao
-    
-    //Leitura do Arquivo DTAPS
-    // leitura do arquvio e atualizaçao  de taps
-    
-    
-    
-//    // Leitura de Medidas do sistema SCADA (SASE processado);
-//    numeroMedidas_tf = leituraMedidas(folder, "DMED.csv", &medida, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras, grafo, Sbase); 
-//    
-//    // Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
-//    buscaAMs(grafo, numeroBarras, alimentador_tf, numeroAlimentadores, medida, numeroMedidas_tf, &areasMedicao_tf);
-//    
-//    //Estimador de Demandas Trifásicas
-//    estimadorDemandaTrifasico(grafo, numeroBarras, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase/1000, interfaceNiveis, numeroInterfaces, areasMedicao_tf);;;;;
-    
+    // aloca a estrutura de powerflow result 
+    aloca_pfresult(&powerflow_result_alim);
+
+    // função avalia configuracao
+    avaliaConfiguracaoSDR_tf(true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
+
         
     //Liberação de Memória
     free_BARRA(barra_tf,numeroBarras_tf);
     free_DRAM(ramo_tf,numeroRamos_tf);
-    //free_GRAFO(grafo,numeroBarras);
+    free_GRAFO(grafo_tf,numeroBarras_tf);
     free_ALIMENTADOR(alimentador_tf,numeroAlimentadores_tf);
-    //free(dadosReguladorSDR);
-    //free(dadosAlimentadorSDR);
-    //free(dadosTrafoSDR);
-    //desalocaGrafoSDR(grafoSDR, numeroBarras);
-    //free(listaChaves);
+    free(dadosReguladorSDRParam);
+    free(dadosAlimentadorSDRParam);
+    free(DTRFSES_tf);
+    free(DALIM_tf);
+    desalocaGrafoSDR(grafoSDRParam, numeroBarras_tf);
+    free(powerflow_result_alim);
     return (EXIT_SUCCESS);
 }
 

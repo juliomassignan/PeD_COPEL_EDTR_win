@@ -487,7 +487,7 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
         grafo[root-1].V[0]=grafo[root-1].barra->Vinicial[0];// inicializa tensão do no raiz 
         grafo[root-1].V[1]=grafo[root-1].barra->Vinicial[1];
         grafo[root-1].V[2]=grafo[root-1].barra->Vinicial[2];
-
+        //incializa tensão no alimentador
         inicializaTensaoSDR_alimentador_tf(grafo,numeroBarras,alimentadores,numeroAlimentadores,configuracaoParam,matrizB,indiceRNP,indiceConfiguracao,root);
 
     }
@@ -531,7 +531,7 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
  * @warning 
  * Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  * */
-void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
+void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
         /* int numeroAlimentadoresParam,int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam, long int numeroBarrasParam, /*BOOL copiarDadosEletricos,*/
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
@@ -544,17 +544,6 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
     RNPSETOR rnpSetorSR;
 
     // aloca memoria para a estrutura de resultados
-
-    if (FirstEXEC == 1)
-    {
-        if (((*powerflow_result_alim) = (TF_PFSOLUTION *)malloc(numeroAlimentadores*sizeof(TF_PFSOLUTION)))==NULL)
-        {
-            printf("Erro -- Nao foi possivel alocar espaco de memoria para os resultados !!!!");
-            exit(1); 
-        }
-
-    }
-
     
 
     if (todosAlimentadores) //calcula os valores de fitness para todos os alimentadores
@@ -564,21 +553,10 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
         // true converge FP | false faz iteraçao única (P&D)
         
     } 
-    else if(FirstEXEC == 0){ //calcula os valores de fitness para dois alimentadores específicos RNP_P e RNP_A
+    else{ //calcula os valores de fitness para dois alimentadores específicos RNP_P e RNP_A
 
-        fluxoPotencia_alimentador_P_A_tf(grafo_tf,numeroBarras_tf,alimentador_tf,ramos_tf,Sbase,configuracoesParam,dadosAlimentadorParam,idNovaConfiguracaoParam,matrizB,RNP_P,RNP_A,numeroInterfaces_tf,interfaceNiveis_tf,powerflow_result_rede,powerflow_result_alim);
+        fluxoPotencia_alimentador_P_A_tf(grafo_tf,numeroBarras_tf,alimentador_tf,ramos_tf,Sbase/1000,configuracoesParam,dadosAlimentadorParam,idNovaConfiguracaoParam,matrizB,RNP_P,RNP_A,powerflow_result_rede,powerflow_result_alim,numeroInterfaces_tf,interfaceNiveis_tf);
     }
-    else{
-        printf("Erro -- Deve-se Executar para todos alimentadores ao menos uma vez !!!!");
-        exit(1); 
-    }
- 
-    printf("ID,maior potencia,carregamento\n");
-    for (size_t i = 0; i < numeroAlimentadores; i++)
-    {
-        printf("%d, %f,%f\n",i+1,creal((*powerflow_result_alim)[i].maiorCarregamentoPotencia),(*powerflow_result_alim)[i].carregamentoRede);
-    }
-    
     
  
     //salva os resultados dentro da configuracao
@@ -606,12 +584,6 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUT
     //calcula o carregamento do trafo
     carregamentoTrafo_tf(alimentador_tf,numeroAlimentadores_tf,numeroTrafosSE,configuracoesParam,idNovaConfiguracaoParam,idAntigaConfiguracaoParam,todosAlimentadores,RNP_P,RNP_A);
 
-    
-    printf("carregamentoTrafo\n\n");
-    for (size_t i = 0; i < numeroTrafosSE; i++)
-    {
-           printf("%d, %f,%f\n",i+1,creal(configuracoesParam[idNovaConfiguracaoParam].objetivo.potenciaTrafo[i+1]),configuracoesParam[idNovaConfiguracaoParam].objetivo.maiorCarregamentoTrafo);
-    }
     
 }
 
@@ -1473,7 +1445,7 @@ long int numeroInterfaces, long int **interfaceNiveis )
     int idAlim;
     
     TF_PFSOLUTION powerflow_result_rede;
-
+    
     powerflow_result_rede.convergencia = 0;
     powerflow_result_rede.maiorCarregamentoCorrente = 0;
     powerflow_result_rede.perdasResistivas = 0;
@@ -1623,14 +1595,10 @@ long int numeroInterfaces, long int **interfaceNiveis )
 void fluxoPotencia_alimentador_P_A_tf(TF_GRAFO *grafo_tf ,long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, TF_DRAM *ramos_tf,double Sbase,
         /*int numeroBarrasParam,*/ CONFIGURACAO *configuracoesParam, 
         /*double VFParam,*/ DADOSALIMENTADOR *dadosAlimentadorParam ,int indiceConfiguracao, RNPSETORES *matrizB, long int RNP_P, long int RNP_A, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim/*,
-        MATRIZCOMPLEXA *ZParam,*/ /* MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado*/,
-long int numeroInterfaces, long int **interfaceNiveis )
+        MATRIZCOMPLEXA *ZParam,*/ /* MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado*/,long int numeroInterfaces, long int **interfaceNiveis )
 {
         long int iniAlim,noS,noR,root;
         long int noProf[1000];
-
-
-     
 
         RNPSETOR rnpSetorSR;
 
@@ -1666,11 +1634,9 @@ long int numeroInterfaces, long int **interfaceNiveis )
         grafo_tf[root-1].V[2]=grafo_tf[root-1].barra->Vinicial[2];
 
         inicializaTensaoSDR_alimentador_tf(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores,configuracoesParam,matrizB,RNP_A,indiceConfiguracao,root);        
-        (*powerflow_result_alim)[RNP_A]=fluxoPotencia_BFS_Alimentador_tf(grafo_tf, numeroBarras_tf, alimentador_tf[RNP_P], ramos_tf, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
+        (*powerflow_result_alim)[RNP_A]=fluxoPotencia_BFS_Alimentador_tf(grafo_tf, numeroBarras_tf, alimentador_tf[RNP_A], ramos_tf, Sbase,configuracoesParam,dadosAlimentadorParam,indiceConfiguracao,matrizB);
 
         (*powerflow_result_rede)=compilaResultadosRede((*powerflow_result_alim),numeroAlimentadores,alimentador_tf,grafo_tf,numeroBarras_tf,Sbase,numeroInterfaces,interfaceNiveis);
-
-        
 
 
 }
@@ -1803,16 +1769,44 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
 
    
         
-    for (j=0;j<numeroAlim_tf;j++)
+  
+    for (i=0;i<numeroTFSES;i++)
     {
-        for (i=0;i<numeroTFSES;i++)
+        for (j=0;j<numeroAlim_tf;j++)
         {
             if(DTRFSE[i].idTrafoSE==(*alimentador_tf)[j].dalim->ID_TR)
             {
                 (*alimentador_tf)[j].DTRFSE=&DTRFSE[i];
-                break;
             }
         }
+
     }
 
 }
+
+
+
+//Alocada na estrutrura de resultados do fluxo de potencia
+/**
+ * @brief Função auxiliar para alocação memória da estrutura TF_PFSOLUTION
+ *
+ * Essa função realiza a alocação de memória de forma apropriada para a estrutura DBAR.
+ * A função retorna @c void .
+ * 
+ * @param pfresult ponteiro para TF_PFSOLUTION a ser alocado o espaço de memória
+ * @return void
+ * @see
+ * @note 
+ * @warning
+ */
+
+void aloca_pfresult(TF_PFSOLUTION **pfresult)
+{
+    if (((*pfresult) = (TF_PFSOLUTION *)malloc(numeroAlimentadores*sizeof(TF_PFSOLUTION)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para os resultados !!!!");
+        exit(1); 
+    }
+
+}
+

@@ -485,24 +485,6 @@ char *leituraDados(TF_DBAR **barra, TF_DRAM **ramo, long int *numeroBarras, long
             fclose(arquivo);
     }
     
-    strcpy(aux,aux2);
-    arquivo = fopen(strcat(aux,"DSE.csv"),"r"); //Le somente se existir o arquivo
-    if(arquivo != NULL)
-    {
-            //leituraSubestacoes
-            fclose(arquivo);
-    }
-    
-    
-    strcpy(aux,aux2);
-    arquivo = fopen(strcat(aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
-    if(arquivo != NULL)
-    {
-            //leituraAlimentadores
-            fclose(arquivo);
-    }
-    return(folder);
-    
 }
 
 //------------------------------------------------------------------------------

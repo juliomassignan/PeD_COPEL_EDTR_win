@@ -282,7 +282,7 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
  * */
 
 
-void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores,BOOL FirstEXEC, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
+void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim, CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, /*DADOSTRAFO *dadosTrafoParam, int numeroTrafosParam,*/
         /* int numeroAlimentadoresParam,int *indiceRegulador, DADOSREGULADOR *dadosRegulador,*/ DADOSALIMENTADOR *dadosAlimentadorParam, /*double VFParam,*/ int idAntigaConfiguracaoParam, RNPSETORES *matrizB, int RNP_P,int RNP_A,/*MATRIZCOMPLEXA *ZParam,*/
         /*MATRIZMAXCORRENTE *maximoCorrenteParam, long int numeroBarrasParam, /*BOOL copiarDadosEletricos,*/
         TF_GRAFO *grafo_tf, long numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, int numeroAlimentadores_tf,
