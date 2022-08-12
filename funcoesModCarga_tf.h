@@ -55,6 +55,7 @@ void imprimeConsumidores(TF_DADOS_CONSUMIDOR *consumidores);
 void imprimeCurvasAgregadas(TF_CURVA_TRAFO *curvasTrafos, long int numeroBarrasParam);
 void imprimeAMs(TF_AREA_MEDICAO *areasAM);
 void imprimePQ_AMs(TF_AREA_MEDICAO *areasAM,TF_GRAFO *grafoSDRParam,long int numeroBarras, long int estampa_tempo,const char *modo);
-
+void buscaAMs(TF_GRAFO * grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DMED*medidas, long int **numeroMedidasTabela, TF_AREA_MEDICAO **areasAM);
+void estimadorDemandaTrifasico(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, TF_AREA_MEDICAO *areasAM);
 #endif	/* FUNCOESMODCARGA_H */
 

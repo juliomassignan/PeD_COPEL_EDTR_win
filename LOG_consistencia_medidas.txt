@@ -1,0 +1,7 @@
+Medidas excluidas por possível falta de comunicacao. Critério: conectadas a rede mas com valor igual a zero
+
+Medidas excluidas pelo valor medido ser maior que duas vezes o valor esperado da medida. Criterio: Valor esperado dado pelas curvas agregadas e fluxo de potencia 
+
+Medidas excluidas por inconsistência entre medida a jusante e montante. Critério: Valor mais distante do valor esperado é descartado
+
+Medidas excluidas por inconsistência de topologia. Critério: a rede a jusante da AM não possui barras do tipo 1 (Barras com Carga)

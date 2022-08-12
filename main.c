@@ -193,6 +193,10 @@ int main(int argc, char** argv) {
     // função avalia configuracao
     avaliaConfiguracaoSDR_tf(true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
         
+    // Tempo Real ---------------- Estimação
+    
+
+    
     //Liberação de Memória
     free_BARRA(barra_tf,numeroBarras_tf);
     free_DRAM(ramo_tf,numeroRamos_tf);

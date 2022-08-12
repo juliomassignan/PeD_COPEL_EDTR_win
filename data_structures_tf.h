@@ -133,7 +133,7 @@ typedef struct
     double V_pri; //Tensão do primário 
     double V_sec; // Tensão do secundário 
     double Snom; // potencia nominal
-    char sigla_SE[7];   //sigla da subestação
+    char sigla_SE[15];   //sigla da subestação
 } TF_DTRFSE;
 
 

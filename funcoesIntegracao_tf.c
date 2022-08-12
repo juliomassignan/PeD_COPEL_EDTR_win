@@ -1688,6 +1688,14 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
 {
 
     long int i,j;
+    
+
+    for (j=0;j<numeroAlim_tf;j++)
+    {
+
+        (*alimentador_tf)[j].dalim=NULL;
+        (*alimentador_tf)[j].DTRFSE=&DTRFSE[0];
+    }
 
     for (i=0;i<numeroDALIM;i++)
     {
@@ -1708,12 +1716,14 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
     {
         for (j=0;j<numeroAlim_tf;j++)
         {
-            if(DTRFSE[i].idTrafoSE==(*alimentador_tf)[j].dalim->ID_TR)
+            if ((*alimentador_tf)[j].dalim!=NULL)
             {
-                (*alimentador_tf)[j].DTRFSE=&DTRFSE[i];
+                if(DTRFSE[i].idTrafoSE==(*alimentador_tf)[j].dalim->ID_TR)
+                {
+                    (*alimentador_tf)[j].DTRFSE=&DTRFSE[i];
+                }
             }
         }
-
     }
 
 }

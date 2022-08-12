@@ -940,17 +940,38 @@ void leituraQualiSE(char *folder, long int *numeroSE, TF_DTRFSE **DTRFSE, long i
     arquivo = fopen(strcat(text_aux,"DTRFSE.csv"),"r");
     numeroSE[0]=0;
     numeroDALIM[0]=0;
+    // default para alimentadores não agrupados
+    numeroSE[0]=1;
+    if (((*DTRFSE) = (TF_DTRFSE *)malloc(sizeof(TF_DTRFSE)))==NULL)
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para as chaves !!!!");
+        exit(1); 
+    }
+    (*DTRFSE)[0].ID = -1; // ID - Identificação da subestação
+    (*DTRFSE)[0].i = 0;
+    (*DTRFSE)[0].idTrafoSE = -1; //idTrafoSE - identificação do transformador da subestação
+    (*DTRFSE)[0].V_pri = 138000; // V_pri - Tensão do primério da subestação
+    (*DTRFSE)[0].V_sec = 13800; // V_sec - Tensão do secundário da subestação
+    (*DTRFSE)[0].Snom  = 99999999; // Snom - Potência Nominal
+    strcpy((*DTRFSE)[0].sigla_SE,"Ficticio"); // sigla_SE - Sigla da subestação
+
+    
     if(arquivo != NULL)
     {
         leituraDTRFSE(arquivo,DTRFSE,numeroSE);
         fclose(arquivo);
     }
+    
+
     sprintf(text_aux,"%s",folder);
     arquivo = fopen(strcat(text_aux,"DALIM.csv"),"r"); //Le somente se existir o arquivo
     if(arquivo != NULL)
     {
         leituraDALIM(arquivo,DALIM,numeroDALIM);
         fclose(arquivo);
+    }
+    else{
+
     }
 
   
@@ -1494,7 +1515,7 @@ void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
-    int contador =0, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    int contador =1, i, aux; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0; /* Variável com o número de linhas do arquivo a serem lidas. */
 
     
@@ -1504,8 +1525,8 @@ void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
         numLinhas++;
     }
     rewind(arquivo);
-    (*numeroSEs)=numLinhas;
-    if (((*DSE) = (TF_DTRFSE *)malloc(numLinhas * sizeof(TF_DTRFSE)))==NULL)
+    (*numeroSEs)=numLinhas+1; // por conta do default
+    if (((*DSE) = (TF_DTRFSE *)realloc((*DSE),(numLinhas+1+1) * sizeof(TF_DTRFSE)))==NULL)
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as chaves !!!!");
         exit(1); 
@@ -1513,8 +1534,7 @@ void leituraDTRFSE(FILE *arquivo, TF_DTRFSE **DSE, long int *numeroSEs)
         
     // Le o arquivo até o fim
     while( (fgets(blocoLeitura, 2000, arquivo))!= NULL ){
-        dados = blocoLeitura;
-        
+        dados = blocoLeitura;        
         (*DSE)[contador].ID = (getfield_int(dados,1)); // ID - Identificação da subestação
         (*DSE)[contador].i = contador;
         (*DSE)[contador].idTrafoSE = (getfield_int(dados,2)); //idTrafoSE - identificação do transformador da subestação
@@ -1977,15 +1997,15 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
     //arquivo = fopen(folder,"r");
     if(arquivo == NULL)
     {
-            printf("Erro ao abrir arquivo %s !!!\n",strcat(text_aux,file));
-            exit(1);
+        printf("Erro ao abrir arquivo %s !!!\n",strcat(text_aux,file));
+        exit(1);
     }
     
     numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
     for (i = 0; i < 14; i++){ 
          numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
          for (j = 0; j < 20; j++){
-              numeroMedidas[i][j] = 0;
+            numeroMedidas[i][j] = 0;
          }
     }
     
@@ -1995,7 +2015,7 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
         numLinhas++;
     }
     rewind(arquivo);
-    if (((*medidas) = (TF_DMED *)malloc((numLinhas) * sizeof(TF_DMED))==NULL))
+    if ((((*medidas) = (TF_DMED *)malloc((numLinhas+1) * sizeof(TF_DMED)))==NULL))
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para as medidas !!!!");
         exit(1); 

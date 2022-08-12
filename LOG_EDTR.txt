@@ -1,0 +1,4 @@
+
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.009565
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002965
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003295
