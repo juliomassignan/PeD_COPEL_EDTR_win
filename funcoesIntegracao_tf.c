@@ -310,8 +310,22 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
     for(int i=aux;i<numeroNos;i++) // for que começa do final do grafoSDR pois os ultimos nós que são os novos
     {
         idAdj=grafoSDR[i+1].adjacentes[0].idNo-1; // pega o id do adjacente ao ultimo nó da MRAN
+        
+        for (size_t j = 1; j < grafoSDR[i+1].numeroAdjacentes; j++)
+        {
+            if(grafoSDR[i+1].adjacentes[j].idNo-1<idAdj) idAdj=grafoSDR[i+1].adjacentes[j].idNo-1;
+        }
+        
         includeDBAR(barras,numeroBarras,(*grafo_tf)[idAdj].Vbase);// funcao que incui ele no DBAR
         includeNografoTF(grafo_tf,(*barras),numeroBarras[0]-1); // funcao que inclui ele no grafo trifásico
+    }
+    for (size_t i = 0; i < numeroNos; i++)
+    {
+        (*grafo_tf)[i].barra=&(*barras)[i];
+    }
+    
+    for(int i=aux;i<numeroNos;i++) // for que começa do final do grafoSDR pois os ultimos nós que são os novos
+    {    
         for (size_t j = 0; j < grafoSDR[i+1].numeroAdjacentes; j++)//for que percorre os adjacentes  dos nós ficticios
         {
            de=grafoSDR[i+1].idNo-1; //salva no de
@@ -319,10 +333,10 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
            includeDSWTC(ramos,numeroRamos,de,para,grafoSDR[i+1].adjacentes[j].estadoChave); // inclui as novas chaves no ramos
            includeAdjGrafoTF((*grafo_tf),(*barras),i,(*ramos),numeroRamos[0]-1); //inclui os adjacentes no grafo no barras
         }
-        
+    }    
         
 
-    }
+
 
 
 }
@@ -361,7 +375,7 @@ void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, 
 
     long int indice, indice1, noS, noR, noN,no_prev, idSetorS, idSetorR, idBarra1, idBarra2, indice2, indice3; //inteiros que serão utilizados para contagem e indices de nos
     long int iniAlim; // inteiro que guarda o inicio do alimentador
-    long int noProf[1000]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int noProf[10000]; //armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
     RNPSETOR rnpSetorSR; // variavel que guarda a RNP de setores atuais
    
     //inicializa o indice que percorre a rpn de setores
@@ -431,7 +445,7 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 {
     int indiceRNP; //indice da RNP, corresponde ao alimentador
     int iniAlim,root,noS,noR;//indexa os nós 
-    long int BarraProf[1000],noProf[1000]; // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int BarraProf[10000],noProf[10000]; // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
     RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
 
     //Percorre todas as RNPs do nível mais alto da configuracao[indiceConfiguracao] 
@@ -475,7 +489,6 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
  * 
  * 
  * @param todosAlimentadores boleano que indica se o fluxo será realizado em todos os alimentadores
- * @param FirstEXEC booleano que indica se é a primeira execução
  * @param powerflow_result_rede estrutura do tipo TF_PFSOLUTION que guarda os resultados do fluxo de potência da rede
  * @param powerflow_result_alim vetor do tipo TF_PFSOLUTION que guarda os resultados do fluxo de potência dos alimentadores
  * @param configuracoesParam vetor do tipo CONFIGURACAO que guarda as informacoes das configuracoes
@@ -579,8 +592,8 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
     int indiceRNPsetor; // indice da RNP de setor
     int iniAlim; //inicio do alimentador
     int n_var=0; // variável que conta o número de variáveis
-    long int noProf[1000]; // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
-    long int BarraProf[1000];  // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int noProf[10000]; // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int BarraProf[10000];  // vetores auxiliares para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
     RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
     int indice,indice1;
     
@@ -680,7 +693,7 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
     complex carregamentoNo;
     RNPSETOR rnpSetorSR; // estrutura que recebe cada RNP de setor
 
-    long int noProf[1000];// vetor auxiliar para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
+    long int noProf[10000];// vetor auxiliar para percorrer a RNP, armazena o ultimo nó presente em uma profundidade, é indexado pela profundidade
     long int root;//no raíz
 
 
@@ -1533,7 +1546,7 @@ void fluxoPotencia_alimentador_P_A_tf(TF_GRAFO *grafo_tf ,long int numeroBarras_
         MATRIZCOMPLEXA *ZParam,*/ /* MATRIZMAXCORRENTE *maximoCorrenteParam, int *indiceRegulador, DADOSREGULADOR *dadosRegulado*/,long int numeroInterfaces, long int **interfaceNiveis )
 {
         long int iniAlim,noS,noR,root;
-        long int noProf[1000];
+        long int noProf[10000];
 
         RNPSETOR rnpSetorSR;
 
