@@ -3,3 +3,7 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.009565
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.002965
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.003295
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.002604
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.000619
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.000940
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001262
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.000487
