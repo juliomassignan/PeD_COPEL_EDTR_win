@@ -1,16 +1,36 @@
-numero	setores	3
+numero	setores	7
 Setor	1	numero	adjacentes	1
 Consumidores:	0	Consumidores	Especiais:	0
 Adjacentes	 2
 Chaves	 1
-CodOp. Chaves	 ` αχÿ
+CodOp. Chaves	 
 Setor	2	numero	adjacentes	2
 Consumidores:	0	Consumidores	Especiais:	0
 Adjacentes	 3	 1
-Chaves	 2	 1
-CodOp. Chaves	 	 ` αχÿ
-Setor	3	numero	adjacentes	1
+Chaves	 7	 1
+CodOp. Chaves	 	 
+Setor	3	numero	adjacentes	3
 Consumidores:	0	Consumidores	Especiais:	0
-Adjacentes	 2
+Adjacentes	 7	 4	 2
+Chaves	 2	 3	 7
+CodOp. Chaves	 	 	 
+Setor	4	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 5	 3
+Chaves	 5	 3
+CodOp. Chaves	 	 
+Setor	5	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 6	 4
+Chaves	 4	 5
+CodOp. Chaves	 	 
+Setor	6	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 5
+Chaves	 4
+CodOp. Chaves	 
+Setor	7	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 3
 Chaves	 2
 CodOp. Chaves	 
