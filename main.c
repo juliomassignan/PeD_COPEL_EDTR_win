@@ -135,6 +135,7 @@ int main(int argc, char** argv) {
     //
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
+    
     // insere as informacoes do grafo trifásico no grafo da MRAN
     converteGrafo_TFtoSDR(grafo_tf,numeroBarras_tf,ramo_tf,numeroRamos_tf,&grafoSDRParam,&dadosReguladorSDRParam,&numeroNos, &numeroChaves);
     // insere as informacoes da estrutura alimentadores trifásico na alimentadores da MRAN
@@ -198,7 +199,20 @@ int main(int argc, char** argv) {
     // Leitura do arquivo DSTAT  e atualiza a topologia da rede elétrica
     // leitura do arquvio e atualizaçao
     
-   
+    //Leitura do Arquivo DTAPS
+    // leitura do arquvio e atualizaçao  de taps
+    
+    // Leitura de Medidas do sistema SCADA (SASE processado)
+    TF_DMED *medida_tf;
+    TF_AREA_MEDICAO *areasMedicao_tf;
+    int **numeroMedidas = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
+    //    
+    //    // Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
+    buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas, &areasMedicao_tf);
+    //    
+    //    //Estimador de Demandas Trifásicas
+    estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
+     
     
     //Liberação de Memória
     free_BARRA(barra_tf,numeroBarras_tf);

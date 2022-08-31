@@ -770,6 +770,7 @@ void buscaAM(long int idNo, int idAM,  BOOL *visitado, TF_GRAFO * grafo, TF_AREA
     
     visitado[idNo] = true;
     TF_GRAFO * no = &grafo[idNo];
+    //
     for(i = 0; i < no->numeroAdjacentes; i++)
     {   
         barraAdj = no->adjacentes[i].idNo;
