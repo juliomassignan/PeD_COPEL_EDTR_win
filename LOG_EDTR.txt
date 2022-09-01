@@ -7,3 +7,5 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.000619
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.000940
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001262
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.000487
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002645
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001698

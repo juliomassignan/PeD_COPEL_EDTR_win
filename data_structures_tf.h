@@ -374,6 +374,17 @@ typedef struct {
     
 } TF_DMED;
 
+
+
+typedef struct {
+ 
+ char *time_stamp;
+ TF_DMED *DMED;
+
+} TF_DPREV;
+
+
+
 //-----------------------------------------------------
 //ESTRUTURAS DE DADOS PARA ARMAZENAR RESULTADOS DE INTERESSE E INTERFACES COM OUTRAS FUNCIONALIDADES
 //

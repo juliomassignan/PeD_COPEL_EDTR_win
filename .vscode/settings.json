@@ -20,6 +20,9 @@
         "funcoesrnp.h": "c",
         "complex.h": "c",
         "funcoesintegracao_tf.h": "c",
-        "algorithm": "c"
+        "algorithm": "c",
+        "random": "c",
+        "bitset": "c",
+        "chrono": "c"
     }
 }
