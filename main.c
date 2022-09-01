@@ -205,7 +205,11 @@ int main(int argc, char** argv) {
     // Leitura de Medidas do sistema SCADA (SASE processado)
     TF_DMED *medida_tf;
     TF_AREA_MEDICAO *areasMedicao_tf;
+    
+    
+
     int **numeroMedidas = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
+    // criar o DPREV
     //    
     //    // Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
     buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas, &areasMedicao_tf);
