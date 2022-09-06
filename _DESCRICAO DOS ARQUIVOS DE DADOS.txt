@@ -226,5 +226,21 @@ V_sec - Tensï¿½o do secundï¿½rio da subestaï¿½ï¿½o
 Snom - Potï¿½ncia Nominal
 sigla_SE - Sigla da subestaï¿½ï¿½o
 
+-------------------------------------------------------------------------------------------------------------------------------
+
+DPREV - Dados de previsão
+
+*obs, este arquivo é o único que possui a primeira linha como cabeçalho, com o nome das medidas, os campos não numéricos não devem conter espaço, ou tabulação 
+
+Simulação,medida_1,prec_medida_1,medida_2,prec_medida_2,...,Time_stamp
+
+Primeira linha do arquivo é um cabeçalho, contendo o nome das colunas e o nome das medidas
+
+Simulação - numero inteiro com o número da simulação
+medida_x - (primeira linha) código com o nome da medida 1, código separado pelo caractere "_", no formato (Tipo_fase_de_para), (Tipo: P-Injeção de potencia ativa, Q-Injeção de potencia reativa,Pkm-fluxo de potencia ativa,Qkm-fluxo de potencia reativa,  I-Injeção de corrente, Ikm-fluxo de corrente, V - tensão | fase: 1-A, 2-B, 3-C, 7-ABC) | de: código da barra, conforme DBAR | para:  código da barra, conforme DBAR )
+prec_medida_x - precisão associada a medida "x" no tempo Time_stamp
+time_stamp - inteiro com a estampa de tempo no formato DHHMM (D- digito do dia, HH dois digitos para a hora, MM dois digitos para o minuto)
+
+
 
 

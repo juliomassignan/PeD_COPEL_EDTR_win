@@ -2683,742 +2683,785 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
  * @note Dados da rede elétrica e um grafo da rede elétrica devem ser criados antes de se chamar esta função. 
  * @warning .
  */
-// long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
-// {
-//     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
-//     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
-//     long int contador =0, i,j,k,l,m,ind, aux,adj; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
-//     int carac,numLinhas = 0,numCol=1; /* Variável com o número de linhas do arquivo a serem lidas. */
-//     FILE *arquivo;
-//     long int **numeroMedidas,nmed,namostras;
-//     double Vbase = 1;
-//     double regua;
-//     char text_aux[500];
+long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
+{
+    char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+    char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+    long int contador =0, i,j,k,l,m,ind, aux,adj; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+    int carac,numLinhas = 0,numCol=1; /* Variável com o número de linhas do arquivo a serem lidas. */
+    FILE *arquivo;
+    long int **numeroMedidas,nmed,namostras;
+    double Vbase = 1;
+    long int t;
+    int dateaux1,dateaux2;
+    double regua;
+    char text_aux[500];
     
-//     // Leitura dos dados de medidores
-//     strcpy(text_aux,folder);
-//     arquivo = fopen(strcat(text_aux,file),"r");
+    // Leitura dos dados de medidores
+    strcpy(text_aux,folder);
+    arquivo = fopen(strcat(text_aux,file),"r");
     
-//     //arquivo = fopen(folder,"r");
-//     if(arquivo == NULL)
-//     {
-//         printf("Erro ao abrir arquivo %s !!!\n",strcat(text_aux,file));
-//         exit(1);
-//     }
+    //arquivo = fopen(folder,"r");
+    if(arquivo == NULL)
+    {
+        printf("Erro ao abrir arquivo %s !!!\n",strcat(text_aux,file));
+        exit(1);
+    }
     
-//     numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
-//     for (i = 0; i < 14; i++){ 
-//          numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
-//          for (j = 0; j < 20; j++){
-//             numeroMedidas[i][j] = 0;
-//          }
-//     }
+    numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
+    for (i = 0; i < 14; i++){ 
+         numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
+         for (j = 0; j < 20; j++){
+            numeroMedidas[i][j] = 0;
+         }
+    }
     
-//     //Aloca na memória espaço para as linhas
-//     while ((carac = fgetc(arquivo)) != EOF) {
-//       if (carac == ','&& numLinhas==0)numCol++;
-//       if (carac == '\n') numLinhas++;
-//     }
+    //Aloca na memória espaço para as linhas
+    while ((carac = fgetc(arquivo)) != EOF) {
+      if (carac == ','&& numLinhas==0)numCol++;
+      if (carac == '\n') numLinhas++;
+    }
 
-//     rewind(arquivo);
+    rewind(arquivo);
 
-//     namostras = (numCol-5)/2;
-//     (*numprev)=namostras;
-//     if ((((*prev) = (TF_DPREV *)malloc((namostras+1) * sizeof(TF_DPREV)))==NULL))
-//     {
-//         printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
-//         exit(1); 
-//     }
+    namostras = numLinhas-1;// retira o cabeçalho
+    nmed= (numCol-2)/2; //numero de medidas
+    (*numprev)=namostras;
+    if ((((*prev) = (TF_DPREV *)malloc((nmed+1) * sizeof(TF_DPREV)))==NULL))
+    {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1); 
+    }
 
-//     for (size_t i = 0; i < namostras; i++)
-//     {
-//         if ((((*prev)[i].DMED = (TF_DMED *)malloc((numLinhas+1) * sizeof(TF_DMED)))==NULL))
-//         {
-//             printf("Erro -- Nao foi possivel alocar espaco de memoria para as medidas !!!!");
-//             exit(1); 
-//         }
-//     }
+
+    for (size_t i = 0; i < nmed; i++)
+    {
+        if (((*prev)[i].time_stamp = (int*)malloc(((*numprev)+1) * sizeof( int)))==NULL)
+        {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1);             
+        }
+        if (((*prev)[i].day = (int*)malloc(((*numprev)+1) * sizeof( int)))==NULL)
+        {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1);                
+        }
+        if (((*prev)[i].hour = (int*)malloc(((*numprev)+1) * sizeof( int)))==NULL)
+        {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1);                
+        }
+        if (((*prev)[i].min = (int*)malloc(((*numprev)+1) * sizeof( int)))==NULL)
+        {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1);                
+        }
+        if (((*prev)[i].prev = (double*)malloc(((*numprev)+1) * sizeof( double)))==NULL)
+        {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1);                
+        }
+        if (((*prev)[i].prec = (double*)malloc(((*numprev)+1) * sizeof( double)))==NULL)
+        {
+        printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+        exit(1);                
+        }
+        (*prev)[i].inst_atual=0;
+        (*prev)[i].fre_amost=0;
+        (*prev)[i].nsamples=namostras;
+
+
+    }
+
+
+    fgets(blocoLeitura, 2000, arquivo); //pega a primeira linha de cabeçahos
+
+    numeroMedidas=leCabDPREV(blocoLeitura,&nmed,prev,ramos,barras,numeroBarras,grafo,numeroRamos,Sbase);
+
+    t=0;
+    while((fgets(blocoLeitura, 2000, arquivo))!= NULL ){
+        dados=blocoLeitura; 
+       
+        for (size_t contador = 0; contador < nmed; contador++)
+        {
+            (*prev)[contador].prev[t] = getfield_double(dados,(*prev)[contador].findex);
+            (*prev)[contador].prec[t] = getfield_double(dados,(*prev)[contador].findex+1);
+            (*prev)[contador].time_stamp[t] = getfield_int(dados,2*nmed+2);
+            dateaux2=(*prev)[contador].time_stamp[t];
+            dateaux1=dateaux2 % 10000; 
+            (*prev)[contador].day[t]= (dateaux2 - dateaux1)/10000;
+            dateaux2=dateaux1;
+            dateaux1=dateaux2 % 100; 
+            (*prev)[contador].hour[t]= (dateaux2 - dateaux1)/100;
+            (*prev)[contador].min[t]= dateaux1;
+        }
+
+        t++;
+    }
     
-//     fgets(blocoLeitura, 2000, arquivo); //pega a primeira linha de cabeçahos
-
-//     for (size_t i = 0; i < namostras; i++)
-//     {
-//         j=2*i+6;
-//         (*prev)[i].time_stamp = getfield(blocoLeitura,j);
-//     }
      
 
-//     // Le o arquivo de curva de cargas até o fim
-//     while( (fgets(blocoLeitura, 2000, arquivo))!= NULL ){
-//         dados=blocoLeitura;
-//         for (size_t count = 0; count < namostras; count++)
-//         {
-//             (*prev)[count].DMED[contador].ligado = (getfield_int(dados,1));
-//             (*prev)[count].DMED[contador].tipo = (getfield_int(dados,2));
-//             (*prev)[count].DMED[contador].DE = (getfield_int(dados,3));
-//             (*prev)[count].DMED[contador].PARA = (getfield_int(dados,4));
-//             (*prev)[count].DMED[contador].fases = (getfield_int(dados,5));
-//             (*prev)[count].DMED[contador].id = contador;
-//             (*prev)[count].DMED[contador].h = 0;
-//             (*prev)[count].DMED[contador].zmed = (getfield_double(dados,6));
-//             (*prev)[count].DMED[contador].sigma = (getfield_double(dados,7));
-//             (*prev)[count].DMED[contador].prec = (getfield_double(dados,7));
-//         }
-        
 
-        
-//     numeroMedidas[(*prev)[0].DMED[contador].tipo][(*prev)[0].DMED[contador].fases-1]++;
-//     switch((*prev)[0].DMED[contador].tipo){
-//             case 0: //Medidas nos ramos
-//             case 1:
-//             case 6:
-//             case 7:
-//             case 12: //PMU de corrente retangular real
-//             case 13: //PMU de corrente retangular imaginário
-//                 for(i=0;i<numeroRamos;i++){
-//                     if(((*prev)[0].DMED[contador].DE == ramos[i].DE ) && ((*prev)[0].DMED[contador].DE == ramos[i].DE )){
-//                         (*prev)[0].DMED[contador].k = ramos[i].k;
-//                         (*prev)[0].DMED[contador].m = ramos[i].m;
-//                         (*prev)[0].DMED[contador].ramo = i;
-//                     }
-//                     if(((*prev)[0].DMED[contador].DE == ramos[i].PARA ) && ((*prev)[0].DMED[contador].PARA == ramos[i].DE )){
-//                         (*prev)[0].DMED[contador].k = ramos[i].m;
-//                         (*prev)[0].DMED[contador].m = ramos[i].k;
-//                         (*prev)[0].DMED[contador].ramo = i;
-//                     }
-//                 }
-//                 break;
-//             case 2: //Medidas nas barras
-//             case 3:
-//             case 4: 
-//             case 5:
-//             case 8: //PMU de tensão retangular real
-//             case 9: //PMU de tensão retangular imaginário
-//             case 10: //PMU de injeção de corrente retangular real
-//             case 11: //PMU de injeção de corrente retangular imaginário
-//                 for(i=0;i<numeroBarras;i++){
-//                     if((*prev)[0].DMED[contador].DE == barras[i].ID ){
-//                         (*prev)[0].DMED[contador].k = barras[i].i;
-//                     }
-//                     (*prev)[0].DMED[contador].m = -1;
-//                     (*prev)[0].DMED[contador].ramo = -1;
-//                 }
-//                 break;
-//         }
-//         contador++;             
-//     }
-//     fclose(arquivo);    
+    return(numeroMedidas);
+}
+
+
+long int  **leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF_DBAR *barras,int numeroBarras ,TF_GRAFO *grafo, int numeroRamos,double Sbase)
+{
+    char medcod[5][10];
+    char *token;
+    int i,j;
+    char *dados;
+    long  int **numeroMedidas;
+    double Vbase;
+
+    numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
+    for (i = 0; i < 14; i++){ 
+         numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
+         for (j = 0; j < 20; j++){
+            numeroMedidas[i][j] = 0;
+         }
+    }
+
+    for (size_t contador = 0; contador < (*nmed); contador++)
+    {
+        dados=blocoLeitura;
+        strcpy(medcod[0],getfield(dados,2*(contador+1)));
+        token=strtok(medcod[0],"_");
+        size_t count =1;
     
-//     //  Associa as medidas ao grafo e transforma em pu os dados medidos
-//      nmed = 0;
-//      for (i = 0; i < 14; i++){ 
-//          for (j = 0; j < 8; j++){
-//              nmed = nmed + numeroMedidas[i][j];
-//          }
-//      }
+        while (token != NULL)
+        {   
+            strcpy(medcod[count],token);
+            token = strtok(NULL,"_");
+            count++;   
+        }
+        (*prev)[contador].findex=2*(contador+1);
+        (*prev)[contador].DMED.ligado=1;
+        if (strcmp(medcod[1],"Pkm")==0) (*prev)[contador].DMED.tipo= 0;
+        else if (strcmp(medcod[1],"Qkm")==0) (*prev)[contador].DMED.tipo= 1;
+        else if (strcmp(medcod[1],"P")==0) (*prev)[contador].DMED.tipo= 2;
+        else if (strcmp(medcod[1],"Q")==0) (*prev)[contador].DMED.tipo= 3;
+        else if (strcmp(medcod[1],"V")==0) (*prev)[contador].DMED.tipo= 4;
+        else if (strcmp(medcod[1],"T")==0) (*prev)[contador].DMED.tipo= 5;     
+        else if (strcmp(medcod[1],"Ikm")==0) (*prev)[contador].DMED.tipo= 6;
+        else if (strcmp(medcod[1],"ITkm")==0) (*prev)[contador].DMED.tipo= 7;    
+        else if (strcmp(medcod[1],"I")==0) (*prev)[contador].DMED.tipo= 8; 
+        else if (strcmp(medcod[1],"IT")==0) (*prev)[contador].DMED.tipo= 9; 
+        (*prev)[contador].DMED.fases= atoi(medcod[2]);
+        (*prev)[contador].DMED.DE= atoi(medcod[3]);
+        (*prev)[contador].DMED.PARA= atoi(medcod[4]);         
+        (*prev)[contador].DMED.zmed =0;
+        (*prev)[contador].DMED.prec =0;
+        (*prev)[contador].DMED.id = contador;
+        (*prev)[contador].DMED.par= -1;
+        (*prev)[contador].DMED.h= 0;
+
+        switch((*prev)[contador].DMED.tipo){
+            case 0: //Medidas nos ramos
+            case 1:
+            case 6:
+            case 7:
+            case 12: //PMU de corrente retangular real
+            case 13: //PMU de corrente retangular imaginário
+                for(i=0;i<numeroRamos;i++){
+                    if(((*prev)[contador].DMED.DE == ramos[i].DE ) && ((*prev)[contador].DMED.PARA == ramos[i].PARA )){
+                        (*prev)[contador].DMED.k = ramos[i].k;
+                        (*prev)[contador].DMED.m = ramos[i].m;
+                        (*prev)[contador].DMED.ramo = i;
+                    }
+                    if(((*prev)[contador].DMED.DE == ramos[i].PARA ) && ((*prev)[contador].DMED.PARA == ramos[i].DE )){
+                        (*prev)[contador].DMED.k = ramos[i].m;
+                        (*prev)[contador].DMED.m = ramos[i].k;
+                        (*prev)[contador].DMED.ramo = i;
+                    }
+                }
+                break;
+            case 2: //Medidas nas barras
+            case 3:
+            case 4: 
+            case 5:
+            case 8: //PMU de tensão retangular real
+            case 9: //PMU de tensão retangular imaginário
+            case 10: //PMU de injeção de corrente retangular real
+            case 11: //PMU de injeção de corrente retangular imaginário
+                for(i=0;i<numeroBarras;i++){
+                    if((*prev)[contador].DMED.DE == barras[i].ID ){
+                        (*prev)[contador].DMED.k = barras[i].i;
+                    }
+                    (*prev)[contador].DMED.m = -1;
+                    (*prev)[contador].DMED.ramo = -1;
+                }
+                break;
+        }
+    }
+
+    //Associa as medidas ao grafo e transforma em pu os dados medidos
+
+
+    for (i = 0; i < 14; i++){ 
+        for (j = 0; j < 8; j++){
+            (*nmed) = (*nmed) + numeroMedidas[i][j];
+        }
+    }
     
-//      //--------------------------------------------------------------------------
-// //     //Associa os medidores ao grafo e transforma medidas em pu
-//      for (i = 0; i < nmed; i++){ 
-//          k = (*prev)[0].DMED[i].k;
-//          m = (*prev)[0].DMED[i].m;
-        
-//          (*prev)[0].DMED[i].idAlim = grafo[k].idAlim;
-        
-// //         //Associa a medida ao grafo e transforma em pu o valor medido e sigma
-//         switch ((*prev)[0].DMED[i].tipo) {
-//             case 0: //Medida de Fluxo de Potência Ativa em kW
-//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
-//                     if (grafo[k].adjacentes[j].idNo == m){
-//                         adj = j;
-//                     }
-//                 }
-//                 ind = grafo[k].adjacentes[adj].nmed;
-//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i]; //precisa atualizar para cada instante
-//                 grafo[k].adjacentes[adj].nmed++;
-                
-//                 for (size_t l = 0; l < namostras; l++)
-//                 {
-//                     (*prev)[l].DMED[i].zmed = (*prev)[l].DMED[i].zmed / (Sbase/1000);
-//                     (*prev)[l].DMED[i].sigma = (*prev)[l].DMED[i].sigma / (Sbase/1000);
-//                     (*prev)[l].DMED[i].nvar = 12;
-//                     (*prev)[l].DMED[i].reguaH = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
-//                     (*prev)[l].DMED[i].H = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[l].DMED[i].nvar;j++){
-//                         (*prev)[l].DMED[i].H[j] = 0;
-//                     }
+    for (i=0;i<(*nmed);i++)
+    {
+        AssoMedGraf(grafo,&((*prev)[i].DMED),Sbase);
+    }
 
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[l].DMED[i].reguaH[j] = regua;
-//                         (*prev)[l].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)m;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[l].DMED[i].reguaH[j+6] = regua;
-//                         (*prev)[l].DMED[i].reguaH[j+9] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 1: //Medida de Fluxo de Potência Reativa em kVAr
-
-//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
-//                     if (grafo[k].adjacentes[j].idNo == m){
-//                         adj = j;
-//                     }
-//                 }
-
-//                 ind = grafo[k].adjacentes[adj].nmed;
-//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i]; //precisa atualizar para cada instante
-//                 grafo[k].adjacentes[adj].nmed++;
+    AssoMedidoresPares(prev,(*nmed));
 
 
-//                 for (size_t l = 0; l < namostras; l++)
-//                 {
-                
-//                     (*prev)[l].DMED[i].zmed = (*prev)[l].DMED[i].zmed / (Sbase/1000);
-//                     (*prev)[l].DMED[i].sigma = (*prev)[l].DMED[i].sigma / (Sbase/1000);
-//                     (*prev)[l].DMED[i].nvar = 12;
-//                     (*prev)[l].DMED[i].reguaH = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
-//                     (*prev)[l].DMED[i].H = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[l].DMED[i].nvar;j++){
-//                         (*prev)[l].DMED[i].H[j] = 0;
-//                     }
-
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[l].DMED[i].reguaH[j] = regua;
-//                         (*prev)[l].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)m;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[l].DMED[i].reguaH[j+6] = regua;
-//                         (*prev)[l].DMED[i].reguaH[j+9] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 2: //Medida de Injeção de Potência Ativa em kW
-
-//                 // 
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;
-//                 grafo[k].nmedPQ++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Sbase/1000);
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Sbase/1000);
-//                                 // 
-//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-//                 // 
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
-//                         regua = grafo[k].adjacentes[l].idNo;
-//                         regua += 0.01;
-//                         for(j=0;j<3;j++){
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
-//                             regua += 0.1;
-//                         }
-//                     }
-//                 }
-//                 break;    
-//             case 3: //Medida de Injeção de Potência Reativa em kVAr
-
-//                 // 
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;
-//                 grafo[k].nmedPQ++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Sbase/1000);
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Sbase/1000);
-//                                 // 
-//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-//                 // 
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
-//                         regua = grafo[k].adjacentes[l].idNo;
-//                         regua += 0.01;
-//                         for(j=0;j<3;j++){
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
-//                             regua += 0.1;
-//                         }
-//                     }
-//                 }
-
-//                 break;
-//             case 4: //Medida de Magnitude de Tensão - kV
-//                 switch ( (*prev)[0].DMED[i].fases){
-//                     case 1:
-//                     case 2:
-//                     case 3:
-//                         Vbase = grafo[k].Vbase;
-//                         break;
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         Vbase = grafo[k].Vbase*(pow(3,0.5));
-//                         break;
-//                 }
-
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;    
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {                                            
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Vbase/1000);
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Vbase/1000);
-                                    
-
-                    
-//                     (*prev)[cont].DMED[i].nvar = 6;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=3;j<6;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 5: //Medida de Ângulo de tensão - graus
-
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];;
-//                 grafo[k].nmed++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {  
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed *PI/180;
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma *PI/180;;
-                                    
-
-                    
-//                     (*prev)[cont].DMED[i].nvar = 3;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 6: //Medida de Magnitude de Corrente em A - Fluxo
-//                 Vbase = grafo[k].Vbase;
-//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
-//                     if (grafo[k].adjacentes[j].idNo == m){
-//                         adj = j;
-//                     }
-//                 }
-//                 ind = grafo[k].adjacentes[adj].nmed;
-//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].adjacentes[adj].nmed++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 { 
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
-                    
-
-                    
-//                     (*prev)[cont].DMED[i].nvar = 12;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)m;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 7: //Medida de Ângulo de Corrente em graus
-//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
-//                     if (grafo[k].adjacentes[j].idNo == m){
-//                         adj = j;
-//                     }
-//                 }
-//                 ind = grafo[k].adjacentes[adj].nmed;
-//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].adjacentes[adj].nmed++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {                 
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed *PI/180;
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma *PI/180;
-
-//                     (*prev)[cont].DMED[i].nvar = 12;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)m;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 8: //Medida PMU de tensão retangular Real
-//                 switch ((*prev)[0].DMED[i].fases){
-//                     case 1:
-//                     case 2:
-//                     case 3:
-//                         Vbase = grafo[k].Vbase;
-//                         break;
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         Vbase = grafo[k].Vbase*(pow(3,0.5));
-//                         break;
-//                 }                
-
-                                
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;
-                
-
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {  
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Vbase/1000);
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Vbase/1000);
-//                     (*prev)[cont].DMED[i].nvar = 3;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
 
 
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 9: //Medida PMU de tensão retangular Imaginário
-//                 switch ((*prev)[0].DMED[i].fases){
-//                     case 1:
-//                     case 2:
-//                     case 3:
-//                         Vbase = grafo[k].Vbase;
-//                         break;
-//                     case 4:
-//                     case 5:
-//                     case 6:
-//                         Vbase = grafo[k].Vbase*(pow(3,0.5));
-//                         break;
-//                 }
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;   
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {  
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Vbase/1000);
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Vbase/1000);
+    return(numeroMedidas);
+}
 
-//                     (*prev)[cont].DMED[i].nvar = 3;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 10: //Medida PMU de injeção de corrente retangular real
-//                 Vbase = grafo[k].Vbase;
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 { 
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
-//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
-//                         regua = grafo[k].adjacentes[l].idNo;
-//                         regua += 0.01;
-//                         for(j=0;j<3;j++){
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
-//                             regua += 0.1;
-//                         }
-//                     }
-//                 }
-//                 break;
-//             case 11: //Medida PMU de injeção de corrente retangular imaginário
-//                 Vbase = grafo[k].Vbase;
-//                 ind = grafo[k].nmed;
-//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].nmed++;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
 
-//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
-//                         regua = grafo[k].adjacentes[l].idNo;
-//                         regua += 0.01;
-//                         for(j=0;j<3;j++){
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
-//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
-//                             regua += 0.1;
-//                         }
-//                     }
-//                 }
-//                 break;
-//             case 12: //Medida PMU de corrente retangular real
-//                 Vbase = grafo[k].Vbase;
 
-//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
-//                     if (grafo[k].adjacentes[j].idNo == m){
-//                         adj = j;
-//                     }
-//                 }
-//                 ind = grafo[k].adjacentes[adj].nmed;
-//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i];
-//                 grafo[k].adjacentes[adj].nmed++;
-
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
-                    
-//                     (*prev)[cont].DMED[i].nvar = 12;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)m;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//             case 13: //Medida PMU de corrente retangular Imaginário
-//                 Vbase = grafo[k].Vbase;
-//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
-//                     if (grafo[k].adjacentes[j].idNo == m){
-//                         adj = j;
-//                     }
-//                 }
-//                 ind = grafo[k].adjacentes[adj].nmed;
-//                 for (size_t cont = 0; cont < namostras; cont++)
-//                 {                
-//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
-//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
-//                     grafo[k].adjacentes[adj].medidores[ind] =  &(*prev)[0].DMED[i];
-//                     grafo[k].adjacentes[adj].nmed++;
-                    
-//                     (*prev)[cont].DMED[i].nvar = 12;
-//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
-//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
-//                         (*prev)[cont].DMED[i].H[j] = 0;
-//                     }
-                    
-//                     regua = (double)k;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
-//                         regua += 0.1;
-//                     }
-//                     regua = (double)m;
-//                     regua += 0.01;
-//                     for(j=0;j<3;j++){
-//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
-//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
-//                         regua += 0.1;
-//                     }
-//                 }
-//                 break;
-//         }        
-//     }
+void AssoMedGraf(TF_GRAFO *grafo, TF_DMED *medida,double Sbase)
+{
+    int j,k,m,i,l;
+    int ind;
+    int adj;
+    double regua;
+    k = (*medida).k;
+    m = (*medida).m;
+    double Vbase;
     
-//     //--------------------------------------------------------------------------
-//     //Associa os medidores ao grafo e transforma medidas em pu (equivalente de corrente para o AMB e Baran precisa do par de medida)
-//     for (i = 0; i < nmed; i++){ 
-//         k = (*prev)[0].DMED[i].k;
-//         m = (*prev)[0].DMED[i].m;
-//         // 
-//         //Associa a medida ao grafo e transforma em pu o valor medido e sigma
-//         switch ((*prev)[0].DMED[i].tipo) {
-//             case 0: //Medida de Fluxo de Potência Ativa em kW
-//                 for (j = 0; j < nmed; j++){ 
+    (*medida).idAlim = grafo[k].idAlim;
+    
+        //Associa a medida ao grafo e transforma em pu o valor medido e sigma
+    switch ((*medida).tipo) {
+        case 0: //Medida de Fluxo de Potência Ativa em kW
+            (*medida).zmed = (*medida).zmed / (Sbase/1000);
+            (*medida).sigma = (*medida).sigma / (Sbase/1000);
+            
+            for(j=0;j<grafo[k].numeroAdjacentes;j++){
+                if (grafo[k].adjacentes[j].idNo == m){
+                    adj = j;
+                }
+            }
+            ind = grafo[k].adjacentes[adj].nmed;
+            grafo[k].adjacentes[adj].medidores[ind] = &(*medida);
+            grafo[k].adjacentes[adj].nmed++;
+            
+            (*medida).nvar = 12;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            regua = (double)m;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j+6] = regua;
+                (*medida).reguaH[j+9] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 1: //Medida de Fluxo de Potência Reativa em kVAr
+            (*medida).zmed = (*medida).zmed / (Sbase/1000);
+            (*medida).sigma = (*medida).sigma / (Sbase/1000);
+            
+            for(j=0;j<grafo[k].numeroAdjacentes;j++){
+                if (grafo[k].adjacentes[j].idNo == m){
+                    adj = j;
+                }
+            }
+            ind = grafo[k].adjacentes[adj].nmed;
+            grafo[k].adjacentes[adj].medidores[ind] = &(*medida);
+            grafo[k].adjacentes[adj].nmed++;
+            
+            (*medida).nvar = 12;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            regua = (double)m;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j+6] = regua;
+                (*medida).reguaH[j+9] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 2: //Medida de Injeção de Potência Ativa em kW
+            (*medida).zmed = (*medida).zmed / (Sbase/1000);
+            (*medida).sigma = (*medida).sigma / (Sbase/1000);
+                            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            grafo[k].nmedPQ++;
+                            
+            (*medida).nvar = 6+6*grafo[k].numeroAdjacentes;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            for(l=0;l<grafo[k].numeroAdjacentes;l++){
+                regua = grafo[k].adjacentes[l].idNo;
+                regua += 0.01;
+                for(j=0;j<3;j++){
+                    (*medida).reguaH[6+6*l+j] = regua;
+                    (*medida).reguaH[6+6*l+j+3] = -regua;
+                    regua += 0.1;
+                }
+            }
+            break;    
+        case 3: //Medida de Injeção de Potência Reativa em kVAr
+            (*medida).zmed = (*medida).zmed / (Sbase/1000);
+            (*medida).sigma = (*medida).sigma / (Sbase/1000);
+                            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            grafo[k].nmedPQ++;
+            
+            (*medida).nvar = 6+6*grafo[k].numeroAdjacentes;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            for(l=0;l<grafo[k].numeroAdjacentes;l++){
+                regua = grafo[k].adjacentes[l].idNo;
+                regua += 0.01;
+                for(j=0;j<3;j++){
+                    (*medida).reguaH[6+6*l+j] = regua;
+                    (*medida).reguaH[6+6*l+j+3] = -regua;
+                    regua += 0.1;
+                }
+            }
+            break;
+        case 4: //Medida de Magnitude de Tensão - kV
+            switch ((*medida).fases){
+                case 1:
+                case 2:
+                case 3:
+                    Vbase = grafo[k].Vbase;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    Vbase = grafo[k].Vbase*(pow(3,0.5));
+                    break;
+            }                
+            (*medida).zmed = (*medida).zmed / (Vbase/1000);
+            (*medida).sigma = (*medida).sigma / (Vbase/1000);
+                            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            
+            (*medida).nvar = 6;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                regua += 0.1;
+            }
+            regua = (double)k;
+            regua += 0.01;
+            for(j=3;j<6;j++){
+                (*medida).reguaH[j] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 5: //Medida de Ângulo de tensão - graus
+            (*medida).zmed = (*medida).zmed *PI/180;
+            (*medida).sigma = (*medida).sigma *PI/180;;
+                            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            
+            (*medida).nvar = 3;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 6: //Medida de Magnitude de Corrente em A - Fluxo
+            Vbase = grafo[k].Vbase;
+            (*medida).zmed = (*medida).zmed / ((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
+            (*medida).sigma = (*medida).sigma / ((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
+            
+            for(j=0;j<grafo[k].numeroAdjacentes;j++){
+                if (grafo[k].adjacentes[j].idNo == m){
+                    adj = j;
+                }
+            }
+            ind = grafo[k].adjacentes[adj].nmed;
+            grafo[k].adjacentes[adj].medidores[ind] = &(*medida);
+            grafo[k].adjacentes[adj].nmed++;
+            
+            (*medida).nvar = 12;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            regua = (double)m;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j+6] = regua;
+                (*medida).reguaH[j+9] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 7: //Medida de Ângulo de Corrente em graus
+            (*medida).zmed = (*medida).zmed *PI/180;
+            (*medida).sigma = (*medida).sigma *PI/180;
+            
+            for(j=0;j<grafo[k].numeroAdjacentes;j++){
+                if (grafo[k].adjacentes[j].idNo == m){
+                    adj = j;
+                }
+            }
+            ind = grafo[k].adjacentes[adj].nmed;
+            grafo[k].adjacentes[adj].medidores[ind] = &(*medida);
+            grafo[k].adjacentes[adj].nmed++;
+            
+            (*medida).nvar = 12;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            regua = (double)m;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j+6] = regua;
+                (*medida).reguaH[j+9] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 8: //Medida PMU de tensão retangular Real
+            switch ((*medida).fases){
+                case 1:
+                case 2:
+                case 3:
+                    Vbase = grafo[k].Vbase;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    Vbase = grafo[k].Vbase*(pow(3,0.5));
+                    break;
+            }                
+            (*medida).zmed = (*medida).zmed / (Vbase/1000);
+            (*medida).sigma = (*medida).sigma / (Vbase/1000);
+                            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            
+            (*medida).nvar = 3;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                regua += 0.1;
+            }
+            break;
+        case 9: //Medida PMU de tensão retangular Imaginário
+            switch ((*medida).fases){
+                case 1:
+                case 2:
+                case 3:
+                    Vbase = grafo[k].Vbase;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    Vbase = grafo[k].Vbase*(pow(3,0.5));
+                    break;
+            }                
+            (*medida).zmed = (*medida).zmed / (Vbase/1000);
+            (*medida).sigma = (*medida).sigma / (Vbase/1000);
+            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            
+            (*medida).nvar = 3;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 10: //Medida PMU de injeção de corrente retangular real
+            Vbase = grafo[k].Vbase;
+            (*medida).zmed = (*medida).zmed / ((Sbase/1000)/((Vbase/1000)));
+            (*medida).sigma = (*medida).sigma / ((Sbase/1000)/((Vbase/1000)));
+            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            
+            (*medida).nvar = 6+6*grafo[k].numeroAdjacentes;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            for(l=0;l<grafo[k].numeroAdjacentes;l++){
+                regua = grafo[k].adjacentes[l].idNo;
+                regua += 0.01;
+                for(j=0;j<3;j++){
+                    (*medida).reguaH[6+6*l+j] = regua;
+                    (*medida).reguaH[6+6*l+j+3] = -regua;
+                    regua += 0.1;
+                }
+            }
+            break;
+        case 11: //Medida PMU de injeção de corrente retangular imaginário
+            Vbase = grafo[k].Vbase;
+            (*medida).zmed = (*medida).zmed / ((Sbase/1000)/((Vbase/1000)));
+            (*medida).sigma = (*medida).sigma / ((Sbase/1000)/((Vbase/1000)));
+            
+            ind = grafo[k].nmed;
+            grafo[k].medidores[ind] = &(*medida);
+            grafo[k].nmed++;
+            
+            (*medida).nvar = 6+6*grafo[k].numeroAdjacentes;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            for(l=0;l<grafo[k].numeroAdjacentes;l++){
+                regua = grafo[k].adjacentes[l].idNo;
+                regua += 0.01;
+                for(j=0;j<3;j++){
+                    (*medida).reguaH[6+6*l+j] = regua;
+                    (*medida).reguaH[6+6*l+j+3] = -regua;
+                    regua += 0.1;
+                }
+            }
+            
+            break;
+        case 12: //Medida PMU de corrente retangular real
+            Vbase = grafo[k].Vbase;
+            (*medida).zmed = (*medida).zmed / ((Sbase/1000)/((Vbase/1000)));
+            (*medida).sigma = (*medida).sigma / ((Sbase/1000)/((Vbase/1000)));
+            
+            for(j=0;j<grafo[k].numeroAdjacentes;j++){
+                if (grafo[k].adjacentes[j].idNo == m){
+                    adj = j;
+                }
+            }
+            ind = grafo[k].adjacentes[adj].nmed;
+            grafo[k].adjacentes[adj].medidores[ind] = &(*medida);
+            grafo[k].adjacentes[adj].nmed++;
+            
+            (*medida).nvar = 12;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            regua = (double)m;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j+6] = regua;
+                (*medida).reguaH[j+9] = -regua;
+                regua += 0.1;
+            }
+            break;
+        case 13: //Medida PMU de corrente retangular Imaginário
+            Vbase = grafo[k].Vbase;
+            (*medida).zmed = (*medida).zmed / ((Sbase/1000)/((Vbase/1000)));
+            (*medida).sigma = (*medida).sigma / ((Sbase/1000)/((Vbase/1000)));
+            
+            for(j=0;j<grafo[k].numeroAdjacentes;j++){
+                if (grafo[k].adjacentes[j].idNo == m){
+                    adj = j;
+                }
+            }
+            ind = grafo[k].adjacentes[adj].nmed;
+            grafo[k].adjacentes[adj].medidores[ind] = &(*medida);
+            grafo[k].adjacentes[adj].nmed++;
+            
+            (*medida).nvar = 12;
+            (*medida).reguaH = (double*) malloc ((*medida).nvar * sizeof(double));
+            (*medida).H = (double*) malloc ((*medida).nvar * sizeof(double));
+            for(j=0;j<(*medida).nvar;j++){
+                (*medida).H[j] = 0;
+            }
+            
+            regua = (double)k;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j] = regua;
+                (*medida).reguaH[j+3] = -regua;
+                regua += 0.1;
+            }
+            regua = (double)m;
+            regua += 0.01;
+            for(j=0;j<3;j++){
+                (*medida).reguaH[j+6] = regua;
+                (*medida).reguaH[j+9] = -regua;
+                regua += 0.1;
+            }
+            break;
+    }        
+}
 
-//                     if (((*prev)[0].DMED[j].tipo == 1) && ((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
-//                         for (size_t cont = 0; cont < namostras; cont++)
-//                         {   
-//                             (*prev)[cont].DMED[i].par = j;
-//                             (*prev)[cont].DMED[j].par = i;
-//                             j=nmed;
-//                         }
-//                     }
-//                 }
-//                 break;
-//             case 2: //Medida de Injeção de Potência Ativa em kW
-//                 for (j = 0; j < nmed; j++){ 
-//                     if (((*prev)[0].DMED[j].tipo  == 3) && ((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
-//                      for (size_t cont = 0; cont < namostras; cont++)
-//                         {   
-//                             (*prev)[cont].DMED[i].par = j;
-//                             (*prev)[cont].DMED[j].par = i;
-//                             j=nmed;
-//                         }
-//                     }
-//                 }
-//                 break;    
-//             case 4: //Medida de Magnitude de Tensão - kV
-//                 for (j = 0; j < nmed; j++){ 
-//                     if (((*prev)[0].DMED[j].tipo  == 5) && ((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
-//                      for (size_t cont = 0; cont < namostras; cont++)
-//                         {   
-//                             (*prev)[cont].DMED[i].par = j;
-//                             (*prev)[cont].DMED[j].par = i;
-//                             j=nmed;
-//                         }
-//                     }
-//                 }
-//                 break;
-//             case 6: //Medida de Magnitude de Corrente em A
-//                 for (j = 0; j < nmed; i++){ 
-//                     if (((*prev)[0].DMED[j].tipo == 7) &&((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
-//                      for (size_t cont = 0; cont < namostras; cont++)
-//                         {   
-//                             (*prev)[cont].DMED[i].par = j;
-//                             (*prev)[cont].DMED[j].par = i;
-//                             j=nmed;
-//                         }
-//                     }
-//                 }
-//                 break;   
-//         }        
-//     }
-//     return(numeroMedidas);
-// }
 
-
+void AssoMedidoresPares(TF_DPREV **prev,int nmed)
+{
+    int k,m,i,j;
+    for (i = 0; i < nmed; i++){ 
+        k = (*prev)[i].DMED.k;
+        m = (*prev)[i].DMED.m;
+        
+        //Associa a medida ao grafo e transforma em pu o valor medido e sigma
+        switch ((*prev)[i].DMED.tipo) {
+            case 0: //Medida de Fluxo de Potência Ativa em kW
+                for (j = 0; j < nmed; j++){ 
+                    if (((*prev)[j].DMED.tipo == 1) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
+                        (*prev)[i].DMED.par = j;
+                        (*prev)[j].DMED.par = i;
+                        j=nmed;
+                    }
+                }
+                break;
+            case 2: //Medida de Injeção de Potência Ativa em kW
+                for (j = 0; j < nmed; j++){ 
+                    if (((*prev)[j].DMED.tipo == 3) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
+                        (*prev)[i].DMED.par = j;
+                        (*prev)[j].DMED.par = i;
+                        j=nmed;
+                    }
+                }
+                break;    
+            case 4: //Medida de Magnitude de Tensão - kV
+                for (j = 0; j < nmed; j++){ 
+                    if (((*prev)[j].DMED.tipo == 5) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
+                        (*prev)[i].DMED.par = j;
+                        (*prev)[j].DMED.par = i;
+                        j=nmed;
+                    }
+                }
+                break;
+            case 6: //Medida de Magnitude de Corrente em A
+                for (j = 0; j < nmed; i++){ 
+                    if (((*prev)[j].DMED.tipo == 7) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
+                        (*prev)[i].DMED.par = j;
+                        (*prev)[j].DMED.par = i;
+                        j=nmed;
+                    }
+                }
+                break;   
+        }        
+    }
+}
 
 
 

@@ -378,6 +378,7 @@ typedef struct {
 
 typedef struct {
  
+    
     int *time_stamp; // vetor com cada estampa de tempo (formato a definir)
     int *day; // vetor de inteiro com os dias
     int *hour; // vetor de inteiro com as horas
@@ -387,6 +388,7 @@ typedef struct {
     int inst_atual; //
     int fre_amost;// frequencia amostral (min)
     int nsamples; // numero de amostras
+    int findex;
 
     TF_DMED DMED; 
 
