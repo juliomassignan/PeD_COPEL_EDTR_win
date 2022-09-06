@@ -1,36 +1,141 @@
-numero	setores	7
+numero	setores	28
 Setor	1	numero	adjacentes	1
 Consumidores:	0	Consumidores	Especiais:	0
 Adjacentes	 2
 Chaves	 1
 CodOp. Chaves	 
-Setor	2	numero	adjacentes	2
+Setor	2	numero	adjacentes	3
 Consumidores:	0	Consumidores	Especiais:	0
-Adjacentes	 3	 1
-Chaves	 7	 1
-CodOp. Chaves	 	 
-Setor	3	numero	adjacentes	3
-Consumidores:	0	Consumidores	Especiais:	0
-Adjacentes	 7	 4	 2
-Chaves	 2	 3	 7
+Adjacentes	 4	 3	 1
+Chaves	 3	 2	 1
 CodOp. Chaves	 	 	 
+Setor	3	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 2
+Chaves	 2
+CodOp. Chaves	 
 Setor	4	numero	adjacentes	2
 Consumidores:	0	Consumidores	Especiais:	0
-Adjacentes	 5	 3
-Chaves	 5	 3
+Adjacentes	 5	 2
+Chaves	 4	 3
 CodOp. Chaves	 	 
 Setor	5	numero	adjacentes	2
 Consumidores:	0	Consumidores	Especiais:	0
 Adjacentes	 6	 4
-Chaves	 4	 5
+Chaves	 5	 4
 CodOp. Chaves	 	 
-Setor	6	numero	adjacentes	1
+Setor	6	numero	adjacentes	2
 Consumidores:	0	Consumidores	Especiais:	0
-Adjacentes	 5
-Chaves	 4
+Adjacentes	 7	 5
+Chaves	 6	 5
+CodOp. Chaves	 	 
+Setor	7	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 8	 6
+Chaves	 7	 6
+CodOp. Chaves	 	 
+Setor	8	numero	adjacentes	10
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 25	 24	 22	 20	 18	 17	 15	 11	 9	 7
+Chaves	 15	 14	 13	 20	 12	 11	 10	 9	 8	 7
+CodOp. Chaves	 	 	 	 	 	 	 	 	 	 
+Setor	9	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 10	 8
+Chaves	 27	 8
+CodOp. Chaves	 	 
+Setor	10	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 9
+Chaves	 27
 CodOp. Chaves	 
-Setor	7	numero	adjacentes	1
+Setor	11	numero	adjacentes	4
 Consumidores:	0	Consumidores	Especiais:	0
-Adjacentes	 3
-Chaves	 2
+Adjacentes	 14	 13	 12	 8
+Chaves	 26	 25	 24	 9
+CodOp. Chaves	 	 	 	 
+Setor	12	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 11
+Chaves	 24
+CodOp. Chaves	 
+Setor	13	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 11
+Chaves	 25
+CodOp. Chaves	 
+Setor	14	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 11
+Chaves	 26
+CodOp. Chaves	 
+Setor	15	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 16	 8
+Chaves	 23	 10
+CodOp. Chaves	 	 
+Setor	16	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 15
+Chaves	 23
+CodOp. Chaves	 
+Setor	17	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 8
+Chaves	 11
+CodOp. Chaves	 
+Setor	18	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 19	 8
+Chaves	 22	 12
+CodOp. Chaves	 	 
+Setor	19	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 18
+Chaves	 22
+CodOp. Chaves	 
+Setor	20	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 21	 8
+Chaves	 21	 20
+CodOp. Chaves	 	 
+Setor	21	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 20
+Chaves	 21
+CodOp. Chaves	 
+Setor	22	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 23	 8
+Chaves	 19	 13
+CodOp. Chaves	 	 
+Setor	23	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 22
+Chaves	 19
+CodOp. Chaves	 
+Setor	24	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 8
+Chaves	 14
+CodOp. Chaves	 
+Setor	25	numero	adjacentes	3
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 28	 26	 8
+Chaves	 16	 17	 15
+CodOp. Chaves	 	 	 
+Setor	26	numero	adjacentes	2
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 27	 25
+Chaves	 18	 17
+CodOp. Chaves	 	 
+Setor	27	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 26
+Chaves	 18
+CodOp. Chaves	 
+Setor	28	numero	adjacentes	1
+Consumidores:	0	Consumidores	Especiais:	0
+Adjacentes	 25
+Chaves	 16
 CodOp. Chaves	 

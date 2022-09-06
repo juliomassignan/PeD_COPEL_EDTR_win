@@ -1,38 +1,6 @@
 Medidas excluidas por possível falta de comunicacao. Critério: conectadas a rede mas com valor igual a zero
-Medidor (16) 0 - -1 (fase: 1)  tipo PQ:  Alimentador: 0
-Medidor (17) 0 - -1 (fase: 2)  tipo PQ:  Alimentador: 0
-Medidor (18) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
-Medidor (19) 0 - -1 (fase: 1)  tipo PQ:  Alimentador: 0
-Medidor (20) 0 - -1 (fase: 2)  tipo PQ:  Alimentador: 0
-Medidor (21) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
-Medidor (22) 0 - -1 (fase: 1)  tipo PQ:  Alimentador: 0
-Medidor (23) 0 - -1 (fase: 2)  tipo PQ:  Alimentador: 0
-Medidor (24) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
-Medidor (25) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
-Medidor (26) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
-Medidor (27) 0 - -1 (fase: 1)  tipo PQ:  Alimentador: 0
-Medidor (28) 0 - -1 (fase: 2)  tipo PQ:  Alimentador: 0
-Medidor (29) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
-Medidor (30) 0 - -1 (fase: 1)  tipo PQ:  Alimentador: 0
-Medidor (31) 0 - -1 (fase: 3)  tipo PQ:  Alimentador: 0
 
 Medidas excluidas pelo valor medido ser maior que duas vezes o valor esperado da medida. Criterio: Valor esperado dado pelas curvas agregadas e fluxo de potencia 
-Medidor (0) 0 - -1 (fase: 3)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (1) 0 - -1 (fase: 1)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (2) 0 - -1 (fase: 2)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (3) 0 - -1 (fase: 3)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (4) 0 - -1 (fase: 2)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (5) 0 - -1 (fase: 2)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (6) 0 - -1 (fase: 1)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (7) 0 - -1 (fase: 1)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (8) 0 - -1 (fase: 2)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (9) 0 - -1 (fase: 3)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (10) 0 - -1 (fase: 1)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (11) 0 - -1 (fase: 2)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (12) 0 - -1 (fase: 3)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (13) 0 - -1 (fase: 1)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (14) 0 - -1 (fase: 2)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
-Medidor (15) 0 - -1 (fase: 3)  tipo I:  Alimentador: 0   Imed = 0.000000   Icalc = 0.000000
 
 Medidas excluidas por inconsistência entre medida a jusante e montante. Critério: Valor mais distante do valor esperado é descartado
 

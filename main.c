@@ -204,19 +204,23 @@ int main(int argc, char** argv) {
     
     // Leitura de Medidas do sistema SCADA (SASE processado)
     TF_DMED *medida_tf;
+    TF_DPREV *prev_tf;
     TF_AREA_MEDICAO *areasMedicao_tf;
-    
-    
+
+    int numeroAmostras;
+    int instante_atual=0;
 
     int **numeroMedidas = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
-    // criar o DPREV
-    //    
+    //    leitura_dprev(folder, "DPREV.csv", &prev_tf, ,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
+    //    constroi_dmed_prev()
+
     //    // Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
     buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas, &areasMedicao_tf);
-    //    
+    //
+    //    atualiza_dmed(instante_atual,*prev_tf,medida_rev)    
     //    //Estimador de Demandas Trifásicas
     estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
-     
+    //    salva (curva de carga de demanda estimada, resultados condensados do fluxo de potencia )
     
     //Liberação de Memória
     free_BARRA(barra_tf,numeroBarras_tf);

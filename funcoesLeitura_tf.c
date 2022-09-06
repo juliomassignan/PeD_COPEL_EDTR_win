@@ -1978,6 +1978,7 @@ void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, doub
  * @note Dados da rede elétrica e um grafo da rede elétrica devem ser criados antes de se chamar esta função. 
  * @warning .
  */
+
 long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
@@ -2628,110 +2629,903 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
 }
 
 
+
 //------------------------------------------------------------------------------
 //
-// FUNÇÕES DE IMPRESSÃO DE DADOS
+// FUNÇÕES DE LEITURA DE DADOS ANALÓGICOS E DISCRETOS DO SISTEMA SUPERVISÓRIO
 //
 //------------------------------------------------------------------------------
-// Imprime arquivo com informações da rede elerica para conferências
 /**
- * @brief Função auxiliar para salvar dados da rede elétrica em arquivo externo "dadosRedeEletrica.dad"
+ * @brief Função principal para a leitura de arquivo com dados de medidas analógicas do sistema supervisório
  *
- * Essa função salva um arquivo de texto "dadosRedeEletrica.dad" contendo as principais informações da rede elétrica para conferência 
- * de informaçÕes e validações do processamento de dados da rede elétrica.
- * A função retorna @c void.
+ * Essa função realiza a leitura  de arquivo com dados de medidas analógicas do sistema supervisório dentro da pasta com os dados da rede elétrica.
+ * O local da pasta é recebido como parâmetro @p folder assim como o nome do arquivo no parâmetro @p file. Além disso o arquivo possui como 
+ * separação dos dados os marcadores especificados. Realiza alocação de memória para armazenar os dados de medidas trifásicas da rede elétrica.
+ * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo TF_DMED@p **medidas que armazena dados das medidas da rede elétrica, e também
+ * uma estrutura de dados TF_GRAFO @p grafo para associar os medidores à topologia da rede elétrica. 
+ * Recebe como parâmetros de entrada um ponteiro do tipo DBAR @p *barras e um ponterio do tipo TF_DRAM @p ramos que armazenam dados das barras e ramos da 
+ * rede elétrica para serem associadas com os medidore, e respectivas quantidades totais nos parâmetros @p numeroBarras e @p numeroRamos. Além disto recebe 
+ * como parâmetro de entrada a Potência Base da rede elétrica para realizar os cálculos em pu.
+ * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
  * 
- * @param barras estrutura de dados com informações das barras a serem salvas
- * @param numeroBarras quantidade total de barras
- * @param ramos estrutura de dados com informações dos ramos a serem salvas
- * @param numeroRamos quantidade total de medidas
- * @param medidas estrutura de dados com informações das medidas a serem salvas
- * @param numeroMedidas matriz com quantidade total de medidas por tipo e fase instaladas
- * @return void
- * @see
- * @note Utilizada somente para validação e conferência das informações
- * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+ * Para utilizar a função:
+ * @code
+ * long int numeroBarras = 0;
+ * long int numeroAlimentadores = 0;
+ * long int numeroRamos = 0;
+ * double Sbase = 10000;
+ * char *folder = NULL;
+ * long int **numeroMedidas = NULL;
+ * DBAR *barraExemplo = NULL;
+ * TF_DRAM *ramoExemplo = NULL; 
+ * TF_GRAFO *grafoExemplo = NULL;
+ * TF_DMED*medidaExemplo = NULL;
+ * 
+ * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
+ * if (folder !=NULL)
+ *      printf("leitura concluida\n");
+ * geraGrafo(&grafoExemplo, barraExemplo, numeroBarras,ramoExemplo,numeroRamos); 
+ * numeroMedidas = leituraMedidas(folder, "DMED.csv", &medidaExemplo, ramoExemplo, numeroRamos, barraExemplo, numeroBarras, grafoExemplo, Sbase); 
+ * @endcode
+ * 
+ * @param folder endereço da pasta para o arquivo de medidas ser lido
+ * @param file  nome do arquivo de medidas a ser lido (default = DMED.csv)
+ * @param medidas estrutura de dados para armazenar os dados de medidas analógicas da rede elétrica
+ * @param ramos  parâmetro de entrada e saída que armazena os dados de ramos da rede elétrica
+ * @param numeroRamos parâmetro de entrada e saída que armazena a quantidade total de ramos da rede elétrica
+ * @param barras parâmetro de entrada e saída que armazena os dados de barras da rede elétrica
+ * @param numeroBarras parâmetro de entrada e saída que armazena a quantidade total de barras da rede elétrica
+ * @param grafo estrutura topológica da rede elétrica para armazenar a condição da rede a ser analisada
+ * @param Sbase potência base da rede elétrica para realizar os cálculos em pu
+ * @return long int** matriz com quantidade total de medidas por tipo e fase instaladas
+ * @see leituraDados
+ * @see funcoesTopologia.h  /  geraGrafo
+ * @note Dados da rede elétrica e um grafo da rede elétrica devem ser criados antes de se chamar esta função. 
+ * @warning .
  */
-void salvaDadosRedeEletrica(TF_DBAR *barras, long int numeroBarras, TF_DRAM *ramos, long int numeroRamos, TF_DMED*medidas, long int **numeroMedidas)
-{
-    long int i,j,nmed;
-    FILE *arquivo;
+// long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
+// {
+//     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
+//     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
+//     long int contador =0, i,j,k,l,m,ind, aux,adj; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
+//     int carac,numLinhas = 0,numCol=1; /* Variável com o número de linhas do arquivo a serem lidas. */
+//     FILE *arquivo;
+//     long int **numeroMedidas,nmed,namostras;
+//     double Vbase = 1;
+//     double regua;
+//     char text_aux[500];
     
-    nmed = 0;
-    for (i = 0; i < 14; i++){ 
-        for (j = 0; j < 8; j++){
-            nmed = nmed + numeroMedidas[i][j];
-        }
-    }
+//     // Leitura dos dados de medidores
+//     strcpy(text_aux,folder);
+//     arquivo = fopen(strcat(text_aux,file),"r");
+    
+//     //arquivo = fopen(folder,"r");
+//     if(arquivo == NULL)
+//     {
+//         printf("Erro ao abrir arquivo %s !!!\n",strcat(text_aux,file));
+//         exit(1);
+//     }
+    
+//     numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
+//     for (i = 0; i < 14; i++){ 
+//          numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
+//          for (j = 0; j < 20; j++){
+//             numeroMedidas[i][j] = 0;
+//          }
+//     }
+    
+//     //Aloca na memória espaço para as linhas
+//     while ((carac = fgetc(arquivo)) != EOF) {
+//       if (carac == ','&& numLinhas==0)numCol++;
+//       if (carac == '\n') numLinhas++;
+//     }
+
+//     rewind(arquivo);
+
+//     namostras = (numCol-5)/2;
+//     (*numprev)=namostras;
+//     if ((((*prev) = (TF_DPREV *)malloc((namostras+1) * sizeof(TF_DPREV)))==NULL))
+//     {
+//         printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
+//         exit(1); 
+//     }
+
+//     for (size_t i = 0; i < namostras; i++)
+//     {
+//         if ((((*prev)[i].DMED = (TF_DMED *)malloc((numLinhas+1) * sizeof(TF_DMED)))==NULL))
+//         {
+//             printf("Erro -- Nao foi possivel alocar espaco de memoria para as medidas !!!!");
+//             exit(1); 
+//         }
+//     }
+    
+//     fgets(blocoLeitura, 2000, arquivo); //pega a primeira linha de cabeçahos
+
+//     for (size_t i = 0; i < namostras; i++)
+//     {
+//         j=2*i+6;
+//         (*prev)[i].time_stamp = getfield(blocoLeitura,j);
+//     }
+     
+
+//     // Le o arquivo de curva de cargas até o fim
+//     while( (fgets(blocoLeitura, 2000, arquivo))!= NULL ){
+//         dados=blocoLeitura;
+//         for (size_t count = 0; count < namostras; count++)
+//         {
+//             (*prev)[count].DMED[contador].ligado = (getfield_int(dados,1));
+//             (*prev)[count].DMED[contador].tipo = (getfield_int(dados,2));
+//             (*prev)[count].DMED[contador].DE = (getfield_int(dados,3));
+//             (*prev)[count].DMED[contador].PARA = (getfield_int(dados,4));
+//             (*prev)[count].DMED[contador].fases = (getfield_int(dados,5));
+//             (*prev)[count].DMED[contador].id = contador;
+//             (*prev)[count].DMED[contador].h = 0;
+//             (*prev)[count].DMED[contador].zmed = (getfield_double(dados,6));
+//             (*prev)[count].DMED[contador].sigma = (getfield_double(dados,7));
+//             (*prev)[count].DMED[contador].prec = (getfield_double(dados,7));
+//         }
+        
+
+        
+//     numeroMedidas[(*prev)[0].DMED[contador].tipo][(*prev)[0].DMED[contador].fases-1]++;
+//     switch((*prev)[0].DMED[contador].tipo){
+//             case 0: //Medidas nos ramos
+//             case 1:
+//             case 6:
+//             case 7:
+//             case 12: //PMU de corrente retangular real
+//             case 13: //PMU de corrente retangular imaginário
+//                 for(i=0;i<numeroRamos;i++){
+//                     if(((*prev)[0].DMED[contador].DE == ramos[i].DE ) && ((*prev)[0].DMED[contador].DE == ramos[i].DE )){
+//                         (*prev)[0].DMED[contador].k = ramos[i].k;
+//                         (*prev)[0].DMED[contador].m = ramos[i].m;
+//                         (*prev)[0].DMED[contador].ramo = i;
+//                     }
+//                     if(((*prev)[0].DMED[contador].DE == ramos[i].PARA ) && ((*prev)[0].DMED[contador].PARA == ramos[i].DE )){
+//                         (*prev)[0].DMED[contador].k = ramos[i].m;
+//                         (*prev)[0].DMED[contador].m = ramos[i].k;
+//                         (*prev)[0].DMED[contador].ramo = i;
+//                     }
+//                 }
+//                 break;
+//             case 2: //Medidas nas barras
+//             case 3:
+//             case 4: 
+//             case 5:
+//             case 8: //PMU de tensão retangular real
+//             case 9: //PMU de tensão retangular imaginário
+//             case 10: //PMU de injeção de corrente retangular real
+//             case 11: //PMU de injeção de corrente retangular imaginário
+//                 for(i=0;i<numeroBarras;i++){
+//                     if((*prev)[0].DMED[contador].DE == barras[i].ID ){
+//                         (*prev)[0].DMED[contador].k = barras[i].i;
+//                     }
+//                     (*prev)[0].DMED[contador].m = -1;
+//                     (*prev)[0].DMED[contador].ramo = -1;
+//                 }
+//                 break;
+//         }
+//         contador++;             
+//     }
+//     fclose(arquivo);    
+    
+//     //  Associa as medidas ao grafo e transforma em pu os dados medidos
+//      nmed = 0;
+//      for (i = 0; i < 14; i++){ 
+//          for (j = 0; j < 8; j++){
+//              nmed = nmed + numeroMedidas[i][j];
+//          }
+//      }
+    
+//      //--------------------------------------------------------------------------
+// //     //Associa os medidores ao grafo e transforma medidas em pu
+//      for (i = 0; i < nmed; i++){ 
+//          k = (*prev)[0].DMED[i].k;
+//          m = (*prev)[0].DMED[i].m;
+        
+//          (*prev)[0].DMED[i].idAlim = grafo[k].idAlim;
+        
+// //         //Associa a medida ao grafo e transforma em pu o valor medido e sigma
+//         switch ((*prev)[0].DMED[i].tipo) {
+//             case 0: //Medida de Fluxo de Potência Ativa em kW
+//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
+//                     if (grafo[k].adjacentes[j].idNo == m){
+//                         adj = j;
+//                     }
+//                 }
+//                 ind = grafo[k].adjacentes[adj].nmed;
+//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i]; //precisa atualizar para cada instante
+//                 grafo[k].adjacentes[adj].nmed++;
+                
+//                 for (size_t l = 0; l < namostras; l++)
+//                 {
+//                     (*prev)[l].DMED[i].zmed = (*prev)[l].DMED[i].zmed / (Sbase/1000);
+//                     (*prev)[l].DMED[i].sigma = (*prev)[l].DMED[i].sigma / (Sbase/1000);
+//                     (*prev)[l].DMED[i].nvar = 12;
+//                     (*prev)[l].DMED[i].reguaH = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
+//                     (*prev)[l].DMED[i].H = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[l].DMED[i].nvar;j++){
+//                         (*prev)[l].DMED[i].H[j] = 0;
+//                     }
+
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[l].DMED[i].reguaH[j] = regua;
+//                         (*prev)[l].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)m;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[l].DMED[i].reguaH[j+6] = regua;
+//                         (*prev)[l].DMED[i].reguaH[j+9] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 1: //Medida de Fluxo de Potência Reativa em kVAr
+
+//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
+//                     if (grafo[k].adjacentes[j].idNo == m){
+//                         adj = j;
+//                     }
+//                 }
+
+//                 ind = grafo[k].adjacentes[adj].nmed;
+//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i]; //precisa atualizar para cada instante
+//                 grafo[k].adjacentes[adj].nmed++;
+
+
+//                 for (size_t l = 0; l < namostras; l++)
+//                 {
+                
+//                     (*prev)[l].DMED[i].zmed = (*prev)[l].DMED[i].zmed / (Sbase/1000);
+//                     (*prev)[l].DMED[i].sigma = (*prev)[l].DMED[i].sigma / (Sbase/1000);
+//                     (*prev)[l].DMED[i].nvar = 12;
+//                     (*prev)[l].DMED[i].reguaH = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
+//                     (*prev)[l].DMED[i].H = (double*) malloc ((*prev)[l].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[l].DMED[i].nvar;j++){
+//                         (*prev)[l].DMED[i].H[j] = 0;
+//                     }
+
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[l].DMED[i].reguaH[j] = regua;
+//                         (*prev)[l].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)m;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[l].DMED[i].reguaH[j+6] = regua;
+//                         (*prev)[l].DMED[i].reguaH[j+9] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 2: //Medida de Injeção de Potência Ativa em kW
+
+//                 // 
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;
+//                 grafo[k].nmedPQ++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Sbase/1000);
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Sbase/1000);
+//                                 // 
+//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+//                 // 
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
+//                         regua = grafo[k].adjacentes[l].idNo;
+//                         regua += 0.01;
+//                         for(j=0;j<3;j++){
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
+//                             regua += 0.1;
+//                         }
+//                     }
+//                 }
+//                 break;    
+//             case 3: //Medida de Injeção de Potência Reativa em kVAr
+
+//                 // 
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;
+//                 grafo[k].nmedPQ++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Sbase/1000);
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Sbase/1000);
+//                                 // 
+//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+//                 // 
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
+//                         regua = grafo[k].adjacentes[l].idNo;
+//                         regua += 0.01;
+//                         for(j=0;j<3;j++){
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
+//                             regua += 0.1;
+//                         }
+//                     }
+//                 }
+
+//                 break;
+//             case 4: //Medida de Magnitude de Tensão - kV
+//                 switch ( (*prev)[0].DMED[i].fases){
+//                     case 1:
+//                     case 2:
+//                     case 3:
+//                         Vbase = grafo[k].Vbase;
+//                         break;
+//                     case 4:
+//                     case 5:
+//                     case 6:
+//                         Vbase = grafo[k].Vbase*(pow(3,0.5));
+//                         break;
+//                 }
+
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;    
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {                                            
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Vbase/1000);
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Vbase/1000);
+                                    
+
+                    
+//                     (*prev)[cont].DMED[i].nvar = 6;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=3;j<6;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 5: //Medida de Ângulo de tensão - graus
+
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];;
+//                 grafo[k].nmed++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {  
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed *PI/180;
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma *PI/180;;
+                                    
+
+                    
+//                     (*prev)[cont].DMED[i].nvar = 3;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 6: //Medida de Magnitude de Corrente em A - Fluxo
+//                 Vbase = grafo[k].Vbase;
+//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
+//                     if (grafo[k].adjacentes[j].idNo == m){
+//                         adj = j;
+//                     }
+//                 }
+//                 ind = grafo[k].adjacentes[adj].nmed;
+//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].adjacentes[adj].nmed++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 { 
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
+                    
+
+                    
+//                     (*prev)[cont].DMED[i].nvar = 12;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)m;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 7: //Medida de Ângulo de Corrente em graus
+//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
+//                     if (grafo[k].adjacentes[j].idNo == m){
+//                         adj = j;
+//                     }
+//                 }
+//                 ind = grafo[k].adjacentes[adj].nmed;
+//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].adjacentes[adj].nmed++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {                 
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed *PI/180;
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma *PI/180;
+
+//                     (*prev)[cont].DMED[i].nvar = 12;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)m;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 8: //Medida PMU de tensão retangular Real
+//                 switch ((*prev)[0].DMED[i].fases){
+//                     case 1:
+//                     case 2:
+//                     case 3:
+//                         Vbase = grafo[k].Vbase;
+//                         break;
+//                     case 4:
+//                     case 5:
+//                     case 6:
+//                         Vbase = grafo[k].Vbase*(pow(3,0.5));
+//                         break;
+//                 }                
+
+                                
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;
+                
+
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {  
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Vbase/1000);
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Vbase/1000);
+//                     (*prev)[cont].DMED[i].nvar = 3;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+
+
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 9: //Medida PMU de tensão retangular Imaginário
+//                 switch ((*prev)[0].DMED[i].fases){
+//                     case 1:
+//                     case 2:
+//                     case 3:
+//                         Vbase = grafo[k].Vbase;
+//                         break;
+//                     case 4:
+//                     case 5:
+//                     case 6:
+//                         Vbase = grafo[k].Vbase*(pow(3,0.5));
+//                         break;
+//                 }
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;   
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {  
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / (Vbase/1000);
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / (Vbase/1000);
+
+//                     (*prev)[cont].DMED[i].nvar = 3;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 10: //Medida PMU de injeção de corrente retangular real
+//                 Vbase = grafo[k].Vbase;
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 { 
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
+//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
+//                         regua = grafo[k].adjacentes[l].idNo;
+//                         regua += 0.01;
+//                         for(j=0;j<3;j++){
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
+//                             regua += 0.1;
+//                         }
+//                     }
+//                 }
+//                 break;
+//             case 11: //Medida PMU de injeção de corrente retangular imaginário
+//                 Vbase = grafo[k].Vbase;
+//                 ind = grafo[k].nmed;
+//                 grafo[k].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].nmed++;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
+
+//                     (*prev)[cont].DMED[i].nvar = 6+6*grafo[k].numeroAdjacentes;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     for(l=0;l<grafo[k].numeroAdjacentes;l++){
+//                         regua = grafo[k].adjacentes[l].idNo;
+//                         regua += 0.01;
+//                         for(j=0;j<3;j++){
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j] = regua;
+//                             (*prev)[cont].DMED[i].reguaH[6+6*l+j+3] = -regua;
+//                             regua += 0.1;
+//                         }
+//                     }
+//                 }
+//                 break;
+//             case 12: //Medida PMU de corrente retangular real
+//                 Vbase = grafo[k].Vbase;
+
+//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
+//                     if (grafo[k].adjacentes[j].idNo == m){
+//                         adj = j;
+//                     }
+//                 }
+//                 ind = grafo[k].adjacentes[adj].nmed;
+//                 grafo[k].adjacentes[adj].medidores[ind] = &(*prev)[0].DMED[i];
+//                 grafo[k].adjacentes[adj].nmed++;
+
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
+                    
+//                     (*prev)[cont].DMED[i].nvar = 12;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)m;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//             case 13: //Medida PMU de corrente retangular Imaginário
+//                 Vbase = grafo[k].Vbase;
+//                 for(j=0;j<grafo[k].numeroAdjacentes;j++){
+//                     if (grafo[k].adjacentes[j].idNo == m){
+//                         adj = j;
+//                     }
+//                 }
+//                 ind = grafo[k].adjacentes[adj].nmed;
+//                 for (size_t cont = 0; cont < namostras; cont++)
+//                 {                
+//                     (*prev)[cont].DMED[i].zmed = (*prev)[cont].DMED[i].zmed / ((Sbase/1000)/((Vbase/1000)));
+//                     (*prev)[cont].DMED[i].sigma = (*prev)[cont].DMED[i].sigma / ((Sbase/1000)/((Vbase/1000)));
+//                     grafo[k].adjacentes[adj].medidores[ind] =  &(*prev)[0].DMED[i];
+//                     grafo[k].adjacentes[adj].nmed++;
+                    
+//                     (*prev)[cont].DMED[i].nvar = 12;
+//                     (*prev)[cont].DMED[i].reguaH = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     (*prev)[cont].DMED[i].H = (double*) malloc ((*prev)[cont].DMED[i].nvar * sizeof(double));
+//                     for(j=0;j<(*prev)[cont].DMED[i].nvar;j++){
+//                         (*prev)[cont].DMED[i].H[j] = 0;
+//                     }
+                    
+//                     regua = (double)k;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+3] = -regua;
+//                         regua += 0.1;
+//                     }
+//                     regua = (double)m;
+//                     regua += 0.01;
+//                     for(j=0;j<3;j++){
+//                         (*prev)[cont].DMED[i].reguaH[j+6] = regua;
+//                         (*prev)[cont].DMED[i].reguaH[j+9] = -regua;
+//                         regua += 0.1;
+//                     }
+//                 }
+//                 break;
+//         }        
+//     }
+    
+//     //--------------------------------------------------------------------------
+//     //Associa os medidores ao grafo e transforma medidas em pu (equivalente de corrente para o AMB e Baran precisa do par de medida)
+//     for (i = 0; i < nmed; i++){ 
+//         k = (*prev)[0].DMED[i].k;
+//         m = (*prev)[0].DMED[i].m;
+//         // 
+//         //Associa a medida ao grafo e transforma em pu o valor medido e sigma
+//         switch ((*prev)[0].DMED[i].tipo) {
+//             case 0: //Medida de Fluxo de Potência Ativa em kW
+//                 for (j = 0; j < nmed; j++){ 
+
+//                     if (((*prev)[0].DMED[j].tipo == 1) && ((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
+//                         for (size_t cont = 0; cont < namostras; cont++)
+//                         {   
+//                             (*prev)[cont].DMED[i].par = j;
+//                             (*prev)[cont].DMED[j].par = i;
+//                             j=nmed;
+//                         }
+//                     }
+//                 }
+//                 break;
+//             case 2: //Medida de Injeção de Potência Ativa em kW
+//                 for (j = 0; j < nmed; j++){ 
+//                     if (((*prev)[0].DMED[j].tipo  == 3) && ((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
+//                      for (size_t cont = 0; cont < namostras; cont++)
+//                         {   
+//                             (*prev)[cont].DMED[i].par = j;
+//                             (*prev)[cont].DMED[j].par = i;
+//                             j=nmed;
+//                         }
+//                     }
+//                 }
+//                 break;    
+//             case 4: //Medida de Magnitude de Tensão - kV
+//                 for (j = 0; j < nmed; j++){ 
+//                     if (((*prev)[0].DMED[j].tipo  == 5) && ((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
+//                      for (size_t cont = 0; cont < namostras; cont++)
+//                         {   
+//                             (*prev)[cont].DMED[i].par = j;
+//                             (*prev)[cont].DMED[j].par = i;
+//                             j=nmed;
+//                         }
+//                     }
+//                 }
+//                 break;
+//             case 6: //Medida de Magnitude de Corrente em A
+//                 for (j = 0; j < nmed; i++){ 
+//                     if (((*prev)[0].DMED[j].tipo == 7) &&((*prev)[0].DMED[j].k == k) && ((*prev)[0].DMED[j].m == m)){
+//                      for (size_t cont = 0; cont < namostras; cont++)
+//                         {   
+//                             (*prev)[cont].DMED[i].par = j;
+//                             (*prev)[cont].DMED[j].par = i;
+//                             j=nmed;
+//                         }
+//                     }
+//                 }
+//                 break;   
+//         }        
+//     }
+//     return(numeroMedidas);
+// }
+
+
+
+
+
+// // //------------------------------------------------------------------------------
+// // //
+// // // FUNÇÕES DE IMPRESSÃO DE DADOS
+// // //
+// // //------------------------------------------------------------------------------
+// // // Imprime arquivo com informações da rede elerica para conferências
+// // /**
+// //  * @brief Função auxiliar para salvar dados da rede elétrica em arquivo externo "dadosRedeEletrica.dad"
+// //  *
+// //  * Essa função salva um arquivo de texto "dadosRedeEletrica.dad" contendo as principais informações da rede elétrica para conferência 
+// //  * de informaçÕes e validações do processamento de dados da rede elétrica.
+// //  * A função retorna @c void.
+// //  * 
+// //  * @param barras estrutura de dados com informações das barras a serem salvas
+// //  * @param numeroBarras quantidade total de barras
+// //  * @param ramos estrutura de dados com informações dos ramos a serem salvas
+// //  * @param numeroRamos quantidade total de medidas
+// //  * @param medidas estrutura de dados com informações das medidas a serem salvas
+// //  * @param numeroMedidas matriz com quantidade total de medidas por tipo e fase instaladas
+// //  * @return void
+// //  * @see
+// //  * @note Utilizada somente para validação e conferência das informações
+// //  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
+// //  */
+// // void salvaDadosRedeEletrica(TF_DBAR *barras, long int numeroBarras, TF_DRAM *ramos, long int numeroRamos, TF_DMED*medidas, long int **numeroMedidas)
+// // {
+// //     long int i,j,nmed;
+// //     FILE *arquivo;
+    
+// //     nmed = 0;
+// //     for (i = 0; i < 14; i++){ 
+// //         for (j = 0; j < 8; j++){
+// //             nmed = nmed + numeroMedidas[i][j];
+// //         }
+// //     }
     
     
-    // Leitura dos dados de barras
-    arquivo = fopen("dadosRedeEletrica.dad","w");
-    if(arquivo == NULL)
-    {
-            printf("Erro ao abrir arquivo dadosRedeEletrica.dad !!!\n");
-            exit(1);
-    }
+// //     // Leitura dos dados de barras
+// //     arquivo = fopen("dadosRedeEletrica.dad","w");
+// //     if(arquivo == NULL)
+// //     {
+// //             printf("Erro ao abrir arquivo dadosRedeEletrica.dad !!!\n");
+// //             exit(1);
+// //     }
     
-    fprintf(arquivo,"LISTA DE BARRAS:\n");
-    for(i=0;i<numeroBarras;i++){
-        fprintf(arquivo,"Barra: %ld\t%ld\t%s\t%.2lf",barras[i].i,barras[i].ID,charFases(barras[i].fases),barras[i].Vbase);
-        if(barras[i].nloads>0){
-            for(j=0;j<barras[i].nloads;j++)
-                fprintf(arquivo,"\n\tCarga %ld:\t%s\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.1lf",j,charLigacao(barras[i].loads[j].lig),barras[i].loads[j].Pnom[0],barras[i].loads[j].Pnom[1],barras[i].loads[j].Pnom[2],barras[i].loads[j].Qnom[0],barras[i].loads[j].Qnom[1],barras[i].loads[j].Qnom[2],barras[i].loads[j].ZIP);
-        }
-        if(barras[i].nshunts>0){
-            for(j=0;j<barras[i].nshunts;j++){
-                fprintf(arquivo,"\n\tShunt %ld:\t%s\t%.5lf\t%.5lf\t%.5lf\t%ld",j,charLigacao(barras[i].shunts[j].lig),barras[i].shunts[j].Qnom[0],barras[i].shunts[j].Qnom[1],barras[i].shunts[j].Qnom[2],barras[i].shunts[j].controle);
-                if(barras[i].shunts[j].controle != 0)
-                    fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf",barras[i].shunts[j].DV,barras[i].shunts[j].Vset[0],barras[i].shunts[j].Vset[1],barras[i].shunts[j].Vset[2]);
-            }
-        }
-        if(barras[i].ngds>0){
-            for(j=0;j<barras[i].ngds;j++){
-                fprintf(arquivo,"\n\tGD %ld:\t%s\t%.5lf kVA\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%ld",j,charLigacao(barras[i].gds[j].lig),barras[i].gds[j].Snominal,barras[i].gds[j].Pnom[0],barras[i].gds[j].Pnom[1],barras[i].gds[j].Pnom[2],barras[i].gds[j].Qnom[0],barras[i].gds[j].Qnom[1],barras[i].gds[j].Qnom[2],barras[i].gds[j].controle);
-                if(barras[i].gds[j].controle != 0)
-                    fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%ld",barras[i].gds[j].Qmin,barras[i].gds[j].Qmax,barras[i].gds[j].Vset[0],barras[i].gds[j].Vset[1],barras[i].gds[j].Vset[2],barras[i].gds[j].controlePV);
-            }
-        }
-        fprintf(arquivo,"\n");
-    }
-    fprintf(arquivo,"\nLISTA DE RAMOS:\n");
-    for(i=0;i<numeroRamos;i++){
-        switch(ramos[i].tipo){
-            case ramal:
-                fprintf(arquivo,"Linha %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
-                fprintf(arquivo,"\n\t%.4lf  %.4lf\t\t%.4lf  %.4lf\t\t%.4lf  %.4lf",__real__ ramos[i].linha.Zaa,__imag__ ramos[i].linha.Zaa,__real__ ramos[i].linha.Zab,__imag__ ramos[i].linha.Zab,__real__ ramos[i].linha.Zac,__imag__ ramos[i].linha.Zac);
-                fprintf(arquivo,"\n\t\t\t\t\t%.4lf  %.4lf\t\t%.4lf  %.4lf",__real__ ramos[i].linha.Zbb,__imag__ ramos[i].linha.Zbb,__real__ ramos[i].linha.Zbc,__imag__ ramos[i].linha.Zbc);
-                fprintf(arquivo,"\n\t\t\t\t\t\t\t\t\t%.4lf  %.4lf",__real__ ramos[i].linha.Zcc,__imag__ ramos[i].linha.Zcc);
-                break;
-            case trafo:
-                fprintf(arquivo,"Trafo %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
-                fprintf(arquivo,"\n\t%.4lf  %.4lf\t%.3lf\t%.2lf / %.2lf\t%s%s%ld\t%.4lf\t%.4lf",ramos[i].trafo.R,ramos[i].trafo.X,ramos[i].trafo.Snominal,ramos[i].trafo.Vpri,ramos[i].trafo.Vsec,charLigacao(ramos[i].trafo.lig_pri),charLigacao(ramos[i].trafo.lig_sec),ramos[i].trafo.defasamento,ramos[i].trafo.tap_pri,ramos[i].trafo.tap_sec);
-                break;
-            case regulador:
-                fprintf(arquivo,"Regulador %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
-                fprintf(arquivo,"\n\t%.4lf  %.4lf\t%.3lf\t%.2lf\t%s\t%ld\t%.4lf\t%.4lf\t%.4lf",ramos[i].regulador.R,ramos[i].regulador.X,ramos[i].regulador.Snominal,ramos[i].regulador.Vnom,charLigacao(ramos[i].regulador.lig),ramos[i].regulador.controle,ramos[i].regulador.tap[0],ramos[i].regulador.tap[1],ramos[i].regulador.tap[2]);
-                break;
-            case chave:
-                fprintf(arquivo,"Chave %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
-                break;
-        }
-        fprintf(arquivo,"\n"); 
-    }
+// //     fprintf(arquivo,"LISTA DE BARRAS:\n");
+// //     for(i=0;i<numeroBarras;i++){
+// //         fprintf(arquivo,"Barra: %ld\t%ld\t%s\t%.2lf",barras[i].i,barras[i].ID,charFases(barras[i].fases),barras[i].Vbase);
+// //         if(barras[i].nloads>0){
+// //             for(j=0;j<barras[i].nloads;j++)
+// //                 fprintf(arquivo,"\n\tCarga %ld:\t%s\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.1lf",j,charLigacao(barras[i].loads[j].lig),barras[i].loads[j].Pnom[0],barras[i].loads[j].Pnom[1],barras[i].loads[j].Pnom[2],barras[i].loads[j].Qnom[0],barras[i].loads[j].Qnom[1],barras[i].loads[j].Qnom[2],barras[i].loads[j].ZIP);
+// //         }
+// //         if(barras[i].nshunts>0){
+// //             for(j=0;j<barras[i].nshunts;j++){
+// //                 fprintf(arquivo,"\n\tShunt %ld:\t%s\t%.5lf\t%.5lf\t%.5lf\t%ld",j,charLigacao(barras[i].shunts[j].lig),barras[i].shunts[j].Qnom[0],barras[i].shunts[j].Qnom[1],barras[i].shunts[j].Qnom[2],barras[i].shunts[j].controle);
+// //                 if(barras[i].shunts[j].controle != 0)
+// //                     fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf",barras[i].shunts[j].DV,barras[i].shunts[j].Vset[0],barras[i].shunts[j].Vset[1],barras[i].shunts[j].Vset[2]);
+// //             }
+// //         }
+// //         if(barras[i].ngds>0){
+// //             for(j=0;j<barras[i].ngds;j++){
+// //                 fprintf(arquivo,"\n\tGD %ld:\t%s\t%.5lf kVA\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%ld",j,charLigacao(barras[i].gds[j].lig),barras[i].gds[j].Snominal,barras[i].gds[j].Pnom[0],barras[i].gds[j].Pnom[1],barras[i].gds[j].Pnom[2],barras[i].gds[j].Qnom[0],barras[i].gds[j].Qnom[1],barras[i].gds[j].Qnom[2],barras[i].gds[j].controle);
+// //                 if(barras[i].gds[j].controle != 0)
+// //                     fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%ld",barras[i].gds[j].Qmin,barras[i].gds[j].Qmax,barras[i].gds[j].Vset[0],barras[i].gds[j].Vset[1],barras[i].gds[j].Vset[2],barras[i].gds[j].controlePV);
+// //             }
+// //         }
+// //         fprintf(arquivo,"\n");
+// //     }
+// //     fprintf(arquivo,"\nLISTA DE RAMOS:\n");
+// //     for(i=0;i<numeroRamos;i++){
+// //         switch(ramos[i].tipo){
+// //             case ramal:
+// //                 fprintf(arquivo,"Linha %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
+// //                 fprintf(arquivo,"\n\t%.4lf  %.4lf\t\t%.4lf  %.4lf\t\t%.4lf  %.4lf",__real__ ramos[i].linha.Zaa,__imag__ ramos[i].linha.Zaa,__real__ ramos[i].linha.Zab,__imag__ ramos[i].linha.Zab,__real__ ramos[i].linha.Zac,__imag__ ramos[i].linha.Zac);
+// //                 fprintf(arquivo,"\n\t\t\t\t\t%.4lf  %.4lf\t\t%.4lf  %.4lf",__real__ ramos[i].linha.Zbb,__imag__ ramos[i].linha.Zbb,__real__ ramos[i].linha.Zbc,__imag__ ramos[i].linha.Zbc);
+// //                 fprintf(arquivo,"\n\t\t\t\t\t\t\t\t\t%.4lf  %.4lf",__real__ ramos[i].linha.Zcc,__imag__ ramos[i].linha.Zcc);
+// //                 break;
+// //             case trafo:
+// //                 fprintf(arquivo,"Trafo %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
+// //                 fprintf(arquivo,"\n\t%.4lf  %.4lf\t%.3lf\t%.2lf / %.2lf\t%s%s%ld\t%.4lf\t%.4lf",ramos[i].trafo.R,ramos[i].trafo.X,ramos[i].trafo.Snominal,ramos[i].trafo.Vpri,ramos[i].trafo.Vsec,charLigacao(ramos[i].trafo.lig_pri),charLigacao(ramos[i].trafo.lig_sec),ramos[i].trafo.defasamento,ramos[i].trafo.tap_pri,ramos[i].trafo.tap_sec);
+// //                 break;
+// //             case regulador:
+// //                 fprintf(arquivo,"Regulador %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
+// //                 fprintf(arquivo,"\n\t%.4lf  %.4lf\t%.3lf\t%.2lf\t%s\t%ld\t%.4lf\t%.4lf\t%.4lf",ramos[i].regulador.R,ramos[i].regulador.X,ramos[i].regulador.Snominal,ramos[i].regulador.Vnom,charLigacao(ramos[i].regulador.lig),ramos[i].regulador.controle,ramos[i].regulador.tap[0],ramos[i].regulador.tap[1],ramos[i].regulador.tap[2]);
+// //                 break;
+// //             case chave:
+// //                 fprintf(arquivo,"Chave %ld (%ld)\t%ld (%ld):\t%s\t%d",ramos[i].DE,ramos[i].k,ramos[i].PARA,ramos[i].m,charFases(ramos[i].fases),ramos[i].estado);
+// //                 break;
+// //         }
+// //         fprintf(arquivo,"\n"); 
+// //     }
     
-    // fprintf(arquivo,"\nLISTA DE MEDIDORES:\n");
-    // for(i=0;i<nmed;i++){
-    //     fprintf(arquivo,"Medidor %d %s %d (%d)\t%d (%d):\t%s\t%d",i,charMedidor(medidas[i].tipo),medidas[i].DE,medidas[i].k,medidas[i].PARA,medidas[i].m,charFases(medidas[i].fases),medidas[i].ligado);
-    //     fprintf(arquivo,"\n\tNumero de variaveis: %d\n",medidas[i].nvar);
-    //     for(j=0;j<medidas[i].nvar;j++){
-    //          fprintf(arquivo,"\n\t\t%.1lf",medidas[i].reguaH[j]);
-    //     } 
-    //     fprintf(arquivo,"\n"); 
-    // }
+// //     // fprintf(arquivo,"\nLISTA DE MEDIDORES:\n");
+// //     // for(i=0;i<nmed;i++){
+// //     //     fprintf(arquivo,"Medidor %d %s %d (%d)\t%d (%d):\t%s\t%d",i,charMedidor(medidas[i].tipo),medidas[i].DE,medidas[i].k,medidas[i].PARA,medidas[i].m,charFases(medidas[i].fases),medidas[i].ligado);
+// //     //     fprintf(arquivo,"\n\tNumero de variaveis: %d\n",medidas[i].nvar);
+// //     //     for(j=0;j<medidas[i].nvar;j++){
+// //     //          fprintf(arquivo,"\n\t\t%.1lf",medidas[i].reguaH[j]);
+// //     //     } 
+// //     //     fprintf(arquivo,"\n"); 
+// //     // }
     
-    fclose(arquivo);
-}
+//     fclose(arquivo);
+// // }
 
 // Imprime arquivo com informações das medidas analógicas para conferências
 /**
@@ -2748,45 +3542,45 @@ void salvaDadosRedeEletrica(TF_DBAR *barras, long int numeroBarras, TF_DRAM *ram
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-void salvaMedidasRedeEletrica(TF_DMED*medidas, long int **numeroMedidas)
-{
-    long int i,j;
-    FILE *arquivo;
+// void salvaMedidasRedeEletrica(TF_DMED*medidas, long int **numeroMedidas)
+// {
+//     long int i,j;
+//     FILE *arquivo;
     
-    // Leitura dos dados de barras
-    arquivo = fopen("medidasRedeEletrica.dad","w");
-    if(arquivo == NULL)
-    {
-            printf("Erro ao abrir arquivo dadosRedeEletrica.dad !!!\n");
-            exit(1);
-    }
-    /*
-    fprintf(arquivo,"LISTA DE BARRAS:\n");
-    for(i=0;i<numeroBarras;i++){
-        fprintf(arquivo,"Barra: %d\t%d\t%s\t%.2lf",barras[i].i,barras[i].ID,charFases(barras[i].fases),barras[i].Vbase);
-        if(barras[i].nloads>0){
-            for(j=0;j<barras[i].nloads;j++)
-                fprintf(arquivo,"\n\tCarga %d:\t%s\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.1lf",j,charLigacao(barras[i].loads[j].lig),barras[i].loads[j].Pnom[0],barras[i].loads[j].Pnom[1],barras[i].loads[j].Pnom[2],barras[i].loads[j].Qnom[0],barras[i].loads[j].Qnom[1],barras[i].loads[j].Qnom[2],barras[i].loads[j].ZIP);
-        }
-        if(barras[i].nshunts>0){
-            for(j=0;j<barras[i].nshunts;j++){
-                fprintf(arquivo,"\n\tShunt %d:\t%s\t%.5lf\t%.5lf\t%.5lf\t%d",j,charLigacao(barras[i].shunts[j].lig),barras[i].shunts[j].Qnom[0],barras[i].shunts[j].Qnom[1],barras[i].shunts[j].Qnom[2],barras[i].shunts[j].controle);
-                if(barras[i].shunts[j].controle != 0)
-                    fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf",barras[i].shunts[j].DV,barras[i].shunts[j].Vset[0],barras[i].shunts[j].Vset[1],barras[i].shunts[j].Vset[2]);
-            }
-        }
-        if(barras[i].ngds>0){
-            for(j=0;j<barras[i].ngds;j++){
-                fprintf(arquivo,"\n\tGD %d:\t%s\t%.5lf kVA\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.1lf",j,charLigacao(barras[i].gds[j].lig),barras[i].gds[j].Snominal,barras[i].gds[j].Pnom[0],barras[i].gds[j].Pnom[1],barras[i].gds[j].Pnom[2],barras[i].gds[j].Qnom[0],barras[i].gds[j].Qnom[1],barras[i].gds[j].Qnom[2],barras[i].gds[j].controle);
-                if(barras[i].gds[j].controle != 0)
-                    fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf",barras[i].gds[j].Qmin,barras[i].gds[j].Qmax,barras[i].gds[j].Vset[0],barras[i].gds[j].Vset[1],barras[i].gds[j].Vset[2],barras[i].gds[j].controlePV);
-            }
-        }
-        fprintf(arquivo,"\n");
-    }   */ 
+//     // Leitura dos dados de barras
+//     arquivo = fopen("medidasRedeEletrica.dad","w");
+//     if(arquivo == NULL)
+//     {
+//             printf("Erro ao abrir arquivo dadosRedeEletrica.dad !!!\n");
+//             exit(1);
+//     }
+//     /*
+    // fprintf(arquivo,"LISTA DE BARRAS:\n");
+    // for(i=0;i<numeroBarras;i++){
+    //     fprintf(arquivo,"Barra: %d\t%d\t%s\t%.2lf",barras[i].i,barras[i].ID,charFases(barras[i].fases),barras[i].Vbase);
+    //     if(barras[i].nloads>0){
+    //         for(j=0;j<barras[i].nloads;j++)
+    //             fprintf(arquivo,"\n\tCarga %d:\t%s\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.1lf",j,charLigacao(barras[i].loads[j].lig),barras[i].loads[j].Pnom[0],barras[i].loads[j].Pnom[1],barras[i].loads[j].Pnom[2],barras[i].loads[j].Qnom[0],barras[i].loads[j].Qnom[1],barras[i].loads[j].Qnom[2],barras[i].loads[j].ZIP);
+    //     }
+    //     if(barras[i].nshunts>0){
+    //         for(j=0;j<barras[i].nshunts;j++){
+    //             fprintf(arquivo,"\n\tShunt %d:\t%s\t%.5lf\t%.5lf\t%.5lf\t%d",j,charLigacao(barras[i].shunts[j].lig),barras[i].shunts[j].Qnom[0],barras[i].shunts[j].Qnom[1],barras[i].shunts[j].Qnom[2],barras[i].shunts[j].controle);
+    //             if(barras[i].shunts[j].controle != 0)
+    //                 fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf",barras[i].shunts[j].DV,barras[i].shunts[j].Vset[0],barras[i].shunts[j].Vset[1],barras[i].shunts[j].Vset[2]);
+    //         }
+    //     }
+    //     if(barras[i].ngds>0){
+    //         for(j=0;j<barras[i].ngds;j++){
+    //             fprintf(arquivo,"\n\tGD %d:\t%s\t%.5lf kVA\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.1lf",j,charLigacao(barras[i].gds[j].lig),barras[i].gds[j].Snominal,barras[i].gds[j].Pnom[0],barras[i].gds[j].Pnom[1],barras[i].gds[j].Pnom[2],barras[i].gds[j].Qnom[0],barras[i].gds[j].Qnom[1],barras[i].gds[j].Qnom[2],barras[i].gds[j].controle);
+    //             if(barras[i].gds[j].controle != 0)
+    //                 fprintf(arquivo,"\t%.5lf\t%.5lf\t%.5lf\t%.5lf\t%.5lf",barras[i].gds[j].Qmin,barras[i].gds[j].Qmax,barras[i].gds[j].Vset[0],barras[i].gds[j].Vset[1],barras[i].gds[j].Vset[2],barras[i].gds[j].controlePV);
+    //         }
+    //     }
+    //     fprintf(arquivo,"\n");
+    // }   */ 
     
-    fclose(arquivo);
-}
+    // fclose(arquivo);
+// }
 
 
 
@@ -2807,409 +3601,409 @@ void salvaMedidasRedeEletrica(TF_DMED*medidas, long int **numeroMedidas)
  * @note Utilizada somente para validação e conferência das informações
  * @warning Como se trata de uma função auxiliar essa não deve ser chamada diretamente por outras partes do programa.
  */
-int salvaArquivosAlimentador(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos, int idAlim, double Sbase, BOOL opt_Choice, int id_begin, const char *modo)
-{
-    long int i,j, idRam, auxTipo, para;
-    FILE *arquivo,*arquivo1,*arquivo2,*arquivo3;
-    long int *listaBarrasNew;
-    BOOL visitado[numeroBarras];
-    TF_FILABARRAS *barraAtual;
-    double Vbase, comp, Zbase,prec;
+//  int salvaArquivosAlimentador(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos, int idAlim, double Sbase, BOOL opt_Choice, int id_begin, const char *modo)
+// {
+//     long int i,j, idRam, auxTipo, para;
+//     FILE *arquivo,*arquivo1,*arquivo2,*arquivo3;
+//     long int *listaBarrasNew;
+//     BOOL visitado[numeroBarras];
+//     TF_FILABARRAS *barraAtual;
+//     double Vbase, comp, Zbase,prec;
     
     
-    for (i=0;i<numeroBarras;i++) visitado[i] = false;
+//     for (i=0;i<numeroBarras;i++) visitado[i] = false;
     
-    // CRia lista sequencial de barras
-    listaBarrasNew = (long int *)malloc( (numeroBarras + 2) * sizeof(long int));
-    for (i=0;i<numeroBarras;i++) listaBarrasNew[i] = -1;
-    long int k = id_begin;
-    barraAtual = &alimentadores[idAlim].rnp[0];  
-    while(barraAtual != NULL)
-    {
-        i = barraAtual->idNo;
-        if (opt_Choice){
-            listaBarrasNew[i] = k;
-            k++;
-        }
-        else{
-            listaBarrasNew[i] = grafo[i].barra->ID;            
-        }
-        barraAtual = barraAtual->prox;
-    }
-    id_begin = k;
+//     // CRia lista sequencial de barras
+//     listaBarrasNew = (long int *)malloc( (numeroBarras + 2) * sizeof(long int));
+//     for (i=0;i<numeroBarras;i++) listaBarrasNew[i] = -1;
+//     long int k = id_begin;
+//     barraAtual = &alimentadores[idAlim].rnp[0];  
+//     while(barraAtual != NULL)
+//     {
+//         i = barraAtual->idNo;
+//         if (opt_Choice){
+//             listaBarrasNew[i] = k;
+//             k++;
+//         }
+//         else{
+//             listaBarrasNew[i] = grafo[i].barra->ID;            
+//         }
+//         barraAtual = barraAtual->prox;
+//     }
+//     id_begin = k;
     
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de Barras
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DBAR.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo DBAR.dad !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de Barras
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DBAR.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo DBAR.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];        
-        Vbase = grafo[barraAtual->idNo].barra->Vbase;
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            grafo[i].S[0] = grafo[i].V[0] * conj(grafo[i].Cur[0]);
-            grafo[i].S[1] = grafo[i].V[1] * conj(grafo[i].Cur[1]);
-            grafo[i].S[2] = grafo[i].V[2] * conj(grafo[i].Cur[2]);
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];        
+//         Vbase = grafo[barraAtual->idNo].barra->Vbase;
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             grafo[i].S[0] = grafo[i].V[0] * conj(grafo[i].Cur[0]);
+//             grafo[i].S[1] = grafo[i].V[1] * conj(grafo[i].Cur[1]);
+//             grafo[i].S[2] = grafo[i].V[2] * conj(grafo[i].Cur[2]);
             
-            fprintf(arquivo,"%ld;%d;%d;%.2lf;%.2lf;%.2lf;%.2lf;%.2lf;%.2lf;%.2lf;%d",listaBarrasNew[i],grafo[i].barra->ligacao,grafo[i].fases,Vbase*sqrt(3),creal(grafo[i].S[0])*Sbase,creal(grafo[i].S[1])*Sbase,creal(grafo[i].S[2])*Sbase,cimag(grafo[i].S[0])*Sbase,cimag(grafo[i].S[1])*Sbase,cimag(grafo[i].S[2])*Sbase,0);
-            if (grafo[i].tipo == 2){
-                fprintf(arquivo,";%.5lf;%.5lf;%.5lf;%.5lf;%.5lf;%.5lf",cabs(grafo[i].V[0]),cabs(grafo[i].V[1]),cabs(grafo[i].V[2]),carg(grafo[i].V[0])*180/PI,carg(grafo[i].V[1])*180/PI,carg(grafo[i].V[2])*180/PI); 
-            }
-            fprintf(arquivo,"\n");
+//             fprintf(arquivo,"%ld;%d;%d;%.2lf;%.2lf;%.2lf;%.2lf;%.2lf;%.2lf;%.2lf;%d",listaBarrasNew[i],grafo[i].barra->ligacao,grafo[i].fases,Vbase*sqrt(3),creal(grafo[i].S[0])*Sbase,creal(grafo[i].S[1])*Sbase,creal(grafo[i].S[2])*Sbase,cimag(grafo[i].S[0])*Sbase,cimag(grafo[i].S[1])*Sbase,cimag(grafo[i].S[2])*Sbase,0);
+//             if (grafo[i].tipo == 2){
+//                 fprintf(arquivo,";%.5lf;%.5lf;%.5lf;%.5lf;%.5lf;%.5lf",cabs(grafo[i].V[0]),cabs(grafo[i].V[1]),cabs(grafo[i].V[2]),carg(grafo[i].V[0])*180/PI,carg(grafo[i].V[1])*180/PI,carg(grafo[i].V[2])*180/PI); 
+//             }
+//             fprintf(arquivo,"\n");
 
-            barraAtual = barraAtual->prox;
-        }
-    fclose(arquivo);
+//             barraAtual = barraAtual->prox;
+//         }
+//     fclose(arquivo);
     
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de Shunts
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DSHNT.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo DSHNT.dad !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de Shunts
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DSHNT.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo DSHNT.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;            
-            for (j=0;j<grafo[i].barra->nshunts;j++){
-                fprintf(arquivo,"%ld;%d;%d;%.2lf;%.2lf;%.2lf;%.2lf;%ld",listaBarrasNew[i],grafo[i].barra->shunts[j].lig,grafo[i].barra->shunts[j].fases,grafo[i].barra->shunts[j].Vbase,grafo[i].barra->shunts[j].Qnom[0]*Sbase,grafo[i].barra->shunts[j].Qnom[1]*Sbase,grafo[i].barra->shunts[j].Qnom[2]*Sbase,grafo[i].barra->shunts[j].controle);
-                fprintf(arquivo,"\n");
-            }            
-            barraAtual = barraAtual->prox;
-        }
-    fclose(arquivo);
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;            
+//             for (j=0;j<grafo[i].barra->nshunts;j++){
+//                 fprintf(arquivo,"%ld;%d;%d;%.2lf;%.2lf;%.2lf;%.2lf;%ld",listaBarrasNew[i],grafo[i].barra->shunts[j].lig,grafo[i].barra->shunts[j].fases,grafo[i].barra->shunts[j].Vbase,grafo[i].barra->shunts[j].Qnom[0]*Sbase,grafo[i].barra->shunts[j].Qnom[1]*Sbase,grafo[i].barra->shunts[j].Qnom[2]*Sbase,grafo[i].barra->shunts[j].controle);
+//                 fprintf(arquivo,"\n");
+//             }            
+//             barraAtual = barraAtual->prox;
+//         }
+//     fclose(arquivo);
         
         
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de Linhas, Trafos e Reguladores de Tensão
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DLIN.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo DLIN.dad !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de Linhas, Trafos e Reguladores de Tensão
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DLIN.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo DLIN.dad !!!\n");
+//             exit(1);
+//     }
     
-    arquivo1 = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DTRF.csv",modo);
-    if(arquivo1 == NULL){
-            printf("Erro ao abrir arquivo DTRF.dad !!!\n");
-            exit(1);
-    }
+//     arquivo1 = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DTRF.csv",modo);
+//     if(arquivo1 == NULL){
+//             printf("Erro ao abrir arquivo DTRF.dad !!!\n");
+//             exit(1);
+//     }
     
-    arquivo2 = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DREG.csv",modo);
-    if(arquivo2 == NULL){
-            printf("Erro ao abrir arquivo DTRF.dad !!!\n");
-            exit(1);
-    }
+//     arquivo2 = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DREG.csv",modo);
+//     if(arquivo2 == NULL){
+//             printf("Erro ao abrir arquivo DTRF.dad !!!\n");
+//             exit(1);
+//     }
     
-    arquivo3 = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DSWTC.csv",modo);
-    if(arquivo3 == NULL){
-            printf("Erro ao abrir arquivo DSWTC.dad !!!\n");
-            exit(1);
-    }
+//     arquivo3 = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DSWTC.csv",modo);
+//     if(arquivo3 == NULL){
+//             printf("Erro ao abrir arquivo DSWTC.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            Vbase = grafo[i].Vbase;
-            for (j=0;j<grafo[i].numeroAdjacentes;j++){
-                idRam = grafo[i].adjacentes[j].idram;
-                if ((visitado[grafo[i].adjacentes[j].idNo] == false)&& (listaBarrasNew[grafo[i].adjacentes[j].idNo] != -1)){
-                     switch(grafo[i].adjacentes[j].tipo){
-                        case 0: // Linha
-                            comp = ramos[idRam].linha.comprimento;
-                            Zbase = ((pow(Vbase,2))/(Sbase*1000));
-                            fprintf(arquivo,"%ld;%ld;%d;%.3lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.1lf",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA],ramos[idRam].fases,comp,creal(ramos[idRam].linha.Zaa)*Zbase/comp,cimag(ramos[idRam].linha.Zaa)*Zbase/comp,creal(ramos[idRam].linha.Zab)*Zbase/comp,cimag(ramos[idRam].linha.Zab)*Zbase/comp,creal(ramos[idRam].linha.Zac)*Zbase/comp,cimag(ramos[idRam].linha.Zac)*Zbase/comp,creal(ramos[idRam].linha.Zbb)*Zbase/comp,cimag(ramos[idRam].linha.Zbb)*Zbase/comp,creal(ramos[idRam].linha.Zbc)*Zbase/comp,cimag(ramos[idRam].linha.Zbc)*Zbase/comp,creal(ramos[idRam].linha.Zcc)*Zbase/comp,cimag(ramos[idRam].linha.Zcc)*Zbase/comp,ramos[idRam].linha.Baa/Zbase/comp,ramos[idRam].linha.Bab/Zbase/comp,ramos[idRam].linha.Bac/Zbase/comp,ramos[idRam].linha.Bbb/Zbase/comp,ramos[idRam].linha.Bbc/Zbase/comp,ramos[idRam].linha.Bcc/Zbase/comp,ramos[idRam].ampacidade);
-                            fprintf(arquivo,"\n");   
-                            break;
-                        case 1: // Trafo
-                            Zbase = ((pow(Vbase,2))/(3*Sbase*1000));
-                            fprintf(arquivo1,"%ld;%ld",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA]);
-                            fprintf(arquivo1,"\n");   
-                            break;
-                        case 2: // Regulador
-                            Zbase = ((pow(Vbase,2))/(3*Sbase*1000));
-                            fprintf(arquivo2,"%ld;%ld;%d;%.2lf;%.2lf;%ld;%.2lf;%.4lf;%.4lf;%d;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%ld;%.1lf;%.1lf;%.1lf",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA],ramos[idRam].fases,sqrt(3)*ramos[idRam].regulador.Vnom,ramos[idRam].regulador.regulacao,ramos[idRam].regulador.ntaps,ramos[idRam].regulador.Snominal,ramos[idRam].regulador.R*Zbase,ramos[idRam].regulador.X*Zbase,ramos[idRam].regulador.lig,ramos[idRam].regulador.TP,ramos[idRam].regulador.TC,ramos[idRam].regulador.deltaV,ramos[idRam].regulador.R1,ramos[idRam].regulador.X1,ramos[idRam].regulador.R2,ramos[idRam].regulador.X2,ramos[idRam].regulador.R3,ramos[idRam].regulador.X3,ramos[idRam].regulador.V1,ramos[idRam].regulador.V2,ramos[idRam].regulador.V3,ramos[idRam].regulador.controle,ramos[idRam].regulador.tap[0],ramos[idRam].regulador.tap[1],ramos[idRam].regulador.tap[2]);               
-                            fprintf(arquivo2,"\n");   
-                            break;  
-                        case 3: // Chave
-                            fprintf(arquivo3,"%ld;%ld;%d;%d;%d;%.2lf",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA],ramos[idRam].fases,ramos[idRam].estado,0,ramos[idRam].ampacidade);               
-                            fprintf(arquivo3,"\n");   
-                            break;
-                     }
-                }
-            }
-            visitado[i] = true;
-            barraAtual = barraAtual->prox;
-        }
-    fclose(arquivo);
-    fclose(arquivo1);
-    fclose(arquivo2);
-    fclose(arquivo3);
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             Vbase = grafo[i].Vbase;
+//             for (j=0;j<grafo[i].numeroAdjacentes;j++){
+//                 idRam = grafo[i].adjacentes[j].idram;
+//                 if ((visitado[grafo[i].adjacentes[j].idNo] == false)&& (listaBarrasNew[grafo[i].adjacentes[j].idNo] != -1)){
+//                      switch(grafo[i].adjacentes[j].tipo){
+//                         case 0: // Linha
+//                             comp = ramos[idRam].linha.comprimento;
+//                             Zbase = ((pow(Vbase,2))/(Sbase*1000));
+//                             fprintf(arquivo,"%ld;%ld;%d;%.3lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.7lf;%.1lf",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA],ramos[idRam].fases,comp,creal(ramos[idRam].linha.Zaa)*Zbase/comp,cimag(ramos[idRam].linha.Zaa)*Zbase/comp,creal(ramos[idRam].linha.Zab)*Zbase/comp,cimag(ramos[idRam].linha.Zab)*Zbase/comp,creal(ramos[idRam].linha.Zac)*Zbase/comp,cimag(ramos[idRam].linha.Zac)*Zbase/comp,creal(ramos[idRam].linha.Zbb)*Zbase/comp,cimag(ramos[idRam].linha.Zbb)*Zbase/comp,creal(ramos[idRam].linha.Zbc)*Zbase/comp,cimag(ramos[idRam].linha.Zbc)*Zbase/comp,creal(ramos[idRam].linha.Zcc)*Zbase/comp,cimag(ramos[idRam].linha.Zcc)*Zbase/comp,ramos[idRam].linha.Baa/Zbase/comp,ramos[idRam].linha.Bab/Zbase/comp,ramos[idRam].linha.Bac/Zbase/comp,ramos[idRam].linha.Bbb/Zbase/comp,ramos[idRam].linha.Bbc/Zbase/comp,ramos[idRam].linha.Bcc/Zbase/comp,ramos[idRam].ampacidade);
+//                             fprintf(arquivo,"\n");   
+//                             break;
+//                         case 1: // Trafo
+//                             Zbase = ((pow(Vbase,2))/(3*Sbase*1000));
+//                             fprintf(arquivo1,"%ld;%ld",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA]);
+//                             fprintf(arquivo1,"\n");   
+//                             break;
+//                         case 2: // Regulador
+//                             Zbase = ((pow(Vbase,2))/(3*Sbase*1000));
+//                             fprintf(arquivo2,"%ld;%ld;%d;%.2lf;%.2lf;%ld;%.2lf;%.4lf;%.4lf;%d;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%.1lf;%ld;%.1lf;%.1lf;%.1lf",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA],ramos[idRam].fases,sqrt(3)*ramos[idRam].regulador.Vnom,ramos[idRam].regulador.regulacao,ramos[idRam].regulador.ntaps,ramos[idRam].regulador.Snominal,ramos[idRam].regulador.R*Zbase,ramos[idRam].regulador.X*Zbase,ramos[idRam].regulador.lig,ramos[idRam].regulador.TP,ramos[idRam].regulador.TC,ramos[idRam].regulador.deltaV,ramos[idRam].regulador.R1,ramos[idRam].regulador.X1,ramos[idRam].regulador.R2,ramos[idRam].regulador.X2,ramos[idRam].regulador.R3,ramos[idRam].regulador.X3,ramos[idRam].regulador.V1,ramos[idRam].regulador.V2,ramos[idRam].regulador.V3,ramos[idRam].regulador.controle,ramos[idRam].regulador.tap[0],ramos[idRam].regulador.tap[1],ramos[idRam].regulador.tap[2]);               
+//                             fprintf(arquivo2,"\n");   
+//                             break;  
+//                         case 3: // Chave
+//                             fprintf(arquivo3,"%ld;%ld;%d;%d;%d;%.2lf",listaBarrasNew[ramos[idRam].DE],listaBarrasNew[ramos[idRam].PARA],ramos[idRam].fases,ramos[idRam].estado,0,ramos[idRam].ampacidade);               
+//                             fprintf(arquivo3,"\n");   
+//                             break;
+//                      }
+//                 }
+//             }
+//             visitado[i] = true;
+//             barraAtual = barraAtual->prox;
+//         }
+//     fclose(arquivo);
+//     fclose(arquivo1);
+//     fclose(arquivo2);
+//     fclose(arquivo3);
     
     
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de DMED_fp.csv
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DMED_fp.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo DMED_fp.dad !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de DMED_fp.csv
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DMED_fp.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo DMED_fp.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];        
-        Vbase = grafo[barraAtual->idNo].barra->Vbase;
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            if (cabs(grafo[i].S[0]+grafo[i].S[2]+grafo[i].S[3]) < 0.000001) prec = 0.00001; //medida virtual
-            else  prec = 0.30; //pseudo medida
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];        
+//         Vbase = grafo[barraAtual->idNo].barra->Vbase;
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             if (cabs(grafo[i].S[0]+grafo[i].S[2]+grafo[i].S[3]) < 0.000001) prec = 0.00001; //medida virtual
+//             else  prec = 0.30; //pseudo medida
             
-            if (grafo[i].tipo != 2){
-                switch (grafo[i].fases){
-                case 1:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
+//             if (grafo[i].tipo != 2){
+//                 switch (grafo[i].fases){
+//                 case 1:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
                 
-                    break;
-                case 2:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
+//                     break;
+//                 case 2:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
                 
-                    break;
-                case 3:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
-                    break;
-                case 4:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
+//                     break;
+//                 case 3:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
+//                     break;
+//                 case 4:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
                 
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
                 
-                    break;
-                case 5:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
+//                     break;
+//                 case 5:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
                 
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
-                    break;
-                case 6:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
+//                     break;
+//                 case 6:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
                 
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
-                    break;
-                case 7:
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
+//                     break;
+//                 case 7:
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,1,creal(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,2,creal(grafo[i].S[1])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,2,listaBarrasNew[i],-1,3,creal(grafo[i].S[2])*Sbase,prec);
                 
                     
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
-                    break;
-                }
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,1,cimag(grafo[i].S[0])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,2,cimag(grafo[i].S[1])*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,3,listaBarrasNew[i],-1,3,cimag(grafo[i].S[2])*Sbase,prec);
+//                     break;
+//                 }
                                 
                 
-            }
-            if (grafo[i].tipo == 2){
-                prec = 0.01;
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,1,cabs(grafo[i].V[0])*Vbase/1000,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,2,cabs(grafo[i].V[1])*Vbase/1000,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,3,cabs(grafo[i].V[2])*Vbase/1000,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,1,carg(grafo[i].V[0])*180/PI,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,2,carg(grafo[i].V[1])*180/PI,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,3,carg(grafo[i].V[2])*180/PI,prec);
-            }
-//            fprintf(arquivo,"\n");
+//             }
+//             if (grafo[i].tipo == 2){
+//                 prec = 0.01;
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,1,cabs(grafo[i].V[0])*Vbase/1000,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,2,cabs(grafo[i].V[1])*Vbase/1000,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,3,cabs(grafo[i].V[2])*Vbase/1000,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,1,carg(grafo[i].V[0])*180/PI,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,2,carg(grafo[i].V[1])*180/PI,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,3,carg(grafo[i].V[2])*180/PI,prec);
+//             }
+// //            fprintf(arquivo,"\n");
 
-            barraAtual = barraAtual->prox;
-        }
+//             barraAtual = barraAtual->prox;
+//         }
     
-    fclose(arquivo);
+//     fclose(arquivo);
     
-    // Medidas do Sistema SCADA - Assumida uma tensão na SE e fluxo de potência na SE
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DMED_SC.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo DMED_SC.dad !!!\n");
-            exit(1);
-    }
+//     // Medidas do Sistema SCADA - Assumida uma tensão na SE e fluxo de potência na SE
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DMED_SC.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo DMED_SC.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];        
-        Vbase = grafo[barraAtual->idNo].barra->Vbase;
-        i = barraAtual->idNo;
-        prec = 0.01;
-        fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,1,cabs(grafo[i].V[0])*Vbase/1000,prec);
-        fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,2,cabs(grafo[i].V[1])*Vbase/1000,prec);
-        fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,3,cabs(grafo[i].V[2])*Vbase/1000,prec);
-        fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,1,carg(grafo[i].V[0])*180/PI,prec);
-        fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,2,carg(grafo[i].V[1])*180/PI,prec);
-        fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,3,carg(grafo[i].V[2])*180/PI,prec);
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];        
+//         Vbase = grafo[barraAtual->idNo].barra->Vbase;
+//         i = barraAtual->idNo;
+//         prec = 0.01;
+//         fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,1,cabs(grafo[i].V[0])*Vbase/1000,prec);
+//         fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,2,cabs(grafo[i].V[1])*Vbase/1000,prec);
+//         fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,3,cabs(grafo[i].V[2])*Vbase/1000,prec);
+//         fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,1,carg(grafo[i].V[0])*180/PI,prec);
+//         fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,2,carg(grafo[i].V[1])*180/PI,prec);
+//         fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,5,listaBarrasNew[i],-1,3,carg(grafo[i].V[2])*180/PI,prec);
             
-        // Medida de Fluxo de Potência na Saída do Alimentador
-        for (int adj =0; adj< grafo[i].numeroAdjacentes;adj++ ){
-            if (grafo[i].adjacentes[adj].tipo == 3){
-                para = grafo[i].adjacentes[adj].idNo;
-                prec = 0.02;
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],1,creal(grafo[i].V[0]*conj(grafo[i].adjacentes[adj].Cur[0]))*Sbase,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],2,creal(grafo[i].V[1]*conj(grafo[i].adjacentes[adj].Cur[1]))*Sbase,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],3,creal(grafo[i].V[2]*conj(grafo[i].adjacentes[adj].Cur[2]))*Sbase,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],1,cimag(grafo[i].V[0]*conj(grafo[i].adjacentes[adj].Cur[0]))*Sbase,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],2,cimag(grafo[i].V[1]*conj(grafo[i].adjacentes[adj].Cur[1]))*Sbase,prec);
-                fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],3,cimag(grafo[i].V[2]*conj(grafo[i].adjacentes[adj].Cur[2]))*Sbase,prec);
-            }
-        }
+//         // Medida de Fluxo de Potência na Saída do Alimentador
+//         for (int adj =0; adj< grafo[i].numeroAdjacentes;adj++ ){
+//             if (grafo[i].adjacentes[adj].tipo == 3){
+//                 para = grafo[i].adjacentes[adj].idNo;
+//                 prec = 0.02;
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],1,creal(grafo[i].V[0]*conj(grafo[i].adjacentes[adj].Cur[0]))*Sbase,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],2,creal(grafo[i].V[1]*conj(grafo[i].adjacentes[adj].Cur[1]))*Sbase,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],3,creal(grafo[i].V[2]*conj(grafo[i].adjacentes[adj].Cur[2]))*Sbase,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],1,cimag(grafo[i].V[0]*conj(grafo[i].adjacentes[adj].Cur[0]))*Sbase,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],2,cimag(grafo[i].V[1]*conj(grafo[i].adjacentes[adj].Cur[1]))*Sbase,prec);
+//                 fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],3,cimag(grafo[i].V[2]*conj(grafo[i].adjacentes[adj].Cur[2]))*Sbase,prec);
+//             }
+//         }
         
-        // Percorre o alimentador para medidas em reguladores
-        barraAtual = &alimentadores[idAlim].rnp[0];
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            Vbase = grafo[i].Vbase;
-            for (j=0;j<grafo[i].numeroAdjacentes;j++){
-                para = grafo[i].adjacentes[j].idNo;
-                idRam = grafo[i].adjacentes[j].idram;
-                if ((grafo[i].adjacentes[j].tipo == 2) && (grafo[i].profundidade < grafo[para].profundidade)){
-                    //Tensão montante
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,1,cabs(grafo[i].V[0])*Vbase/1000,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,2,cabs(grafo[i].V[1])*Vbase/1000,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,3,cabs(grafo[i].V[2])*Vbase/1000,prec);
+//         // Percorre o alimentador para medidas em reguladores
+//         barraAtual = &alimentadores[idAlim].rnp[0];
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             Vbase = grafo[i].Vbase;
+//             for (j=0;j<grafo[i].numeroAdjacentes;j++){
+//                 para = grafo[i].adjacentes[j].idNo;
+//                 idRam = grafo[i].adjacentes[j].idram;
+//                 if ((grafo[i].adjacentes[j].tipo == 2) && (grafo[i].profundidade < grafo[para].profundidade)){
+//                     //Tensão montante
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,1,cabs(grafo[i].V[0])*Vbase/1000,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,2,cabs(grafo[i].V[1])*Vbase/1000,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[i],-1,3,cabs(grafo[i].V[2])*Vbase/1000,prec);
                     
-                    //Tensão Jusante
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[para],-1,1,cabs(grafo[para].V[0])*Vbase/1000,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[para],-1,2,cabs(grafo[para].V[1])*Vbase/1000,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[para],-1,3,cabs(grafo[para].V[2])*Vbase/1000,prec);
+//                     //Tensão Jusante
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[para],-1,1,cabs(grafo[para].V[0])*Vbase/1000,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[para],-1,2,cabs(grafo[para].V[1])*Vbase/1000,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,4,listaBarrasNew[para],-1,3,cabs(grafo[para].V[2])*Vbase/1000,prec);
                                         
-                    //Fluxo de potência montante
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],1,creal(grafo[i].V[0]*conj(grafo[i].adjacentes[j].Cur[0]))*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],2,creal(grafo[i].V[1]*conj(grafo[i].adjacentes[j].Cur[1]))*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],3,creal(grafo[i].V[2]*conj(grafo[i].adjacentes[j].Cur[2]))*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],1,cimag(grafo[i].V[0]*conj(grafo[i].adjacentes[j].Cur[0]))*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],2,cimag(grafo[i].V[1]*conj(grafo[i].adjacentes[j].Cur[1]))*Sbase,prec);
-                    fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],3,cimag(grafo[i].V[2]*conj(grafo[i].adjacentes[j].Cur[2]))*Sbase,prec);
-                }
-            }
-            barraAtual = barraAtual->prox;
-        }
+//                     //Fluxo de potência montante
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],1,creal(grafo[i].V[0]*conj(grafo[i].adjacentes[j].Cur[0]))*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],2,creal(grafo[i].V[1]*conj(grafo[i].adjacentes[j].Cur[1]))*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,0,listaBarrasNew[i],listaBarrasNew[para],3,creal(grafo[i].V[2]*conj(grafo[i].adjacentes[j].Cur[2]))*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],1,cimag(grafo[i].V[0]*conj(grafo[i].adjacentes[j].Cur[0]))*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],2,cimag(grafo[i].V[1]*conj(grafo[i].adjacentes[j].Cur[1]))*Sbase,prec);
+//                     fprintf(arquivo,"%d;%d;%ld;%d;%d;%.5lf;%.5lf\n",1,1,listaBarrasNew[i],listaBarrasNew[para],3,cimag(grafo[i].V[2]*conj(grafo[i].adjacentes[j].Cur[2]))*Sbase,prec);
+//                 }
+//             }
+//             barraAtual = barraAtual->prox;
+//         }
     
-    fclose(arquivo);
+//     fclose(arquivo);
     
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de Vinicial
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/Vinicial.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo Vinicial.dad !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de Vinicial
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/Vinicial.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo Vinicial.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];        
-        Vbase = grafo[barraAtual->idNo].barra->Vbase;
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            switch (grafo[i].fases){
-                case 1:
-                    fprintf(arquivo,"%ld;%.8lf;NaN;NaN;%.8lf;NaN;NaN;",listaBarrasNew[i],cabs(grafo[i].V[0]),carg(grafo[i].V[0]) *180 / PI);
-                    break;
-                case 2:
-                    fprintf(arquivo,"%ld;NaN;%.8lf;NaN;NaN;%.8lf;NaN;",listaBarrasNew[i],cabs(grafo[i].V[1]),carg(grafo[i].V[1]) *180 / PI);
-                    break;
-                case 3:
-                    fprintf(arquivo,"%ld;NaN;NaN;%.8lf;NaN;NaN;%.8lf",listaBarrasNew[i],cabs(grafo[i].V[1]),carg(grafo[i].V[1]) *180 / PI);
-                    break;
-                case 4:
-                    fprintf(arquivo,"%ld;%.8lf;%.8lf;NaN;%.8lf;%.8lf;NaN;",listaBarrasNew[i],cabs(grafo[i].V[0]),cabs(grafo[i].V[1]),carg(grafo[i].V[0]) *180 / PI, carg(grafo[i].V[1]) *180 / PI);
-                    break;
-                case 5:
-                    fprintf(arquivo,"%ld;%.8lf;NaN;%.8lf;%.8lf;NaN;%.8lf;",listaBarrasNew[i],cabs(grafo[i].V[0]),cabs(grafo[i].V[2]),carg(grafo[i].V[0]) *180 / PI, carg(grafo[i].V[2]) *180 / PI);
-                    break;
-                case 6:
-                    fprintf(arquivo,"%ld;NaN;%.8lf;%.8lf;NaN;%.8lf;%.8lf;",listaBarrasNew[i],cabs(grafo[i].V[1]),cabs(grafo[i].V[2]),carg(grafo[i].V[1]) *180 / PI, carg(grafo[i].V[2]) *180 / PI);
-                    break;
-                case 7:
-                    fprintf(arquivo,"%ld;%.8lf;%.8lf;%.8lf;%.8lf;%.8lf;%.8lf;",listaBarrasNew[i],cabs(grafo[i].V[0]),cabs(grafo[i].V[1]),cabs(grafo[i].V[2]),carg(grafo[i].V[0]) *180 / PI, carg(grafo[i].V[1]) *180 / PI, carg(grafo[i].V[2]) *180 / PI);
-                    break;
-            }
-            fprintf(arquivo,"\n");
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];        
+//         Vbase = grafo[barraAtual->idNo].barra->Vbase;
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             switch (grafo[i].fases){
+//                 case 1:
+//                     fprintf(arquivo,"%ld;%.8lf;NaN;NaN;%.8lf;NaN;NaN;",listaBarrasNew[i],cabs(grafo[i].V[0]),carg(grafo[i].V[0]) *180 / PI);
+//                     break;
+//                 case 2:
+//                     fprintf(arquivo,"%ld;NaN;%.8lf;NaN;NaN;%.8lf;NaN;",listaBarrasNew[i],cabs(grafo[i].V[1]),carg(grafo[i].V[1]) *180 / PI);
+//                     break;
+//                 case 3:
+//                     fprintf(arquivo,"%ld;NaN;NaN;%.8lf;NaN;NaN;%.8lf",listaBarrasNew[i],cabs(grafo[i].V[1]),carg(grafo[i].V[1]) *180 / PI);
+//                     break;
+//                 case 4:
+//                     fprintf(arquivo,"%ld;%.8lf;%.8lf;NaN;%.8lf;%.8lf;NaN;",listaBarrasNew[i],cabs(grafo[i].V[0]),cabs(grafo[i].V[1]),carg(grafo[i].V[0]) *180 / PI, carg(grafo[i].V[1]) *180 / PI);
+//                     break;
+//                 case 5:
+//                     fprintf(arquivo,"%ld;%.8lf;NaN;%.8lf;%.8lf;NaN;%.8lf;",listaBarrasNew[i],cabs(grafo[i].V[0]),cabs(grafo[i].V[2]),carg(grafo[i].V[0]) *180 / PI, carg(grafo[i].V[2]) *180 / PI);
+//                     break;
+//                 case 6:
+//                     fprintf(arquivo,"%ld;NaN;%.8lf;%.8lf;NaN;%.8lf;%.8lf;",listaBarrasNew[i],cabs(grafo[i].V[1]),cabs(grafo[i].V[2]),carg(grafo[i].V[1]) *180 / PI, carg(grafo[i].V[2]) *180 / PI);
+//                     break;
+//                 case 7:
+//                     fprintf(arquivo,"%ld;%.8lf;%.8lf;%.8lf;%.8lf;%.8lf;%.8lf;",listaBarrasNew[i],cabs(grafo[i].V[0]),cabs(grafo[i].V[1]),cabs(grafo[i].V[2]),carg(grafo[i].V[0]) *180 / PI, carg(grafo[i].V[1]) *180 / PI, carg(grafo[i].V[2]) *180 / PI);
+//                     break;
+//             }
+//             fprintf(arquivo,"\n");
 
-            barraAtual = barraAtual->prox;
-        }
-    fclose(arquivo);
+//             barraAtual = barraAtual->prox;
+//         }
+//     fclose(arquivo);
     
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de DARE.csv
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DARE.csv",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo DARE.dad !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de DARE.csv
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/DARE.csv",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo DARE.dad !!!\n");
+//             exit(1);
+//     }
     
-        // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];        
-        Vbase = grafo[barraAtual->idNo].barra->Vbase;
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            fprintf(arquivo,"%ld;%d",listaBarrasNew[i],idAlim);
-            if (grafo[i].tipo == 2){ // Barra de Referência do Alimentador
-                fprintf(arquivo,";%d;%d",1,1);
-            }
-            else{ 
-                auxTipo = 0;
-                for (j=0;j<grafo[i].numeroAdjacentes;j++){   // Testa para ver se possui fronteira (com outro alimentador)
-                    idRam = grafo[i].adjacentes[j].idram;
-                    if (listaBarrasNew[grafo[i].adjacentes[j].idNo] == -1){
-                        auxTipo = 1;
-                    }
-                }
-                fprintf(arquivo,";%d;%d",auxTipo,0);
-            }
-            fprintf(arquivo,"\n");
+//         // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];        
+//         Vbase = grafo[barraAtual->idNo].barra->Vbase;
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             fprintf(arquivo,"%ld;%d",listaBarrasNew[i],idAlim);
+//             if (grafo[i].tipo == 2){ // Barra de Referência do Alimentador
+//                 fprintf(arquivo,";%d;%d",1,1);
+//             }
+//             else{ 
+//                 auxTipo = 0;
+//                 for (j=0;j<grafo[i].numeroAdjacentes;j++){   // Testa para ver se possui fronteira (com outro alimentador)
+//                     idRam = grafo[i].adjacentes[j].idram;
+//                     if (listaBarrasNew[grafo[i].adjacentes[j].idNo] == -1){
+//                         auxTipo = 1;
+//                     }
+//                 }
+//                 fprintf(arquivo,";%d;%d",auxTipo,0);
+//             }
+//             fprintf(arquivo,"\n");
 
-            barraAtual = barraAtual->prox;
-        }
+//             barraAtual = barraAtual->prox;
+//         }
     
-    fclose(arquivo);
+//     fclose(arquivo);
     
-    //--------------------------------------------------------------------------
-    // Impressão do Arquivo de Bar_cod.csv
-    arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/Bar_cod.txt",modo);
-    if(arquivo == NULL){
-            printf("Erro ao abrir arquivo Bar_cod.txt !!!\n");
-            exit(1);
-    }
+//     //--------------------------------------------------------------------------
+//     // Impressão do Arquivo de Bar_cod.csv
+//     arquivo = fopen("D:/Dropbox/PeD COPEL 2018/Codigos/Fluxo_Trifasico/Exportado/Bar_cod.txt",modo);
+//     if(arquivo == NULL){
+//             printf("Erro ao abrir arquivo Bar_cod.txt !!!\n");
+//             exit(1);
+//     }
     
-    // Percorre o alimentador 
-        barraAtual = &alimentadores[idAlim].rnp[0];
-        while(barraAtual != NULL)
-        {
-            i = barraAtual->idNo;
-            fprintf(arquivo,"%ld\t%ld",grafo[i].barra->ID,listaBarrasNew[i]);
-            fprintf(arquivo,"\n");   
-            barraAtual = barraAtual->prox;
-        }
+//     // Percorre o alimentador 
+//         barraAtual = &alimentadores[idAlim].rnp[0];
+//         while(barraAtual != NULL)
+//         {
+//             i = barraAtual->idNo;
+//             fprintf(arquivo,"%ld\t%ld",grafo[i].barra->ID,listaBarrasNew[i]);
+//             fprintf(arquivo,"\n");   
+//             barraAtual = barraAtual->prox;
+//         }
     
-    fclose(arquivo);   
+//     fclose(arquivo);   
     
     
-    free(listaBarrasNew);    
-    return (id_begin);
-}
+//     free(listaBarrasNew);    
+//     return (id_begin);
+// }
 
 
 

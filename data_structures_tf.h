@@ -374,6 +374,26 @@ typedef struct {
     
 } TF_DMED;
 
+
+
+typedef struct {
+ 
+    int *time_stamp; // vetor com cada estampa de tempo (formato a definir)
+    int *day; // vetor de inteiro com os dias
+    int *hour; // vetor de inteiro com as horas
+    int *min; // vetor de inteiro com os minutos
+    double *prev; // vetor de double com as medidas
+    double *prec; // vetor de doble com as precisões 
+    int inst_atual; //
+    int fre_amost;// frequencia amostral (min)
+    int nsamples; // numero de amostras
+
+    TF_DMED DMED; 
+
+}TF_DPREV;
+
+
+
 //-----------------------------------------------------
 //ESTRUTURAS DE DADOS PARA ARMAZENAR RESULTADOS DE INTERESSE E INTERFACES COM OUTRAS FUNCIONALIDADES
 //
