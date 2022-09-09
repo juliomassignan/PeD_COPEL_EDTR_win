@@ -2683,14 +2683,14 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
  * @note Dados da rede elétrica e um grafo da rede elétrica devem ser criados antes de se chamar esta função. 
  * @warning .
  */
-long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
+long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev,int* nmed , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase)
 {
     char blocoLeitura[2000]; /* Variável para realizar a leitura do bloco de caracteres do arquivo. */
     char *dados; /* Variável do tipo ponteiro para char, utilizada para alterar o ponteiro da string lida do arquivo de forma a realizar o loop no sscanf. */
     long int contador =0, i,j,k,l,m,ind, aux,adj; /* Variáveis contadores para percorrer o arquivo e a string de leitura. */
     int carac,numLinhas = 0,numCol=1; /* Variável com o número de linhas do arquivo a serem lidas. */
     FILE *arquivo;
-    long int **numeroMedidas,nmed,namostras;
+    long int **numeroMedidas,namostras;
     double Vbase = 1;
     long int t;
     int dateaux1,dateaux2;
@@ -2708,13 +2708,6 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
         exit(1);
     }
     
-    numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
-    for (i = 0; i < 14; i++){ 
-         numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
-         for (j = 0; j < 20; j++){
-            numeroMedidas[i][j] = 0;
-         }
-    }
     
     //Aloca na memória espaço para as linhas
     while ((carac = fgetc(arquivo)) != EOF) {
@@ -2725,16 +2718,16 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
     rewind(arquivo);
 
     namostras = numLinhas-1;// retira o cabeçalho
-    nmed= (numCol-2)/2; //numero de medidas
+    (*nmed)= (numCol-2)/2; //numero de medidas
     (*numprev)=namostras;
-    if ((((*prev) = (TF_DPREV *)malloc((nmed+1) * sizeof(TF_DPREV)))==NULL))
+    if ((((*prev) = (TF_DPREV *)malloc(((*nmed)+1) * sizeof(TF_DPREV)))==NULL))
     {
         printf("Erro -- Nao foi possivel alocar espaco de memoria para a série temporal !!!!");
         exit(1); 
     }
 
 
-    for (size_t i = 0; i < nmed; i++)
+    for (size_t i = 0; i < (*nmed); i++)
     {
         if (((*prev)[i].time_stamp = (int*)malloc(((*numprev)+1) * sizeof( int)))==NULL)
         {
@@ -2769,6 +2762,7 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
         (*prev)[i].inst_atual=0;
         (*prev)[i].fre_amost=0;
         (*prev)[i].nsamples=namostras;
+        (*prev)[i].base=0;
 
 
     }
@@ -2776,17 +2770,18 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
 
     fgets(blocoLeitura, 2000, arquivo); //pega a primeira linha de cabeçahos
 
-    numeroMedidas=leCabDPREV(blocoLeitura,&nmed,prev,ramos,barras,numeroBarras,grafo,numeroRamos,Sbase);
+    leCabDPREV(blocoLeitura,nmed,prev,ramos,barras,numeroBarras,grafo,numeroRamos,Sbase,&numeroMedidas);
+    BaseMedida(grafo,Sbase,(*prev),(*nmed));
 
     t=0;
     while((fgets(blocoLeitura, 2000, arquivo))!= NULL ){
         dados=blocoLeitura; 
        
-        for (size_t contador = 0; contador < nmed; contador++)
+        for (size_t contador = 0; contador < (*nmed); contador++)
         {
             (*prev)[contador].prev[t] = getfield_double(dados,(*prev)[contador].findex);
             (*prev)[contador].prec[t] = getfield_double(dados,(*prev)[contador].findex+1);
-            (*prev)[contador].time_stamp[t] = getfield_int(dados,2*nmed+2);
+            (*prev)[contador].time_stamp[t] = getfield_int(dados,2*(*nmed)+2);
             dateaux2=(*prev)[contador].time_stamp[t];
             dateaux1=dateaux2 % 10000; 
             (*prev)[contador].day[t]= (dateaux2 - dateaux1)/10000;
@@ -2806,20 +2801,20 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
 }
 
 
-long int  **leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF_DBAR *barras,int numeroBarras ,TF_GRAFO *grafo, int numeroRamos,double Sbase)
+void leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF_DBAR *barras,int numeroBarras ,TF_GRAFO *grafo, int numeroRamos,double Sbase,long int ***numeroMedidas)
 {
     char medcod[5][10];
     char *token;
     int i,j;
     char *dados;
-    long  int **numeroMedidas;
+
     double Vbase;
 
-    numeroMedidas = (long int**)malloc(14 * sizeof(long int*)); 
+    (*numeroMedidas) = (long int**)malloc(14 * sizeof(long int*)); 
     for (i = 0; i < 14; i++){ 
-         numeroMedidas[i] = (long int*) malloc(20 * sizeof(long int));
+        (*numeroMedidas)[i] = (long int*) malloc(20 * sizeof(long int));
          for (j = 0; j < 20; j++){
-            numeroMedidas[i][j] = 0;
+           (*numeroMedidas)[i][j] = 0;
          }
     }
 
@@ -2857,6 +2852,7 @@ long int  **leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ra
         (*prev)[contador].DMED.par= -1;
         (*prev)[contador].DMED.h= 0;
 
+        (*numeroMedidas)[(*prev)[contador].DMED.tipo][(*prev)[contador].DMED.fases-1]++;
         switch((*prev)[contador].DMED.tipo){
             case 0: //Medidas nos ramos
             case 1:
@@ -2898,10 +2894,10 @@ long int  **leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ra
 
     //Associa as medidas ao grafo e transforma em pu os dados medidos
 
-
+    (*nmed)=0;
     for (i = 0; i < 14; i++){ 
         for (j = 0; j < 8; j++){
-            (*nmed) = (*nmed) + numeroMedidas[i][j];
+            (*nmed) = (*nmed) + (*numeroMedidas)[i][j];
         }
     }
     
@@ -2913,9 +2909,6 @@ long int  **leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ra
     AssoMedidoresPares(prev,(*nmed));
 
 
-
-
-    return(numeroMedidas);
 }
 
 
@@ -3463,6 +3456,103 @@ void AssoMedidoresPares(TF_DPREV **prev,int nmed)
     }
 }
 
+void BaseMedida(TF_GRAFO *grafo,double Sbase,TF_DPREV *prev,int nmed)
+{
+    int k;
+    double Vbase;
+    for (size_t i = 0; i < nmed; i++)
+    {
+        k=prev[i].DMED.k;    
+        switch (prev[i].DMED.tipo) {
+            case 0: //Medida de Fluxo de Potência Ativa em kW
+                prev[i].base =  (Sbase/1000);
+                break;
+            case 1: //Medida de Fluxo de Potência Reativa em kVAr
+                prev[i].base = (Sbase/1000);
+                break;
+            case 2: //Medida de Injeção de Potência Ativa em kW
+                prev[i].base= (Sbase/1000);     
+                break;    
+            case 3: //Medida de Injeção de Potência Reativa em kVAr
+                prev[i].base= (Sbase/1000);  
+                break;
+            case 4: //Medida de Magnitude de Tensão - kV
+                switch (prev[i].DMED.fases){
+                    case 1:
+                    case 2:
+                    case 3:
+                        Vbase = grafo[k].Vbase;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        Vbase = grafo[k].Vbase*(pow(3,0.5));
+                        break;
+                }                
+                prev[i].base= (Vbase/1000);
+                break;
+            case 5: //Medida de Ângulo de tensão - graus
+                prev[i].base= 1/ (PI/180);
+                break;
+            case 6: //Medida de Magnitude de Corrente em A - Fluxo
+                Vbase = grafo[k].Vbase;
+                prev[i].base=((Sbase/1000)/(pow(3,0.5)*(Vbase/1000)));
+                break;
+            case 7: //Medida de Ângulo de Corrente em graus
+                prev[i].base= 1/ (PI/180);
+                break;
+            case 8: //Medida PMU de tensão retangular Real
+                switch (prev[i].DMED.fases){
+                    case 1:
+                    case 2:
+                    case 3:
+                        Vbase = grafo[k].Vbase;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        Vbase = grafo[k].Vbase*(pow(3,0.5));
+                        break;
+                }                
+                prev[i].base=(Vbase/1000);
+                                
+                break;
+            case 9: //Medida PMU de tensão retangular Imaginário
+                switch (prev[i].DMED.fases){
+                    case 1:
+                    case 2:
+                    case 3:
+                        Vbase = grafo[k].Vbase;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                        Vbase = grafo[k].Vbase*(pow(3,0.5));
+                        break;
+                }                
+                prev[i].base=(Vbase/1000);
+                break;
+            case 10: //Medida PMU de injeção de corrente retangular real
+                Vbase = grafo[k].Vbase;
+                prev[i].base=((Sbase/1000)/((Vbase/1000)));
+
+                break;
+            case 11: //Medida PMU de injeção de corrente retangular imaginário
+                Vbase = grafo[k].Vbase;
+                prev[i].base=((Sbase/1000)/((Vbase/1000)));
+                break;
+            case 12: //Medida PMU de corrente retangular real
+                Vbase = grafo[k].Vbase;
+                prev[i].base=((Sbase/1000)/((Vbase/1000)));
+                
+                break;
+            case 13: //Medida PMU de corrente retangular Imaginário
+                Vbase = grafo[k].Vbase;
+                prev[i].base=((Sbase/1000)/((Vbase/1000)));
+                break;
+        } 
+    }   
+}
 
 
 // // //------------------------------------------------------------------------------

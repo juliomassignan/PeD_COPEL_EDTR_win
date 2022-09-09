@@ -23,6 +23,8 @@
         "algorithm": "c",
         "random": "c",
         "bitset": "c",
-        "chrono": "c"
+        "chrono": "c",
+        "stdio.h": "c",
+        "math.h": "c"
     }
 }

@@ -1,6 +1,6 @@
 all: fp 
-    fp: main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o funcoesSetor.o funcoesInicializacao.o funcoesProblema.o
-	gcc -g -o fp main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o  funcoesSetor.o funcoesInicializacao.o funcoesProblema.o -lm -lstdc++ -fopenmp
+    fp: main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o funcoesSetor.o funcoesInicializacao.o funcoesProblema.o funcoesNowCasting.o
+	gcc -g -o fp main.o funcoesCalculoEletrico_tf.o funcoesFluxoVarredura_tf.o funcoesLeitura_tf.o funcoesModCarga_tf.o funcoesTopologia_tf.o funcoesMatematicas_tf.o funcoesAuxiliares.o funcoesLeituraDados.o funcoesRNP.o funcoesIntegracao_tf.o  funcoesSetor.o funcoesInicializacao.o funcoesProblema.o funcoesNowCasting.o -lm -lstdc++ -fopenmp
 	
     funcoesCalculoEletrico_tf.o: funcoesCalculoEletrico_tf.c data_structures_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h
 	gcc -g -c funcoesCalculoEletrico_tf.c
@@ -23,6 +23,9 @@ all: fp
     funcoesIntegracao_tf.o: funcoesIntegracao_tf.c data_structures_tf.h funcoesTopologia_tf.h funcoesFluxoVarredura_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h data_structures_modcarga_tf.h funcoesLeituraDados.h funcoesInicializacao.h funcoesAuxiliares.h funcoesRNP.h funcoesProblema.h funcoesSetor.h funcoesIntegracao_tf.h
 	gcc -g -c funcoesIntegracao_tf.c
 	
+    funcoesNowCasting.o: funcoesNowCasting.c data_structures_tf.h
+	gcc -g -c funcoesNowCasting.c
+
     funcoesRNP.o: funcoesRNP.c data_structures.h funcoesRNP.h funcoesAuxiliares.h
 	gcc -g -c funcoesRNP.c
 

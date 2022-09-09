@@ -1,4 +1,5 @@
 Medidas excluidas por possível falta de comunicacao. Critério: conectadas a rede mas com valor igual a zero
+Medidor (2) 0 - 1 (fase: 3)  tipo PQ:  Alimentador: 0
 
 Medidas excluidas pelo valor medido ser maior que duas vezes o valor esperado da medida. Criterio: Valor esperado dado pelas curvas agregadas e fluxo de potencia 
 

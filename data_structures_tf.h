@@ -390,7 +390,8 @@ typedef struct {
     int nsamples; // numero de amostras
     int findex;
 
-    TF_DMED DMED; 
+    TF_DMED DMED;
+    double base; 
 
 }TF_DPREV;
 
