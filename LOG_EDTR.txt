@@ -12,3 +12,4 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.001698
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.003351
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.004621
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.004911
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003320
