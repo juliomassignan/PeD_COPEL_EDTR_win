@@ -34,3 +34,5 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.004049
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.004132
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.003582
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.009847
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004672
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.006088

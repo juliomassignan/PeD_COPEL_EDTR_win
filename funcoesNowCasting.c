@@ -45,10 +45,10 @@ void constroi_dmed_prev2(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas)
 
     for (size_t i = 0; i < nmed; i++)
     {
-        (*medidas)[i]=(prev_tf[i].DMED);
+        (*medidas)[i]=prev_tf[i].DMED;
     }
     
-
+    
     
 }
 

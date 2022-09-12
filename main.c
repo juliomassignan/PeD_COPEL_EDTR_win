@@ -216,15 +216,20 @@ int main(int argc, char** argv) {
     int numeroAmostras;
     int instante_atual=0;
 
-    // int **numeroMedidas = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
+    // int **numeroMedidas2 = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
     //   Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
-    // buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas, &areasMedicao_tf);
+    // buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas2, &areasMedicao_tf);
    // 
     
     int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
-    // 
+    //
+    
+     
+    // construir dmed, atualiza dmed e atualiza AM
     atualiza_dmed(instante_atual,prev_tf,nmed); 
+
     constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf);
+
       
     buscaAMs_NowCasting(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medidaPrev_tf, numeroMedidas, &areasMedicao_tf);
         
