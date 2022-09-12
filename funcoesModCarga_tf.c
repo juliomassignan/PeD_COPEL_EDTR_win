@@ -848,7 +848,6 @@ void buscaAMs(TF_GRAFO * grafo, long int numeroBarras, TF_ALIMENTADOR *alimentad
               numeroMedidas += numeroMedidasTabela[i][j];
          }
     }
-    
     // Aloca Áreas de Medição
     if (((*areasAM) = (TF_AREA_MEDICAO *)malloc( (numeroMedidas+1) * sizeof(TF_AREA_MEDICAO)))==NULL)
     {

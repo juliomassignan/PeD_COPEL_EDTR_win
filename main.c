@@ -209,9 +209,10 @@ int main(int argc, char** argv) {
     
     // Leitura de Medidas do sistema SCADA (SASE processado)
     TF_DMED *medida_tf=NULL;
-    TF_DMED **medidaPrev_tf=NULL;
+    TF_DMED *medidaPrev_tf=NULL;
     TF_DPREV *prev_tf=NULL;
     TF_AREA_MEDICAO *areasMedicao_tf=NULL;
+    TF_NCRESULT resultadoNC;
 
     int numeroAmostras;
     int instante_atual=0;
@@ -221,20 +222,18 @@ int main(int argc, char** argv) {
     // buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas2, &areasMedicao_tf);
    // 
     
-    int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
-    //
+    int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
+
+    constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf,grafo_tf,Sbase); 
     
-     
-    // construir dmed, atualiza dmed e atualiza AM
-    atualiza_dmed(instante_atual,prev_tf,nmed); 
+    buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medidaPrev_tf, numeroMedidas, &areasMedicao_tf);   
+    
+    resultadoNC=NowCastingDemanda(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras);
 
-    constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf);
 
-      
-    buscaAMs_NowCasting(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medidaPrev_tf, numeroMedidas, &areasMedicao_tf);
-        
-    //    //Estimador de Demandas Trifásicas
-    estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
+
+
+    
     //    salva (curva de carga de demanda estimada, resultados condensados do fluxo de potencia )
     
     //Liberação de Memória

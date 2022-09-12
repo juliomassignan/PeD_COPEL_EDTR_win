@@ -26,5 +26,6 @@
         "chrono": "c",
         "stdio.h": "c",
         "math.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

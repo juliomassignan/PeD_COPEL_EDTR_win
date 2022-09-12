@@ -34,5 +34,24 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.004049
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.004132
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.003582
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.009847
+<<<<<<< HEAD
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.004672
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.006088
+=======
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004020
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002048
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003618
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001702
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002016
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001679
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001894
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002084
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003915
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001928
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001931
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001718
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001979
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001635
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001662
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001633
+>>>>>>> refs/remotes/origin/Now_Casting
