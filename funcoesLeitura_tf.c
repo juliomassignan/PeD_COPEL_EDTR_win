@@ -2774,11 +2774,13 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
     BaseMedida(grafo,Sbase,(*prev),(*nmed));
 
     t=0;
+
     while((fgets(blocoLeitura, 2000, arquivo))!= NULL ){
         dados=blocoLeitura; 
        
         for (size_t contador = 0; contador < (*nmed); contador++)
         {
+            
             (*prev)[contador].prev[t] = getfield_double(dados,(*prev)[contador].findex);
             (*prev)[contador].prec[t] = getfield_double(dados,(*prev)[contador].findex+1);
             (*prev)[contador].time_stamp[t] = getfield_int(dados,2*(*nmed)+2);
@@ -2793,8 +2795,15 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
 
         t++;
     }
+
+    for (size_t contador = 0; contador < (*nmed); contador++)
+    {
+        (*prev)[contador].DMED.zmed= (*prev)[contador].prev[0];
+        (*prev)[contador].DMED.sigma= (*prev)[contador].prec[0];
+        (*prev)[contador].DMED.prec=(*prev)[contador].prec[0]; 
+    }
     
-     
+
 
 
     return(numeroMedidas);
@@ -2851,6 +2860,7 @@ void leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF
         (*prev)[contador].DMED.id = contador;
         (*prev)[contador].DMED.par= -1;
         (*prev)[contador].DMED.h= 0;
+        (*prev)[contador].id=contador;
 
         (*numeroMedidas)[(*prev)[contador].DMED.tipo][(*prev)[contador].DMED.fases-1]++;
         switch((*prev)[contador].DMED.tipo){
@@ -2893,20 +2903,12 @@ void leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF
     }
 
     //Associa as medidas ao grafo e transforma em pu os dados medidos
-
     (*nmed)=0;
     for (i = 0; i < 14; i++){ 
         for (j = 0; j < 8; j++){
             (*nmed) = (*nmed) + (*numeroMedidas)[i][j];
         }
     }
-    
-    for (i=0;i<(*nmed);i++)
-    {
-        AssoMedGraf(grafo,&((*prev)[i].DMED),Sbase);
-    }
-
-    AssoMedidoresPares(prev,(*nmed));
 
 
 }
@@ -3407,47 +3409,47 @@ void AssoMedGraf(TF_GRAFO *grafo, TF_DMED *medida,double Sbase)
 }
 
 
-void AssoMedidoresPares(TF_DPREV **prev,int nmed)
+void AssoMedidoresPares(TF_DMED *medidas,int nmed)
 {
     int k,m,i,j;
     for (i = 0; i < nmed; i++){ 
-        k = (*prev)[i].DMED.k;
-        m = (*prev)[i].DMED.m;
+        k = medidas[i].k;
+        m = medidas[i].m;
         
         //Associa a medida ao grafo e transforma em pu o valor medido e sigma
-        switch ((*prev)[i].DMED.tipo) {
+        switch (medidas[i].tipo) {
             case 0: //Medida de Fluxo de Potência Ativa em kW
                 for (j = 0; j < nmed; j++){ 
-                    if (((*prev)[j].DMED.tipo == 1) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
-                        (*prev)[i].DMED.par = j;
-                        (*prev)[j].DMED.par = i;
+                    if ((medidas[j].tipo == 1) && (medidas[j].k == k) && (medidas[j].m == m)){
+                        medidas[i].par = j;
+                        medidas[j].par = i;
                         j=nmed;
                     }
                 }
                 break;
             case 2: //Medida de Injeção de Potência Ativa em kW
                 for (j = 0; j < nmed; j++){ 
-                    if (((*prev)[j].DMED.tipo == 3) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
-                        (*prev)[i].DMED.par = j;
-                        (*prev)[j].DMED.par = i;
+                    if ((medidas[j].tipo == 3) && (medidas[j].k == k) && (medidas[j].m == m)){
+                        medidas[i].par = j;
+                        medidas[j].par = i;
                         j=nmed;
                     }
                 }
                 break;    
             case 4: //Medida de Magnitude de Tensão - kV
                 for (j = 0; j < nmed; j++){ 
-                    if (((*prev)[j].DMED.tipo == 5) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
-                        (*prev)[i].DMED.par = j;
-                        (*prev)[j].DMED.par = i;
+                    if ((medidas[j].tipo == 5) && (medidas[j].k == k) && (medidas[j].m == m)){
+                        medidas[i].par = j;
+                        medidas[j].par = i;
                         j=nmed;
                     }
                 }
                 break;
             case 6: //Medida de Magnitude de Corrente em A
                 for (j = 0; j < nmed; i++){ 
-                    if (((*prev)[j].DMED.tipo == 7) && ((*prev)[j].DMED.k == k) && ((*prev)[j].DMED.m == m)){
-                        (*prev)[i].DMED.par = j;
-                        (*prev)[j].DMED.par = i;
+                    if ((medidas[j].tipo == 7) && (medidas[j].k == k) && (medidas[j].m == m)){
+                        medidas[i].par = j;
+                        medidas[j].par = i;
                         j=nmed;
                     }
                 }
@@ -3455,6 +3457,7 @@ void AssoMedidoresPares(TF_DPREV **prev,int nmed)
         }        
     }
 }
+
 
 void BaseMedida(TF_GRAFO *grafo,double Sbase,TF_DPREV *prev,int nmed)
 {

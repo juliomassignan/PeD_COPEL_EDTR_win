@@ -389,12 +389,20 @@ typedef struct {
     int fre_amost;// frequencia amostral (min)
     int nsamples; // numero de amostras
     int findex;
+    
 
     TF_DMED DMED;
+    int id;
     double base; 
 
 }TF_DPREV;
 
+
+typedef struct
+{
+    int namostras;
+    
+}TF_NCRESULT;
 
 
 //-----------------------------------------------------
