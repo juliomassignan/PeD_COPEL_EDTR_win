@@ -211,6 +211,8 @@ typedef struct {
     
 } TF_DBAR;
 
+
+
 // 
 /*Dados de circuitos elétricos de distribuição (linhas ou ramais)*/
 /**
@@ -397,12 +399,23 @@ typedef struct {
 
 }TF_DPREV;
 
+typedef struct
+{
+    double P[3];
+    double Q[3];
+    
+    
+}TF_NCBAR;
+
 
 typedef struct
 {
-    int namostras;
+    TF_NCBAR *dadosBarras;
     
 }TF_NCRESULT;
+
+
+
 
 
 //-----------------------------------------------------

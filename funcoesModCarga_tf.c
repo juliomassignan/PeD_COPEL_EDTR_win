@@ -359,8 +359,6 @@ void leituraCurvasAgregadas(char *folder, TF_CURVA_TRAFO **curvasTrafos, TF_DBAR
     {
         // Le da primeira linha (Cabeçalho)
 //        fgets(blocoLeitura, 2000, arquivo);
-        
-        
         // Le o arquivo de curva de cargas até o fim
         while( (fgets(blocoLeitura, 5000, arquivo))!= NULL ){
             dados = blocoLeitura;

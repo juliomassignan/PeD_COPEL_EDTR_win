@@ -18,4 +18,6 @@ void atualiza_dmed(int instante_atual,TF_DPREV *prev_tf, int nmed, TF_DMED *medi
 
 TF_NCRESULT NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, long int numeroAlimentadores, TF_DRAM *ramo_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, TF_AREA_MEDICAO *areasMedicao_tf, TF_DPREV *prev_tf, TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras);
 
+void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_atual,TF_NCRESULT * result);
+
 #endif

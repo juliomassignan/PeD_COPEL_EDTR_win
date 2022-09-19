@@ -8,6 +8,7 @@
 
 #include "data_structures_tf.h"
 #include "funcoesLeitura_tf.h"
+#include "funcoesModCarga_tf.h"
 #include "data_structures_modcarga_tf.h"
 
 
@@ -94,11 +95,18 @@ void atualiza_AM(TF_GRAFO * grafo, long int numeroBarras, TF_DMED*medidas, long 
     
 }
 
-TF_NCRESULT NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, long int numeroAlimentadores, TF_DRAM *ramo_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, TF_AREA_MEDICAO *areasMedicao_tf, TF_DPREV *prev_tf, TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras)
+TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, long int numeroAlimentadores, TF_DRAM *ramo_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, TF_AREA_MEDICAO *areasMedicao_tf, TF_DPREV *prev_tf, TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras)
 {
 
     int nmed=0;
-    TF_NCRESULT result;
+    TF_NCRESULT* result;
+    (result) = (TF_NCRESULT *) malloc((numeroAmostras+1)*sizeof(TF_NCRESULT));
+    
+    for (size_t i = 0; i < numeroAmostras; i++)
+    {
+        result[i].dadosBarras= (TF_NCBAR *) malloc((numeroBarras_tf+1)*sizeof(TF_NCBAR));
+    }
+    
 
     nmed=0;
     for (size_t i = 0; i < 14; i++){ 
@@ -118,9 +126,59 @@ TF_NCRESULT NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_A
         atualiza_AM(grafo_tf,numeroBarras_tf,medidaPrev_tf,nmed,areasMedicao_tf);
         //Estimador de Demandas Trifásicas
         estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
+        preenche_result_NC(grafo_tf,numeroBarras_tf,instante_atual,result);
+        imprimeDBAR_cargas(grafo_tf,numeroBarras_tf,instante_atual,prev_tf);
     }
     
-    result.namostras=numeroAmostras;
+
+
 
     return(result);
+}
+
+
+void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_atual,TF_NCRESULT * result)
+{
+    
+    for (size_t i = 0; i < numeroBarras_tf; i++)
+    {
+        result[instante_atual].dadosBarras[i].P[0]= creal(grafo_tf[i].S[0]);
+        result[instante_atual].dadosBarras[i].P[1]= creal(grafo_tf[i].S[1]);
+        result[instante_atual].dadosBarras[i].P[2]= creal(grafo_tf[i].S[2]);
+        result[instante_atual].dadosBarras[i].Q[0]= cimag(grafo_tf[i].S[0]);
+        result[instante_atual].dadosBarras[i].Q[1]= cimag(grafo_tf[i].S[1]);
+        result[instante_atual].dadosBarras[i].Q[2]= cimag(grafo_tf[i].S[2]);
+    }
+    
+
+
+}
+
+void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, int instante, TF_DPREV *prev_tf)
+{   
+    FILE *arquivo;
+    char nome[100]="DBAR_";
+    char ts[15];
+    sprintf(ts,"%d",prev_tf[0].time_stamp[instante]);
+
+    strcat(nome,ts);
+    strcat(nome,".dad");
+
+    
+    arquivo = fopen(nome,"w");
+    for (size_t i = 0; i < numerobarras_tf; i++)
+    {
+        if(grafo_tf[i].tipo==2)
+        {
+            fprintf(arquivo,"%d;%d;%d;%.3f;%.3f;%.3f;%.3f;%.3f;%.3f;%d;%.7f;%.7f;%.7f;%.7f;%.7f;%.7f;\n",grafo_tf[i].barra[0].ID,grafo_tf[i].barra[0].ligacao,grafo_tf[i].barra[0].fases,creal(grafo_tf[i].S[0]),creal(grafo_tf[i].S[1]),creal(grafo_tf[i].S[2]),cimag(grafo_tf[i].S[0]),cimag(grafo_tf[i].S[1]),cimag(grafo_tf[i].S[2]),0,cabs(grafo_tf[i].V[0]),cabs(grafo_tf[i].V[1]),cabs(grafo_tf[i].V[2]),carg(grafo_tf[i].V[0])*180/PI,carg(grafo_tf[i].V[1])*180/PI,carg(grafo_tf[i].V[2])*180/PI);
+        }
+        else if(grafo_tf[i].tipo==1)
+        {
+            fprintf(arquivo,"%d;%d;%d;%.3f;%.3f;%.3f;%.3f;%.3f;%.3f;%d;%.7f;%.7f;%.7f;;;;\n",grafo_tf[i].barra[0].ID,grafo_tf[i].barra[0].ligacao,grafo_tf[i].barra[0].fases,creal(grafo_tf[i].S[0]),creal(grafo_tf[i].S[1]),creal(grafo_tf[i].S[2]),cimag(grafo_tf[i].S[0]),cimag(grafo_tf[i].S[1]),cimag(grafo_tf[i].S[2]),0,cabs(grafo_tf[i].V[0]),cabs(grafo_tf[i].V[1]),cabs(grafo_tf[i].V[2]));
+        }
+        else{
+            fprintf(arquivo,"%d;%d;%d;%.3f;%.3f;%.3f;%.3f;%.3f;%.3f;%d;;;;;;;\n",grafo_tf[i].barra[0].ID,grafo_tf[i].barra[0].ligacao,grafo_tf[i].barra[0].fases,creal(grafo_tf[i].S[0]),creal(grafo_tf[i].S[1]),creal(grafo_tf[i].S[2]),cimag(grafo_tf[i].S[0]),cimag(grafo_tf[i].S[1]),cimag(grafo_tf[i].S[2]),0);
+        }
+    }
+    fclose(arquivo);
 }
