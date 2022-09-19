@@ -55,3 +55,9 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.001635
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001662
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001633
 >>>>>>> refs/remotes/origin/Now_Casting
+
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002595
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003495
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003604
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002603
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003700

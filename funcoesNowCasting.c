@@ -109,6 +109,11 @@ TF_NCRESULT NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_A
     
     for (size_t instante_atual = 0; instante_atual < numeroAmostras; instante_atual++)
     {
+
+        // receber a curva trafos
+        // fazer rodar toda vez que mudar a hora do instante atual e colocar na inicializa
+        // inicializaPQcurvas(barra_tf, curvasTrafos, numeroBarras_tf,  estampa_tempo, VALOR_ESPERADO, Sbase); 
+
         atualiza_dmed(instante_atual,prev_tf,nmed,medidaPrev_tf); 
         atualiza_AM(grafo_tf,numeroBarras_tf,medidaPrev_tf,nmed,areasMedicao_tf);
         //Estimador de Demandas Trifásicas

@@ -213,29 +213,45 @@ int main(int argc, char** argv) {
     TF_DPREV *prev_tf=NULL;
     TF_AREA_MEDICAO *areasMedicao_tf=NULL;
     TF_NCRESULT resultadoNC;
+    TF_CURVA_TRAFO *curvasTrafos = NULL; 
+
+    int flag_mod=3,estampa_tempo;
 
     int numeroAmostras;
     int instante_atual=0;
 
+
+
+    if (flag_mod == 3){ 
+        leituraCurvasAgregadas(folder, &curvasTrafos,barra_tf,numeroBarras_tf); //Leitura de curvas de cargas agregadas
+        estampa_tempo  = 10;
+        inicializaPQcurvas(barra_tf, curvasTrafos, numeroBarras_tf,  estampa_tempo, VALOR_ESPERADO, Sbase); 
+    }   
     // int **numeroMedidas2 = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
     //   Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
     // buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas2, &areasMedicao_tf);
-   // 
-    
-    int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
+    // estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
 
+
+    int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
+    
     constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf,grafo_tf,Sbase); 
     
     buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medidaPrev_tf, numeroMedidas, &areasMedicao_tf);   
     
     resultadoNC=NowCastingDemanda(grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras);
+    
 
 
 
 
     
     //    salva (curva de carga de demanda estimada, resultados condensados do fluxo de potencia )
-    
+    // resultados de saída
+    // Curvas Agregadas e fazer igual
+    // Sair só o DBAR.csv da estampa de tempo
+    // sumario da rede
+    //
     //Liberação de Memória
     free_BARRA(barra_tf,numeroBarras_tf);
     free_DRAM(ramo_tf,numeroRamos_tf);
