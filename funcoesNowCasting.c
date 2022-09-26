@@ -11,7 +11,7 @@
 #include "funcoesModCarga_tf.h"
 #include "data_structures_modcarga_tf.h"
 
-
+// fazer a documentação
 
 void constroi_dmed_prev(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas,TF_GRAFO*grafo,double Sbase)
 {
@@ -154,8 +154,10 @@ void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_at
 
 }
 
+// imprime o DBAR a partir do grafo
 void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, int instante, TF_DPREV *prev_tf)
 {   
+    // mudar para entrar com o nome do arquivo
     FILE *arquivo;
     char nome[100]="DBAR_";
     char ts[15];
