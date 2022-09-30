@@ -99,6 +99,7 @@ TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_
 {
 
     int nmed=0;
+    char ts[15];
     TF_NCRESULT* result;
     (result) = (TF_NCRESULT *) malloc((numeroAmostras+1)*sizeof(TF_NCRESULT));
     
@@ -127,7 +128,9 @@ TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_
         //Estimador de Demandas Trifásicas
         estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
         preenche_result_NC(grafo_tf,numeroBarras_tf,instante_atual,result);
-        imprimeDBAR_cargas(grafo_tf,numeroBarras_tf,instante_atual,prev_tf);
+
+        sprintf(ts,"%d",prev_tf[0].time_stamp[instante_atual]);// pega o time stamp atual
+        imprimeDBAR_cargas(grafo_tf,numeroBarras_tf,ts);
     }
     
 
@@ -154,15 +157,14 @@ void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_at
 
 }
 
-// imprime o DBAR a partir do grafo
-void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, int instante, TF_DPREV *prev_tf)
+
+
+void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, const char *ts)
 {   
     // mudar para entrar com o nome do arquivo
     FILE *arquivo;
     char nome[100]="DBAR_";
-    char ts[15];
-    sprintf(ts,"%d",prev_tf[0].time_stamp[instante]);
-
+    
     strcat(nome,ts);
     strcat(nome,".dad");
 

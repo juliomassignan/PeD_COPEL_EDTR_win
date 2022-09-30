@@ -20,4 +20,8 @@ TF_NCRESULT NowCastingDemanda(TF_GRAFO *grafo_tf, long int numeroBarras_tf, TF_A
 
 void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_atual,TF_NCRESULT * result);
 
+
+void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, const char *ts);
+
+
 #endif

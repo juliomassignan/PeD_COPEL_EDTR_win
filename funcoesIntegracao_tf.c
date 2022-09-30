@@ -38,7 +38,7 @@
  * @brief Função de integracao da MRAN para converter o grafo utilizado trifasico no grafo utilizado na MRAN e para preencher os dados dos reguladores. 
  *
  * Essa função recebe como parâmetro o grafo do tipo TF_GRAFO, do fluxo de potência trifásico e realiza a conversão de suas informações para 
- * para preencher o grafo @p **grafoSDRParam do tipo GRAFO. A partir do grafo trifásico também é preenchida a estrutura @p **dadosReguladorSDRParam , do tipo DADOSREGULADOR. Ambas estruturas são alocadas nessa funcao
+ * para preencher o grafo @p **grafoSDRParam do tipo GRAFO. A partir do grafo trifásico também é preenchida a estrutura @p **dadosReguladorSDRParam , do tipo DADOSREGULADOR. Ambas estruturas são alocadas nesta funcao
  * Além disso, ela retorna número de nós da rede @p numeroBarras , o número de transformadores em @p numeroTrafos , e o número de chaves em @p numeroChaves , que são ponteiros para long int.
  * Todas estas informacoes serao necessarias para utilizar as funcoes da MRAN e o fluxo de potência por varredura de RNP
  * @param grafo_tf grafo trifásico da rede com as informações que serão fornecidas nesta função
@@ -48,7 +48,6 @@
  * @param grafoSDRParam ponteiro para um vetor do tipo GRAFO, retorna o grafo da rede a ser utilizado na MRAN 
  * @param dadosReguladorSDRParam ponteiro para um vetor do tipo DADOSREGULADOR com as informacoes dos reguladores a ser utilizado na MRAN
  * @param numeroBarras retorna o número de nos no grafo grafoSDRParam 
- * @param numeroTrafos retorna o número de trafos
  * @param numeroChaves retorna o numero de chaves na rede
  * @return void.
  * @see leituraBarras
@@ -225,7 +224,7 @@ void converteGrafo_TFtoSDR(TF_GRAFO *grafo_tf,long int numeroBarras_tf,TF_DRAM *
  * 
  * @param grafo_tf vetor do tipo TF_GRAFO com as informacoes trifasicas sobre a rede
  * @param numeroBarras numero inteiro com o numero de barras da rede
- * @param numero_alimentadores numero inteiro que conta o numero de alimentadores presentes no sistema
+ * @param numerosAlimentadores_tf numero inteiro que conta o numero de alimentadores presentes no sistema
  * @param dadosAlimentadorSDRParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
  * @return void
  * @see 
@@ -344,7 +343,7 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
 
 
 
-//Função inicialização do vetor x para sistemas radiais através de uma varredura para compensar os taps fora da nominal (sem o arquivo Vinicial)
+//Função inicialização do vetor x para sistemas radiais através de uma varredura (sem o arquivo Vinicial)
 /**
  * @brief Função auxiliar para inicializar as tensões complexas nodais trifásicas de todos os alimentadores através de um processo de varredura direta por RNP de Setores
  * 
@@ -359,7 +358,6 @@ void compatibiliza_chaveSetoresFicticia_tf(TF_GRAFO** grafo_tf,TF_DBAR **barras,
  * @param numeroBarras quatidade total de barras
  * @param alimentadores ponteiro par os alimentadores da rede elétrica
  * @param numeroAlimentadores quantidade total de alimentadores
- * @param todosAlimentadores BOLL que indica se deve ser executado para todos os alimentadores
  * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
  * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
  * @param indiceRNP inteiro com o indice da RNP atual
@@ -423,14 +421,14 @@ void inicializaTensaoSDR_alimentador_tf(TF_GRAFO *grafo, long int numeroBarras, 
  * 
  * Essa função percorre todos os alimentadores que tem suas tensões incializadas individualmente a partir da fução inicializaTensaoSDR_alimentador_tf
  * Esta função recebe como parâmetros @p configuracaoParam que é um vetor com as configuracoes da rede que é indexada pelo inteiro @p indiceConfiguracao com o id da configuracao atual, com o vetor @p matrizB do tipo RNPSETORES com as RNPS de setores
- * @p todosAlimentadores do tipo BOLL que informa se a funcao seerá executada para todos alimentadores, @p grafo do tipo TF_GRAFO com as informações da rede trifásica e que recebera as tensoes  
+ * @p todosAlimentadores do tipo BOOL que informa se a funcao seerá executada para todos alimentadores, @p grafo do tipo TF_GRAFO com as informações da rede trifásica e que recebera as tensoes  
  * @p numeroAlimentadores inteiro com o número de alimentaores da rede, @p numeroBarras com o número de barras da rede, @p alimentadores estrutura do tipo TF_ALIMENTADOR com os alimentadores da rede.
  * 
  * @param grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
  * @param numeroBarras quatidade total de barras
  * @param alimentadores ponteiro par os alimentadores da rede elétrica
  * @param numeroAlimentadores quantidade total de alimentadores
- * @param todosAlimentadores BOLL que indica se deve ser executado para todos os alimentadores
+ * @param todosAlimentadores BOOL que indica se deve ser executado para todos os alimentadores
  * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
  * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
  * @param indiceConfiguracao inteiro com o indice da configuracao atual 
@@ -476,10 +474,10 @@ BOOL todosAlimentadores, CONFIGURACAO* configuracaoParam,RNPSETORES *matrizB,int
 
 /**
  * @brief Função Avalia configuracao, realiza o cálculo do fluxo de potência para uma configuracao específica e compila os resultados, 
+ * 
  * recebe como parâmetros @p todosAlimentadores, um booleano que indica se o fluxo deve ser resolvido para todos os alimentadores ou apenas para dois
- * @p FirstEXEC um boleano que indica se é a primeira execução do fluxo de potência, @p *powerflow_result_rede uma estrutura do tipo TF_PFSOLUTION que armazena
- * os resultados todais da rede, @p powerflow_result_alim um vetor com os resultados de todos os alimentadores, @p configuracoesParam do tipo CONFIGURACAO
- * com as informações das rnps e os resultados das configuracoes da rede, @p idNovaConfiguracaoParam um inteiro com a identificação da configuração atual,
+ * @p *powerflow_result_rede uma estrutura do tipo TF_PFSOLUTION que armazena os resultados todais da rede, @p powerflow_result_alim um vetor com os resultados de todos os alimentadores,
+ * @p configuracoesParam do tipo CONFIGURACAO com as informações das rnps e os resultados das configuracoes da rede, @p idNovaConfiguracaoParam um inteiro com a identificação da configuração atual,
  * @p grafo_tf uma estrutura do tipo TF_GRAFO com as informações elétricas do grafo da rede, @p numeroBarras_tf com o número de barras totais de acordo com a rede trifásica
  * @p alimentador_tf vetor do tipo TF_ALIMENTADOR, @p numeroAlimentadores_tf inteiro com o número de alimentadores na rede, @p ramos_tf estrutura do tipo TF_DRAM
  * com as informações sobre os ramos da rede trifásica, @p Sbase double com a potência base da rede, @p interfaceNiveis_tf matriz de inteiro utilizada para fazer
@@ -572,10 +570,11 @@ void avaliaConfiguracaoSDR_tf(BOOL todosAlimentadores, TF_PFSOLUTION *powerflow_
  * @p configuracaoParam que é um vetor com as configuracoes da rede que é indexada pelo inteiro @p indiceConfiguracao com o id da configuracao atual, com o vetor @p matrizB do tipo RNPSETORES com as RNPS de setores 
  * @p indiceRNP trata-se de um inteiro com o alimentador que está sendo preenchido, @p nvar ponteiro para inteiro que retorna o número de variáveis da rede  
  * 
- * @param grafo ponteiro para o grafo da rede elétrica para inicilizar as tensões nodais
+ * @param grafo_tf vetor do tipo TF_GRAFO com as informacoes trifasicas sobre a rede
  * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
  * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
  * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param indiceRNP inteiro com o indice da RNP atual
  * @param nvar ponteiro para inteiro que retorna o número de variáveis da rede 
  * @return void
  * @see
@@ -655,8 +654,8 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
 //Cálculo de Fluxo de Potência para um Alimentador de Distribuição Baseado na Varredura Direta/Inversa Trifasica Utilizando RPN
 /**
  * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa através da RNP de setores,
- * utiliza as informacoes da rede na estrutura @p grafo do tipo TF_GRAFO, com as informacoes elétricas da rede, respeiando a configuacao topologica disponível na 
- * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede  
+ * utiliza as informacoes da rede nas estruturas @p grafo do tipo TF_GRAFO, @p alimentador do tipo TF_ALIMENTADOR com as, @p ramos do tipo TF_DRAM e @p numeroBarras com o numero de barras
+ *  com as informacoes elétricas da rede, respeiando a configuacao topologica disponível na @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede  
  * 
  * Essa função efetua
  * A função retorna @c TF_PFSOLUTION.
@@ -666,7 +665,7 @@ void compatibiliza_profundidadegrafo_tf(TF_GRAFO *grafo_tf,CONFIGURACAO *configu
  * @param alimentadores alimentadores da rede elétrica
  * @param ramos vetor do tipo TF_DRAM com as informações dos ramos da rede
  * @param Sbase double com a potencia base da rede
- * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
+ * @param configuracoesParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
  * @param dadosAlimentadorParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
  * @param indiceConfiguracao inteiro com o indice da configuracao atual 
  * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
@@ -983,15 +982,17 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_tf(TF_GRAFO *grafo, long int numeroB
 
 
 
-//Cálculo de Fluxo de Potência para um Alimentador de Distribuição Baseado na Varredura Direta/Inversa Trifasica
+//Cálculo de Fluxo de Potência para um Alimentador de Distribuição Baseado na Varredura Direta/Inversa Trifasica em iteracao unica
 /**
- * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa
- * 
- * Essa função efetua
+ * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em um alimentador específico via método de Varredura Direta/Inversa em iteracao unica
+
+ * Essa função efetua o calculo do fluxo de potencia em um alimentador em uma varredura única, ela utiliza como parâmetros de entrada um vetor da estrutura do tipo
+ * @p grafo do tipo TF_GRAFO com os dados sobre a rede elétrica, @p numeroBarras inteiro com o número de barras, @p alimentador do tipo TF_ALIMENTADOR com os dados do alimentador
+ * @p ramos vetor do tipo TF_DRAM com as informações sobre os ramos.E
  * A função retorna @c TF_PFSOLUTION.
  * 
  * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
- * @param numeroBarras
+ * @param numeroBarrasE
  * @param alimentador
  * @param ramos
  * @param Sbase
@@ -1130,26 +1131,30 @@ TF_PFSOLUTION fluxoPotencia_BFS_Alimentador_IteracaoUnica_tf(TF_GRAFO *grafo, lo
     free(DV); free(RNP); free(barraAtual); free(barraProx); free(ramoAdj);
     return(powerflow_result);
 }
+
+
 //Cálculo de Fluxo de Potência em todos os alimentadores realizada de acordo com o nível de tesão do alimentador
 /**
  * @brief Função auxiliar para o cálculo de fluxo de potência trifásico nos alimentadores via método de Varredura Direta/Inversa através da RNP de setores,
  * , realiza a verradura inicialmente nos alimentadores de 13.8kV, realiza depois nos alimentadores de 34.5kV com a carga do alimentador anterior refletida nele
  * Verifica se há mudança de tap, caso positivo, reinicia o calculo do fluxo nos alimentadores de 13.8kV utiliza as informacoes da rede na estrutura @p grafo do tipo TF_GRAFO, com as informacoes elétricas da rede, respeiando a configuacao topologica disponível na 
- * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede  
- * Essa função efetua
- * A função retorna @c TF_PFSOLUTION.
+ * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede, retorna os resultados compilados
+ * nas estruturas @p powerflow_result_rede do tipo TF_PFSOLUTION com os dados totais da rede e @p powerflow_result_alim vetor do tipo TF_PFSOLUTION com os resultados por alimentador
  * 
  * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
  * @param numeroBarras quatidade total de barras
  * @param alimentadores alimentadores da rede elétrica
- * @param interfaceNiveis 
- * @param numeroInterfaces
- * @param opt_flow
+ * @param numeroAlimentadores inteiro com o número de alimentadores na rede
+ * @param interfaceNiveis matriz de inteiros com a informação sobre as interfaces da rede
+ * @param numeroInterfaces inteiro com o nmero de inter interfaces
+ * @param opt_flow boleano para indicar se roda o modo iteracao unica ou o normal
  * @param ramos vetor do tipo TF_DRAM com as informações dos ramos da rede
  * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
  * @param dadosAlimentadorParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
  * @param indiceConfiguracao inteiro com o indice da configuracao atual 
  * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
+ * @param powerflow_result_rede dados compilados com os resultados do fluxo de potencia da rede
+ * @param powerflow_result_alim dados compulados do fluxo de potência por alimentador
  * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
  * @see fluxoPotencia_BFS_Multiplos
  * @note 
@@ -1377,8 +1382,8 @@ void fluxoPotencia_Niveis_BFS_Multiplos_tf(TF_GRAFO *grafo, long int numeroBarra
  * @param alimentadores alimentadores da rede elétrica
  * @param numeroAlimentadores numero de alimentadores da rede elétrica
  * @param grafo grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
- * @param interfaceNiveis 
- * @param numeroInterfaces
+ * @param interfaceNiveis matriz de inteiros com a informação das interfaces da rede
+ * @param numeroInterfaces numero total de interfaces
  * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
  * @see fluxoPotencia_BFS_Multiplos
  * @note 
@@ -1519,20 +1524,25 @@ long int numeroInterfaces, long int **interfaceNiveis )
  * @brief Função auxiliar para o cálculo de fluxo de potência trifásico em dois alimentadores específicos via método de Varredura Direta/Inversa através da RNP de setores,
  * , realiza a verradura inicialmente nos alimentadores de 13.8kV, realiza depois nos alimentadores de 34.5kV com a carga do alimentador anterior refletida nele
  * Verifica se há mudança de tap, caso positivo, reinicia o calculo do fluxo nos alimentadores de 13.8kV utiliza as informacoes da rede na estrutura @p grafo do tipo TF_GRAFO, com as informacoes elétricas da rede, respeiando a configuacao topologica disponível na 
- * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede  
+ * @p configuracoesParam ponteiro do tipo CONFIGURACAO com a configuracao da rede, @p matrizB ponteiro do tipo RNPSETORES com a RNP de setores da rede, os indices dos alimentadores são os inteiros @p RNP_P e @p RNP_A
+ * os resultados são atualizados nas estruturas powerflow_result_rede do tipo TF_PFSOLUTION com os dados gerais da rede e o vetor do tipo  TF_PFSOLUTION @p powerflow_result_alim com os dados por alimentador 
  * Essa função efetua
  * A função retorna @c TF_PFSOLUTION.
  * 
  * @param grafo_tf grafo da rede elétrica com informações da rede, conectividade e parâmetros, onde são aramzenados os resultados detalhdos do cálculo de fluxo de potência
  * @param numeroBarras_tf quatidade total de barras
  * @param alimentadores alimentadores da rede elétrica
- * @param interfaceNiveis 
- * @param numeroInterfaces
- * @param opt_flow
+ * @param interfaceNiveis matriz de inteiros com a informação sobre as interfaces da rede
+ * @param numeroInterfaces inteiro com o numero de interfaces
+ * @param opt_flow booleano que diz se deve executar o fluxo de potencia completo, ou iteracao unica
  * @param ramos vetor do tipo TF_DRAM com as informações dos ramos da rede
  * @param configuracaoParam vetor do tipo CONFIGURACAO com as configuracoes atuais dos individuos da RNP de setores
  * @param dadosAlimentadorParam ponteiro pra ponteiro de estrutura do tipo DADOSALIMENTADOR, que retorna o vetor com os alimentadores da rede
  * @param indiceConfiguracao inteiro com o indice da configuracao atual 
+ * @param RNP_P inteiro com o indice de um alimentador que deve ser realizado o fluxo de potencia
+ * @param RNP_A inteiro com o indice de um alimentador que deve ser a realizado o fluxo de potencia
+ * @param powerflow_result_rede estrutura do tipo TF_PFSOLUTION com os resultados compilados do fluxo de potência gerais da rede
+ * @param powerflow_result_alim vetor do tipo TF_PFSOLUTION com os resultado compilados do fluxo de potencia por alimentador
  * @param matrizB vetor do tipo RNPSETORES com as RNPS de setores
  * @return TF_PFSOLUTION resultados condensados do cálculo de fluxo de potência trifásico
  * @see fluxoPotencia_BFS_Multiplos
@@ -1743,7 +1753,7 @@ void trafoSB_info(TF_DTRFSE *DTRFSE,TF_DALIM *DALIM, long int numeroTFSES,long i
 
 
 
-//Alocada na estrutrura de resultados do fluxo de potencia
+//funcao para alocar na estrutrura de resultados do fluxo de potencia
 /**
  * @brief Função auxiliar para alocação memória da estrutura TF_PFSOLUTION
  *

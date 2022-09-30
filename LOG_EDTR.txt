@@ -98,3 +98,15 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.001779
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001617
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001582
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001659
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004422
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004885
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003562
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003025
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004396
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003386
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002882
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003455
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003261
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003240
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003079
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002899
