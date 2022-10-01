@@ -110,3 +110,7 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.003261
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.003240
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.003079
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.002899
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003075
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002772
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002693
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002608
