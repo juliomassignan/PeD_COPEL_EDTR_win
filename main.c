@@ -198,47 +198,47 @@ int main(int argc, char** argv) {
 
     // função avalia configuracao
     avaliaConfiguracaoSDR_tf(true,&powerflow_result_rede,&powerflow_result_alim,configuracaoInicialSDR,idConfiguracaoSDR,dadosAlimentadorSDRParam,idConfiguracaoAntiga,rnpSetoresSDR,-1,-1,grafo_tf,numeroBarras_tf,alimentador_tf,numeroAlimentadores_tf,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,true,numeroTRFSES_tf);
-        
-   // Tempo Real ---------------- Estimação   
     
-    // Leitura do arquivo DSTAT  e atualiza a topologia da rede elétrica
-    // leitura do arquvio e atualizaçao
-    
-    //Leitura do Arquivo DTAPS
-    // leitura do arquvio e atualizaçao  de taps
-    
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    //                      NowCasting de demanda
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
     // Leitura de Medidas do sistema SCADA (SASE processado)
-    TF_DMED *medida_tf=NULL;
-    TF_DMED *medidaPrev_tf=NULL;
-    TF_DPREV *prev_tf=NULL;
-    TF_AREA_MEDICAO *areasMedicao_tf=NULL;
-    TF_NCRESULT resultadoNC;
-    TF_CURVA_TRAFO *curvasTrafos = NULL; 
+    TF_DMED *medida_tf=NULL;  // estrutura para receber os dados das medidas analogicas
+    TF_DMED *medidaPrev_tf=NULL; // estrutura para receber os dados de previsão 
+    TF_DPREV *prev_tf=NULL; // estrutura com as medidas previstas
+    TF_AREA_MEDICAO *areasMedicao_tf=NULL; // estrutura com as areas de medicao
+    TF_NCRESULT resultadoNC; // estrutura para receber os resultados compilados do nowcasting
+    TF_CURVA_TRAFO *curvasTrafos = NULL; // estrutura para receber acurva dos transformadores 
 
-    int flag_mod=3,estampa_tempo;
+    int flag_mod=3; //flag para indicar o modo de utilização do estimador de demanda
+    int estampa_tempo; // inteiro para manipular a estampa de tempo
 
-    int numeroAmostras;
-    int instante_atual=0;
+    int numeroAmostras; // inteiro para armazenar o numero de amostras 
+    int instante_atual=0; // inteiro para ser o contador da estampa de tempo
 
 
-
+    // le e inicializa as curvas de carga
     if (flag_mod == 3){ 
         leituraCurvasAgregadas(folder, &curvasTrafos,barra_tf,numeroBarras_tf); //Leitura de curvas de cargas agregadas
         estampa_tempo  = 10;
         inicializaPQcurvas(barra_tf, curvasTrafos, numeroBarras_tf,  estampa_tempo, VALOR_ESPERADO, Sbase); 
     }   
-    // int **numeroMedidas2 = leituraMedidas(folder, "DMED.csv", &medida_tf, ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf, Sbase); 
-    //   Criação de Áreas de Medição para o Estimador de Demandas Trifásicas
-    // buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medida_tf, numeroMedidas2, &areasMedicao_tf);
-    // estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
 
+    // funcao para leitura do arquivo de dados de previsao
 
     int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
-    
+
+    // funcao que constroi o DMED utilizado pelo estimador de demanda    
     constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf,grafo_tf,Sbase); 
     
+    // funcao que realza a busca das areas de medicao
     buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medidaPrev_tf, numeroMedidas, &areasMedicao_tf);   
     
+
+    // funcao principla para realizacao do nowcasting de demanda
     resultadoNC=NowCastingDemanda(grafo_tf,barra_tf,numeroBarras_tf,alimentador_tf,curvasTrafos,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras);
     
 
