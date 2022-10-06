@@ -26,8 +26,6 @@
  * @param grafo vetor do tipo TF_GRAFO com as informações elétricas da rede trifasica
  * @param Sbase double com a potencia base da rede
  */
-
-
 void constroi_dmed_prev(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas,TF_GRAFO *grafo,double Sbase)
 {
     // aloca espaço para as medidas 
@@ -69,7 +67,6 @@ void constroi_dmed_prev(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas,TF_GRAFO *
  * @param nmed inteiro com o número de medidas da rede
  * @param medidas estrutura do tipo TF_DMED com as medidas previstas
  */
-
 void atualiza_dmed(int instante_atual,TF_DPREV *prev_tf, int nmed, TF_DMED *medidas)
 {
     for (size_t i = 0; i < nmed; i++)
@@ -165,7 +162,6 @@ void atualiza_AM(TF_GRAFO * grafo, long int numeroBarras, TF_DMED *medidas, long
  * @param numeroAmostras inteiro com o numero de amostras
  * @return TF_NCRESULT* retorna os dados compilados do nowcasting de demanda
  */
-
 TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, TF_CURVA_TRAFO *curvasTrafos, 
  long int numeroAlimentadores, TF_DRAM *ramo_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, TF_AREA_MEDICAO *areasMedicao_tf, TF_DPREV *prev_tf, 
  TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras)
@@ -224,7 +220,6 @@ TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int 
  * @param instante_atual 
  * @param result 
  */
-
 void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_atual,TF_NCRESULT * result)
 {
     
@@ -252,8 +247,6 @@ void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_at
  * @param numerobarras_tf inteiro com o numero de barras da rede
  * @param ts string com o sufixo do nome do DBAR
  */
-
-
 void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, const char *ts)
 {   
     // mudar para entrar com o nome do arquivo

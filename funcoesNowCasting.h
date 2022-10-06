@@ -22,8 +22,6 @@
  * @param grafo vetor do tipo TF_GRAFO com as informações elétricas da rede trifasica
  * @param Sbase double com a potencia base da rede
  */
-
-
 void constroi_dmed_prev(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas,TF_GRAFO*grafo,double Sbase);
 
 /**
@@ -39,7 +37,6 @@ void constroi_dmed_prev(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas,TF_GRAFO*g
  * @param numeroMedidas inteiro com o numero de medidas sobre a rede
  * @param areasAM estrutura do tipo TF_AREA_MEDICAO com as informcaoes sobre as areas de medicao
  */
-
 void atualiza_AM(TF_GRAFO * grafo, long int numeroBarras, TF_DMED*medidas, long int numeroMedidas, TF_AREA_MEDICAO *areasAM);
 
 /**
@@ -51,8 +48,8 @@ void atualiza_AM(TF_GRAFO * grafo, long int numeroBarras, TF_DMED*medidas, long 
  * @param nmed inteiro com o número de medidas da rede
  * @param medidas estrutura do tipo TF_DMED com as medidas previstas
  */
-
 void atualiza_dmed(int instante_atual,TF_DPREV *prev_tf, int nmed, TF_DMED *medidas);
+
 /**
  * @brief Funcao que realiza o Now Casting de demanda
  * 
@@ -102,7 +99,6 @@ TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras);
  * @param instante_atual 
  * @param result 
  */
-
 void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_atual,TF_NCRESULT * result);
 
 /**
@@ -115,8 +111,6 @@ void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_at
  * @param numerobarras_tf inteiro com o numero de barras da rede
  * @param ts string com o sufixo do nome do DBAR
  */
-
-
 void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, const char *ts);
 
 

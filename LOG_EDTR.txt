@@ -114,3 +114,8 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.003075
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.002772
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.002693
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.002608
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002228
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001678
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001849
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001875
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004325
