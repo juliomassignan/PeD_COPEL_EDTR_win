@@ -655,8 +655,52 @@ void includeDSWTC(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, int
 
 long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev,int* nmed , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase);
 
+
+/**
+ * @brief Função auxiliar para a leitura do cabecalho do arquivo de previsao de dados
+ * 
+ * Esta função utiliza como parâmetros de entrada @p blocoLeitura , uma string com o cabecalho do arquivo de previsão, @p nmed ponteiro para inteiro, 
+ * que será preenchido com o número de medidas @p prev estrutura do tipo TF_DPREV, com a informação sobre medidas previstas e que será alocada nesta funcao
+ * @p ramos vetor do tipo TF_DRAM com os dados dos ramos da rede trifásica, @p barras vetor do tipo TF_DBAR com as informações sobre as barras da rede, @p numeroBarras inteiro com o numero de barras da rede
+ * @p grafo vetor do tipo TF_GRAFO com as informações sobre a rede elétrica, @p numeroRamos inteiro com o numero de ramos da rede, @p Sbase double com a potencia base da rede
+ * @p numeroMedidas matriz de inteiros com as medidas da rede      
+ * 
+ * @param blocoLeitura string com o cabecalho do arquivo de previsão
+ * @param nmed ponteiro para inteiro preenchido com o número de medidas
+ * @param prev estrutura do tipo TF_DPREV, com a informação sobre medidas previstas
+ * @param ramos vetor do tipo TF_DRAM com os dados dos ramos da rede trifásica
+ * @param barras vetor do tipo TF_DBAR com as informações sobre as barras da rede 
+ * @param numeroBarras inteiro com o numero de barras da rede
+ * @param grafo vetor do tipo TF_GRAFO com as informações sobre a rede elétrica
+ * @param numeroRamos inteiro com o numero de ramos da rede
+ * @param Sbase double com a potencia base da rede
+ * @param numeroMedidas matriz de inteiros com as medidas da rede 
+ */
 void leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF_DBAR *barras,int numeroBarras ,TF_GRAFO *grafo, int numeroRamos,double Sbase,long int ***numeroMedidas);
+
+/**
+ * @brief Função que associa medidas no grafo da rede trifásica
+ * 
+ * Esta função recebe @p grafo do tipo TF_GRAFO com as informações sobre a rede elétrica e associa a ele as medidas na
+ * estrutura @p medida do tipo TF_DMED, @p Sbase double com a potencia base da rede
+ * 
+ * @param grafo vetor do tipo TF_GRAFO com as informações sobre a rede elétrica
+ * @param medida vetor do tipo TF_DMED com as informações sobre as medidas disponiveis
+ * @param Sbase double com a potencia base da rede
+ */
+
 void AssoMedGraf(TF_GRAFO *grafo, TF_DMED *medida,double Sbase);
+
+
+/**
+ * @brief Associa medidores que existem pares
+ * 
+ * 
+ * @param medidas vetor do tipo TF_DMED com as informações sobre as medidas disponiveis
+ * @param nmed inteiro com o numero de medidas da rede
+ */
+
+void AssoMedidoresPares(TF_DMED *medidas,int nmed);
 
 #endif	/* funcoesLeitura_H */
 

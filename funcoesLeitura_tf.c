@@ -2636,7 +2636,7 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
 //
 //------------------------------------------------------------------------------
 /**
- * @brief Função principal para a leitura de arquivo com dados de medidas analógicas do sistema supervisório
+ * @brief Função principal para a leitura dos arquivos com dados das medidas analógicas do sistema supervisório
  *
  * Essa função realiza a leitura  de arquivo com dados de medidas analógicas do sistema supervisório dentro da pasta com os dados da rede elétrica.
  * O local da pasta é recebido como parâmetro @p folder assim como o nome do arquivo no parâmetro @p file. Além disso o arquivo possui como 
@@ -2647,26 +2647,6 @@ long int **leituraMedidas(char *folder,char *file, TF_DMED**medidas, TF_DRAM *ra
  * rede elétrica para serem associadas com os medidore, e respectivas quantidades totais nos parâmetros @p numeroBarras e @p numeroRamos. Além disto recebe 
  * como parâmetro de entrada a Potência Base da rede elétrica para realizar os cálculos em pu.
  * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
- * 
- * Para utilizar a função:
- * @code
- * long int numeroBarras = 0;
- * long int numeroAlimentadores = 0;
- * long int numeroRamos = 0;
- * double Sbase = 10000;
- * char *folder = NULL;
- * long int **numeroMedidas = NULL;
- * DBAR *barraExemplo = NULL;
- * TF_DRAM *ramoExemplo = NULL; 
- * TF_GRAFO *grafoExemplo = NULL;
- * TF_DMED*medidaExemplo = NULL;
- * 
- * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
- * if (folder !=NULL)
- *      printf("leitura concluida\n");
- * geraGrafo(&grafoExemplo, barraExemplo, numeroBarras,ramoExemplo,numeroRamos); 
- * numeroMedidas = leituraMedidas(folder, "DMED.csv", &medidaExemplo, ramoExemplo, numeroRamos, barraExemplo, numeroBarras, grafoExemplo, Sbase); 
- * @endcode
  * 
  * @param folder endereço da pasta para o arquivo de medidas ser lido
  * @param file  nome do arquivo de medidas a ser lido (default = DMED.csv)
@@ -2808,8 +2788,26 @@ long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numpr
 
     return(numeroMedidas);
 }
-
-
+/**
+ * @brief Função auxiliar para a leitura do cabecalho do arquivo de previsao de dados
+ * 
+ * Esta função utiliza como parâmetros de entrada @p blocoLeitura , uma string com o cabecalho do arquivo de previsão, @p nmed ponteiro para inteiro, 
+ * que será preenchido com o número de medidas @p prev estrutura do tipo TF_DPREV, com a informação sobre medidas previstas e que será alocada nesta funcao
+ * @p ramos vetor do tipo TF_DRAM com os dados dos ramos da rede trifásica, @p barras vetor do tipo TF_DBAR com as informações sobre as barras da rede, @p numeroBarras inteiro com o numero de barras da rede
+ * @p grafo vetor do tipo TF_GRAFO com as informações sobre a rede elétrica, @p numeroRamos inteiro com o numero de ramos da rede, @p Sbase double com a potencia base da rede
+ * @p numeroMedidas matriz de inteiros com as medidas da rede      
+ * 
+ * @param blocoLeitura string com o cabecalho do arquivo de previsão
+ * @param nmed ponteiro para inteiro preenchido com o número de medidas
+ * @param prev estrutura do tipo TF_DPREV, com a informação sobre medidas previstas
+ * @param ramos vetor do tipo TF_DRAM com os dados dos ramos da rede trifásica
+ * @param barras vetor do tipo TF_DBAR com as informações sobre as barras da rede 
+ * @param numeroBarras inteiro com o numero de barras da rede
+ * @param grafo vetor do tipo TF_GRAFO com as informações sobre a rede elétrica
+ * @param numeroRamos inteiro com o numero de ramos da rede
+ * @param Sbase double com a potencia base da rede
+ * @param numeroMedidas matriz de inteiros com as medidas da rede 
+ */
 void leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF_DBAR *barras,int numeroBarras ,TF_GRAFO *grafo, int numeroRamos,double Sbase,long int ***numeroMedidas)
 {
     char medcod[5][10];
@@ -2913,7 +2911,16 @@ void leCabDPREV(char * blocoLeitura,int* nmed,TF_DPREV **prev,TF_DRAM *ramos, TF
 
 }
 
-
+/**
+ * @brief Função que associa medidas no grafo da rede trifásica
+ * 
+ * Esta função recebe @p grafo do tipo TF_GRAFO com as informações sobre a rede elétrica e associa a ele as medidas na
+ * estrutura @p medida do tipo TF_DMED, @p Sbase double com a potencia base da rede
+ * 
+ * @param grafo vetor do tipo TF_GRAFO com as informações sobre a rede elétrica
+ * @param medida vetor do tipo TF_DMED com as informações sobre as medidas disponiveis
+ * @param Sbase double com a potencia base da rede
+ */
 
 void AssoMedGraf(TF_GRAFO *grafo, TF_DMED *medida,double Sbase)
 {
@@ -3408,6 +3415,13 @@ void AssoMedGraf(TF_GRAFO *grafo, TF_DMED *medida,double Sbase)
     }        
 }
 
+/**
+ * @brief Associa medidores que existem pares
+ * 
+ * 
+ * @param medidas vetor do tipo TF_DMED com as informações sobre as medidas disponiveis
+ * @param nmed inteiro com o numero de medidas da rede
+ */
 
 void AssoMedidoresPares(TF_DMED *medidas,int nmed)
 {
@@ -3458,7 +3472,18 @@ void AssoMedidoresPares(TF_DMED *medidas,int nmed)
     }
 }
 
-
+/**
+ * @brief Função auxiliar para determinar a base de uma medida prevista e inseri-la no grafo da rede
+ * 
+ * Recebe como parametro de entrada @p grafo do tipo TF_GRAFO com as informações sobre a rede elétrica trifásica,
+ * @p Sbase double com a potência base da rede, @p prev estrutura do tipo TF_DPREV com os dados de previsão, @p nmed
+ * inteiro com o numero de medidas da rede
+ * 
+ * @param grafo estrutura do do tipo TF_GRAFO com as informações sobre a rede elétrica trifásica
+ * @param Sbase double com a potencia base da rede
+ * @param prev estrutura do tipo TF_DPREV com os dados de previsão da rede
+ * @param nmed inteiro com o numero de medidas
+ */
 void BaseMedida(TF_GRAFO *grafo,double Sbase,TF_DPREV *prev,int nmed)
 {
     int k;
