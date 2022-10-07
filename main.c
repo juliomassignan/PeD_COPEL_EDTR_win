@@ -229,7 +229,8 @@ int main(int argc, char** argv) {
 
     // funcao para leitura do arquivo de dados de previsao
 
-    int** numeroMedidas=leituraMedidasPrev(folder, "DPREV.csv", &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
+
+    int** numeroMedidas=leituraMedidasPrev(folder, &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
 
     // funcao que constroi o DMED utilizado pelo estimador de demanda    
     constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf,grafo_tf,Sbase); 

@@ -385,6 +385,7 @@ typedef struct {
     int *day; // vetor de inteiro com os dias
     int *hour; // vetor de inteiro com as horas
     int *min; // vetor de inteiro com os minutos
+    int amostras; // numero de amostras desta medida
     double *prev; // vetor de double com as medidas
     double *prec; // vetor de doble com as precisões 
     int inst_atual; //

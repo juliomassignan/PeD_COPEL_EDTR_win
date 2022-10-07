@@ -119,3 +119,17 @@ Convergência: 1 - Iteracoes: 1 - Tempo: 0.001678
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001849
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.001875
 Convergência: 1 - Iteracoes: 1 - Tempo: 0.004325
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003929
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003518
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003502
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003635
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.002141
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001604
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001525
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001542
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.004372
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.003849
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001903
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001693
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001758
+Convergência: 1 - Iteracoes: 1 - Tempo: 0.001765

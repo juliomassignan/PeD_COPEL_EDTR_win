@@ -653,7 +653,7 @@ void includeDTRF(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, doub
  */
 void includeDSWTC(TF_DRAM **ramos, long int *numeroRamos,  int DE, int PARA, int estado);
 
-long int **leituraMedidasPrev(char *folder,char *file, TF_DPREV**prev,int *numprev,int* nmed , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase);
+long int **leituraMedidasPrev(char *folder, TF_DPREV**prev,int *numprev,int* nmed , TF_DRAM *ramos, long int numeroRamos, TF_DBAR *barras, long int numeroBarras, TF_GRAFO *grafo, double Sbase);
 
 
 /**

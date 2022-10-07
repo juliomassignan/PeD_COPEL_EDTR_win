@@ -41,7 +41,7 @@ void constroi_dmed_prev(TF_DPREV *prev_tf, int nmed,TF_DMED **medidas,TF_GRAFO *
 
     for (size_t i = 0; i < nmed; i++)
     {
-        (*medidas)[prev_tf[i].id]=prev_tf[i].DMED;
+        (*medidas)[i]=prev_tf[i].DMED;
     }
     
 
@@ -71,9 +71,9 @@ void atualiza_dmed(int instante_atual,TF_DPREV *prev_tf, int nmed, TF_DMED *medi
 {
     for (size_t i = 0; i < nmed; i++)
     {
-        medidas[prev_tf[i].id].zmed = prev_tf[i].prev[instante_atual]/prev_tf[i].base;
-        medidas[prev_tf[i].id].sigma = prev_tf[i].prec[instante_atual]/prev_tf[i].base;
-        medidas[prev_tf[i].id].prec= prev_tf[i].prec[instante_atual]; 
+        medidas[i].zmed = prev_tf[i].prev[instante_atual]/prev_tf[i].base;
+        medidas[i].sigma = prev_tf[i].prec[instante_atual]/prev_tf[i].base;
+        medidas[i].prec= prev_tf[i].prec[instante_atual]; 
     }
     
 
