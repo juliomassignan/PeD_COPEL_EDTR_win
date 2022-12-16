@@ -11,6 +11,16 @@
 #include "funcoesModCarga_tf.h"
 #include "data_structures_modcarga_tf.h"
 
+#include "data_structures_tf.h"
+#include "data_structures_modcarga_tf.h"
+#include "funcoesTopologia_tf.h"
+#include "funcoesLeitura_tf.h"
+#include "funcoesFluxoVarredura_tf.h"
+#include "funcoesIntegracao_tf.h"
+
+
+
+
 // fazer a documentação
 
 /**
@@ -167,6 +177,93 @@ TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int 
  TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras)
 {
 
+    FILE *arquivo;
+    int nmed=0;
+    char ts[15];
+    TF_NCRESULT* result;
+    (result) = (TF_NCRESULT *) malloc((numeroAmostras+1)*sizeof(TF_NCRESULT));
+    
+    for (size_t i = 0; i < numeroAmostras; i++)
+    {
+        result[i].dadosBarras= (TF_NCBAR *) malloc((numeroBarras_tf+1)*sizeof(TF_NCBAR));
+    }
+    
+
+    nmed=0;
+    for (size_t i = 0; i < 14; i++){ 
+         for (size_t j = 0; j < 20; j++){
+              nmed += numeroMedidasTabela[i][j];
+         }
+    }
+    
+    arquivo=fopen("dados_compilados.csv","w");
+    fprintf(arquivo,"instante,iteracoes,id_aliment_itxmax,numeroAlimentadores,menor_V,id_menorV,quedaMaxima,id_maxQueda,maiorCarregamentoCorrente,id_maxCar,carregamentoRede,maiorCarregaphA,maiorCarregaphB,maiorCarregaphC,PerdasRes,desba,id_maxDesbalanco,desbalancoCorrenteAlim,id_maxDesbalancoCorrenteAlim\n");
+    fclose(arquivo);
+    
+    for (size_t instante_atual = 0; instante_atual < numeroAmostras; instante_atual++)
+    {
+        arquivo=fopen("dados_compilados.csv","a");
+        fprintf(arquivo,"%d",instante_atual+1);
+        fclose(arquivo);
+
+        // receber a curva trafos
+        // fazer rodar toda vez que mudar a hora do instante atual e colocar na inicializa
+        inicializaPQcurvas(barras_tf, curvasTrafos, numeroBarras_tf,  prev_tf[0].hour[instante_atual], VALOR_ESPERADO, Sbase); // conferir com o Julio se é isso mesmo
+
+        atualiza_dmed(instante_atual,prev_tf,nmed,medidaPrev_tf); 
+        atualiza_AM(grafo_tf,numeroBarras_tf,medidaPrev_tf,nmed,areasMedicao_tf);
+        //Estimador de Demandas Trifásicas
+        estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
+        preenche_result_NC(grafo_tf,numeroBarras_tf,instante_atual,result);
+
+        sprintf(ts,"%d",prev_tf[0].time_stamp[instante_atual]);// pega o time stamp atual
+        imprimeDBAR_cargas(grafo_tf,numeroBarras_tf,ts);
+    }
+    
+
+
+
+    return(result);
+}
+
+
+/**
+ * @brief Funcao que realiza o Now Casting de demanda
+ * 
+ * Esta funcao recebe como parâmetros @p grafo_tf um vetor do tipo TF_GRAFO com as informacoes sobre a rede elétrica @p barras_tf do tipo 
+ * TF_DBAR com as informacoes sobre as barras da rede, @p numeroBarras_tf um inteiro com o numero de barras da rede, @p alimentador_tf , uma
+ * estrutura do tipo TF_ALIMENTADOR com as informacoes sobre os alimentadores da rede elétrica, @p curvaTrafos uma estrutura do tipo TF_CURVA_TRAFO
+ * com as informacoes sobre as curvas de cargas agregadas da rede, @p numeroAlimentadores inteiro com o numero total de alimentadores da rede
+ * @p ramo_tf vetor do tipo TF_DRAM com as informacoes dos ramos da rede, @p Sbase double com a potência base da rede, @p interfaceNiveis_tf matriz 
+ * de inteiros com as informacoes sobre as interfaces da rede, @p numeroInterfaces_tf inteiro com o numero de interfaces da rede, @p areasMedicao_tf
+ * estrutura do tipo TF_AREA_MEDICAO com as informacoes sobre as áreas de medicao, @p prev_tf vetor do tipo TF_DPREV com os dados de previsao 
+ * @p medidaPrev_tf do tipo  TF_DMED com as medidas previstas, @p numeroMedidasTabela matriz de inteiros com os tipos de medida, @p numeroAmostras
+ * inteiro com o numero de previsoes de medida
+ * 
+ * Returna os dados compilados em uma estrutura do tipo TF_NCRESULT
+ * 
+ * @param grafo_tf vetor do tipo TF_GRAFO com as informações elétricas da rede trifasica
+ * @param barras_tf estrutura do tipo TF_DBAR com as informacoes sobre as barras da rede
+ * @param numeroBarras_tf inteiro com o numero de barras da rede 
+ * @param alimentador_tf vetor de estrutura do tipo TF_ALIMENTADOR com as informacoes sobre os alimentadores 
+ * @param curvasTrafos vetor de estrutura do tipo TF_CURVA_TRAFO com as informacoes sobre as curvas de cargas agregadas da rede
+ * @param numeroAlimentadores inteiro com o numero de alimentadores da rede
+ * @param ramo_tf vetor do tipo TF_DRAM com as informacoes sobre os ramos da rede
+ * @param Sbase double com a potência base da rede
+ * @param interfaceNiveis_tf matriz de inteiros com as interfaces da rede
+ * @param numeroInterfaces_tf inteiro com o numero de interfaces
+ * @param areasMedicao_tf vetor de estrutura do tipo TF_AREA_MEDICAO com as informacoes sobre as areas de medicao da rede
+ * @param prev_tf vetor de estrutura do tipo TF_DPREV com os dados de previsao de medidas
+ * @param medidaPrev_tf estrutura do tipo TF_DMED utilizada pra comportar as medidas previstas
+ * @param numeroMedidasTabela matriz de inteiros com o numero de medidas e os tipos
+ * @param numeroAmostras inteiro com o numero de amostras
+ * @return TF_NCRESULT* retorna os dados compilados do nowcasting de demanda
+ */
+TF_NCRESULT* NowCastingDemanda_tf(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, TF_CURVA_TRAFO *curvasTrafos, 
+ long int numeroAlimentadores, TF_DRAM *ramo_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, TF_AREA_MEDICAO *areasMedicao_tf, TF_DPREV *prev_tf, 
+ TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras,CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam, DADOSALIMENTADOR *dadosAlimentadorParam,RNPSETORES *matrizB,TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim)
+{
+
     int nmed=0;
     char ts[15];
     TF_NCRESULT* result;
@@ -195,7 +292,7 @@ TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int 
         atualiza_dmed(instante_atual,prev_tf,nmed,medidaPrev_tf); 
         atualiza_AM(grafo_tf,numeroBarras_tf,medidaPrev_tf,nmed,areasMedicao_tf);
         //Estimador de Demandas Trifásicas
-        estimadorDemandaTrifasico(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf);
+        estimadorDemandaTrifasico_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, ramo_tf, Sbase, interfaceNiveis_tf, numeroInterfaces_tf, areasMedicao_tf,configuracoesParam,idNovaConfiguracaoParam,matrizB,dadosAlimentadorParam,powerflow_result_rede,powerflow_result_alim);
         preenche_result_NC(grafo_tf,numeroBarras_tf,instante_atual,result);
 
         sprintf(ts,"%d",prev_tf[0].time_stamp[instante_atual]);// pega o time stamp atual
@@ -207,6 +304,8 @@ TF_NCRESULT* NowCastingDemanda(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int 
 
     return(result);
 }
+
+
 
 /**
  * @brief Funcao que compila os resultados do Now casting no instante atual 

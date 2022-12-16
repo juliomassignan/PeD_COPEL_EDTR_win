@@ -110,7 +110,7 @@ int getfield_int(char *lin, int num)
         if (!--num)
         {
             field = atoi(tok);
-            free(line);
+            // free(line);
             return field;
         }
         tok = strtok(NULL, " ;,\t\n\r");

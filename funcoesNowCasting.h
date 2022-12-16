@@ -114,4 +114,9 @@ void preenche_result_NC(TF_GRAFO *grafo_tf, int numeroBarras_tf, int instante_at
 void imprimeDBAR_cargas(TF_GRAFO *grafo_tf, int numerobarras_tf, const char *ts);
 
 
+
+
+TF_NCRESULT NowCastingDemanda_tf(TF_GRAFO *grafo_tf, TF_DBAR *barras_tf ,long int numeroBarras_tf, TF_ALIMENTADOR *alimentador_tf, TF_CURVA_TRAFO *curvasTrafos, 
+ long int numeroAlimentadores, TF_DRAM *ramo_tf,double Sbase, long int **interfaceNiveis_tf,long int numeroInterfaces_tf, TF_AREA_MEDICAO *areasMedicao_tf, TF_DPREV *prev_tf, 
+ TF_DMED *medidaPrev_tf ,long int **numeroMedidasTabela, int numeroAmostras,CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam,RNPSETORES *matrizB, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim);
 #endif

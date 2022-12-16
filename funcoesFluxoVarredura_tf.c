@@ -2106,7 +2106,9 @@ void fluxoPotencia_Niveis_BFS_Multiplos(TF_GRAFO *grafo, long int numeroBarras, 
     
     
     FILE *arquivo;
+    FILE *arquivo2;
     arquivo = fopen("tempos_alimentadores.txt","w+");
+    arquivo2= fopen("dados_compilados.csv","a");
     double tempoAUX;
     
     //Calculo de fluxo de potência para todos os alimentadores individualmente
@@ -2397,7 +2399,10 @@ void fluxoPotencia_Niveis_BFS_Multiplos(TF_GRAFO *grafo, long int numeroBarras, 
     printf("maximo desbalanco de corrente de saida de alimentador: %lf %%  (alim: %d)\n", powerflow_result_rede.desbalancoCorrenteAlim *100, id_maxDesbalancoCorrenteAlim);
     printf("maxima corrente de neutro de saida de alimentador: %.2lf A  (alim: %d)\n", powerflow_result_rede.correnteNeutroSE *100, id_maxCurNeutro);
     
-    
+    // iteracoes,id_aliment_itxmax,numeroAlimentadores,menor_V,id_menorV,quedaMaxima,id_maxQueda,maiorCarregamentoCorrente,id_maxCar,carregamentoRede,maiorCarregaphA,maiorCarregaphB,maiorCarregaphC,PerdasRes,desba,id_maxDesbalanco,desbalancoCorrenteAlim,id_maxDesbalancoCorrenteAlim
+    fprintf(arquivo2,",%d,%d,%d,%.4f,%d,%.4f,%d,%.4f,%d,%f,",powerflow_result_rede.iteracoes, id_itmax,numeroAlimentadores,powerflow_result_rede.menorTensao, id_menorV,powerflow_result_rede.quedaMaxima,id_maxQueda,powerflow_result_rede.maiorCarregamentoCorrente,id_maxCar, powerflow_result_rede.carregamentoRede * Sbase);
+    fprintf(arquivo2,"%.2lf,%.2lf,%.2lf, %lf, %lf,%d,",powerflow_result_rede.carregamentoRedeABC[0] * Sbase, powerflow_result_rede.carregamentoRedeABC[1] * Sbase, powerflow_result_rede.carregamentoRedeABC[2] * Sbase, powerflow_result_rede.perdasResistivas * Sbase,powerflow_result_rede.desbalancoTensaoMaximo *100, id_maxDesbalanco);
+    fprintf(arquivo2,"%.2lf,%d\n", powerflow_result_rede.desbalancoCorrenteAlim *100, id_maxDesbalancoCorrenteAlim);
     
     //Impressão de resultados em arquivos
     int ppt_aux = 0;
@@ -2479,6 +2484,7 @@ void fluxoPotencia_Niveis_BFS_Multiplos(TF_GRAFO *grafo, long int numeroBarras, 
 //        }
 //    }
 //    fclose(arquivo);
+    fclose(arquivo2);
 }
 
 

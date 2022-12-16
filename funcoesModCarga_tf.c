@@ -7,9 +7,12 @@
 
 
 #include "data_structures_tf.h"
+#include "data_structures.h"
 #include "data_structures_modcarga_tf.h"
 #include "funcoesLeitura_tf.h"
 #include "funcoesTopologia_tf.h"
+#include "funcoesIntegracao_tf.h"
+#include "funcoesFluxoVarredura_tf.h"
 
 
 BOOL ligadoPorMedidor(TF_NOADJACENTE adjacente) {
@@ -1627,17 +1630,162 @@ void estimadorDemandaTrifasico(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMEN
     //---------------------------------------------------------------------
     // Inicializa Tensões e Correntes das Cargas em cada barra
     incializaTensoesVarredura(grafo, numeroBarras, alimentadores, numeroAlimentadores);
-    
+
+
     //---------------------------------------------------------------------
     // Conversão das Demandas nos Transformadores de Distribuição Delta-Estrela
     
-        
+    // fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramos_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB,powerflow_result_rede,powerflow_result_alim);    
     
     while (conv_ECTR==0){
         //---------------------------------------------------------------------
         // Cálculo de Fluxo de Potência
                 
         fluxoPotencia_Niveis_BFS_Multiplos(grafo, numeroBarras, alimentadores, numeroAlimentadores, ramos, Sbase/1000, interfaceNiveis, numeroInterfaces, true);
+        //fluxoPotencia_BFS_Multiplos(grafo, numeroBarras, alimentador, numeroAlimentadores, ramo, Sbase/1000);
+        
+        
+        //--------------------------------------------------------------------------
+        // Função de Atualização das Medidas em Tempo Real
+        conv_ECTR = atualizaAM(areasAM, grafo, numeroBarras,convECTR_alim,itECTR);
+        
+        if (itECTR == 0){
+            filtraAMs(areasAM, grafo); //Testa consistência das medidas analógicas
+            atualizaAM(areasAM,grafo,numeroBarras,convECTR_alim,itECTR);
+        }
+        //conv_ECTR = 1; //Rodar sem ajuste de cargas
+        
+        if (conv_ECTR == 1){
+              printf("\nEDTR - Trifásico Convergido em %d iteracoes\n",itECTR);
+        }
+        else if (itECTR == 15){
+              printf("\nEDTR - Trifásico divergiu para os alimentadores:\n");
+              conv_ECTR = 2;
+        }
+        else{
+            // Função de Ajuste das Áreas de Medição
+            ajustaAM(areasAM,grafo,numeroBarras);
+            
+            // Atualizar as correntes em função do valor ajustade de potência  - usar o grafo[no].S
+            itECTR++;
+        }
+        
+    } //Fim do loop do ECTR
+    clock_t end = clock();
+    double edtr_time = (double)(end - start) / CLOCKS_PER_SEC;
+    fprintf(arqout,"\nConvergência: %d - Iteracoes: %d - Tempo: %lf", conv_ECTR, itECTR, edtr_time);
+    fclose(arqout);
+    
+    
+    
+//    //Impressão de resultados em arquivos
+//    int ppt_aux = 0;
+//    for (idAlim = 0; idAlim < numeroAlimentadores; idAlim++){
+////        if (grafo[alimentadores[idAlim].noRaiz].Vbase*sqrt(3)/1000 == 34.5){
+//        if ((idAlim == 18) || (idAlim ==94)){
+////        if ((idAlim ==94)){
+//            if (ppt_aux == 0){
+//                salvaTensoesNodais("stateVT.txt","w+",alimentadores[idAlim],grafo);
+//                salvaCorrentesRamos("loadingI.txt", "w+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
+//                ppt_aux=1;
+//            }
+//            else{
+//                salvaTensoesNodais("stateVT.txt","a+",alimentadores[idAlim],grafo);
+//                salvaCorrentesRamos("loadingI.txt", "a+", alimentadores[idAlim],grafo, numeroBarras, Sbase);
+//            }
+////            printf("\nTaps de Reguladores:\n");
+////            barraAtual = &alimentadores[idAlim].rnp[0];
+////            while(barraAtual != NULL){
+////                imprimeTaps(&grafo[barraAtual->idNo]);
+////                barraAtual = barraAtual->prox;
+////            }
+//        }
+//    }
+    
+}
+
+
+
+
+// /Rotina para Cálculo de Fluxo de Potência em múltiplos alimentadores de um sistema de distribuição na sequeência hierárquica dos níveis de tensão (Primeiro 13.8kV e depois 34.5kV)
+/**
+ * @brief Função principal para cálculo de fluxo de potência (Primeiro 13.8kV e depois 34.5kV).
+ *
+ * Essa função realiza a leitura da pasta com os dados da rede elétrica em arquivos separados. 
+ * A pasta e subpasta são indicadas no arquivo "config.txt". A função assume que o nome do arquivo é padrão da e os arquivos 
+ * lidos são: DBAR.csv; DSHNT.csv; DGD.csv; DLIN.csv; DTRF.csv; DREG.csv; DSWTC.csv; DSUBESTACAP.csv; e Viniciail.csv . 
+ * Todos os arquivos são opcionais de leitura exceto o DBAR.csv. Além disso o arquivo possui como separação dos dados os marcadores especificados.
+ * Realiza alocação de memória para armazenar os dados da rede elétrica.
+ * Recebe como parâmetros de entrada e saída um ponteiro para ponteiro do tipo DBAR @p **barras que armazena dados das barras da rede elétrica e
+ * um ponteiro para ponteiro do tipo DBAR @p **barras que armazena dados das barras da rede elétrica. Além disto recebe como 
+ * parâmetros de entrada e saída inteiros que indicam: @p numeroBarras a quantidade total de barras na rede; @p numeroRamos a 
+ * quantidade total de ramos na rede; e @p numeroAlimentadores a quantidade total de alimentadores na rede.
+ * A função retorna @c char* indicando a pasta selecionada para os arquivos serem lidos.
+ * 
+ * Para utilizar a função:
+ * @code
+ * long int numeroBarras = 0;
+ * long int numeroAlimentadores = 0;
+ * long int numeroRamos = 0;
+ * char *folder = NULL;
+ * DBAR *barra = NULL;
+ * TF_DRAM *ramo = NULL; 
+ * folder = leituraDados(&barraExemplo,&ramoExemplo,&numeroBarras,&numeroRamos,&numeroAlimentadores);
+ * if (folder !=NULL)
+ *      printf("leitura concluida\n");
+ * @endcode
+ * 
+ * @param barra parâmetro de entrada e saída que armazena os dados de barras da rede elétrica
+ * @param ramo  parâmetro de entrada e saída que armazena os dados de ramos da rede elétrica
+ * @param numeroBarras parâmetro de entrada e saída que armazena a quantidade total de barras da rede elétrica
+ * @param numeroRamos parâmetro de entrada e saída que armazena a quantidade total de ramos da rede elétrica
+ * @param numeroAlimentadores parâmetro de entrada e saída que armazena a quantidade total de alimentadores da rede elétrica
+ * @return char* com string referente ao endereço da pasta com os arquivos da rede elétrica lidos
+ * @see leituraDBAR
+ * @see leituraDSHNT
+ * @see leituraDGD
+ * @see leituraDLIN
+ * @see leituraDTRF
+ * @see leituraDREG
+ * @see leituraDSWTC
+ * @see leituraDSUBESTACAO
+ * @see leituraVinicial
+ * @note
+ * @warning .
+ */
+void estimadorDemandaTrifasico_tf(TF_GRAFO *grafo, long int numeroBarras, TF_ALIMENTADOR *alimentadores, long int numeroAlimentadores, TF_DRAM *ramos,double Sbase, long int **interfaceNiveis,long int numeroInterfaces, TF_AREA_MEDICAO *areasAM, 
+CONFIGURACAO *configuracoesParam, long int idNovaConfiguracaoParam,RNPSETORES *matrizB, DADOSALIMENTADOR *dadosAlimentadorParam, TF_PFSOLUTION *powerflow_result_rede, TF_PFSOLUTION **powerflow_result_alim)
+{
+    long int nmed,nvar,nmedTotal;
+    int i,j, idAlim, it, n_threads;
+    TF_FILABARRAS *barraAtual = NULL;
+    TF_GRAFO *no  = NULL;
+    int conv_ECTR = 0, itECTR = 0;
+    
+    BOOL convECTR_alim[numeroAlimentadores];
+    // Auxiliar para busca das AMs
+    for(i=0; i<numeroAlimentadores; i++) convECTR_alim[i] = false;    
+    
+    FILE *arqout;
+    
+    arqout = fopen("LOG_EDTR.txt","a+");
+    clock_t start = clock();
+    
+    //---------------------------------------------------------------------
+    // Inicializa Tensões e Correntes das Cargas em cada barra
+    // incializaTensoesVarredura(grafo, numeroBarras, alimentadores, numeroAlimentadores);
+    inicializaTensaoSDR_alimentadores_tf(grafo,numeroBarras,alimentadores,numeroAlimentadores,1,configuracoesParam,matrizB,idNovaConfiguracaoParam);
+
+    //---------------------------------------------------------------------
+    // Conversão das Demandas nos Transformadores de Distribuição Delta-Estrela
+    
+    // fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores_tf, ramos_tf, Sbase/1000, interfaceNiveis_tf, numeroInterfaces_tf, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB,powerflow_result_rede,powerflow_result_alim);    
+    
+    while (conv_ECTR==0){
+        //---------------------------------------------------------------------
+        // Cálculo de Fluxo de Potência
+                
+        fluxoPotencia_Niveis_BFS_Multiplos_tf(grafo, numeroBarras, alimentadores, numeroAlimentadores, ramos, Sbase/1000, interfaceNiveis, numeroInterfaces, true,dadosAlimentadorParam,configuracoesParam,idNovaConfiguracaoParam,matrizB,powerflow_result_rede,powerflow_result_alim);
         //fluxoPotencia_BFS_Multiplos(grafo, numeroBarras, alimentador, numeroAlimentadores, ramo, Sbase/1000);
         
         

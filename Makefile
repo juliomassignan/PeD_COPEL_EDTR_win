@@ -23,7 +23,7 @@ all: fp
     funcoesIntegracao_tf.o: funcoesIntegracao_tf.c data_structures_tf.h funcoesTopologia_tf.h funcoesFluxoVarredura_tf.h funcoesCalculoEletrico_tf.h funcoesMatematicas_tf.h data_structures_modcarga_tf.h funcoesLeituraDados.h funcoesInicializacao.h funcoesAuxiliares.h funcoesRNP.h funcoesProblema.h funcoesSetor.h funcoesIntegracao_tf.h
 	gcc -g -c funcoesIntegracao_tf.c
 	
-    funcoesNowCasting.o: funcoesNowCasting.c data_structures_tf.h
+    funcoesNowCasting.o: funcoesNowCasting.c data_structures_tf.h funcoesLeitura_tf.h
 	gcc -g -c funcoesNowCasting.c
 
     funcoesRNP.o: funcoesRNP.c data_structures.h funcoesRNP.h funcoesAuxiliares.h
@@ -41,7 +41,7 @@ all: fp
     funcoesAuxiliares.o: funcoesAuxiliares.h funcoesAuxiliares.c
 	gcc -g -c funcoesAuxiliares.c
  
-    funcoesModCarga.o: funcoesModCarga.c data_structures_modcarga.h funcoesModCarga.h funcoesSetor.h
+    funcoesModCarga.o: funcoesModCarga.c  data_structures.h data_structures_modcarga.h funcoesModCarga.h funcoesSetor.h funcoesLeitura_tf.h funcoesTopologia_tf.h funcoesIntegracao_tf.h funcoesFluxoVarredura_tf.h
 	gcc -g -c funcoesModCarga.c
 	
     funcoesProblema.o: funcoesProblema.c data_structures.h funcoesProblema.h funcoesAuxiliares.h funcoesRNP.h funcoesInicializacao.h

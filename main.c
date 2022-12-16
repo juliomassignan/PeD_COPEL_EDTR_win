@@ -231,22 +231,19 @@ int main(int argc, char** argv) {
 
 
     int** numeroMedidas=leituraMedidasPrev(folder, &prev_tf,&numeroAmostras, &nmed,ramo_tf, numeroRamos_tf, barra_tf, numeroBarras_tf, grafo_tf,Sbase); 
-
+// 
     // funcao que constroi o DMED utilizado pelo estimador de demanda    
     constroi_dmed_prev(prev_tf,nmed,&medidaPrev_tf,grafo_tf,Sbase); 
-    
+    // 
     // funcao que realza a busca das areas de medicao
     buscaAMs(grafo_tf, numeroBarras_tf, alimentador_tf, numeroAlimentadores, medidaPrev_tf, numeroMedidas, &areasMedicao_tf);   
-    
-
+    // 
+// 
     // funcao principla para realizacao do nowcasting de demanda
+    // resultadoNC=NowCastingDemanda_tf(grafo_tf,barra_tf,numeroBarras_tf,alimentador_tf,curvasTrafos,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras,configuracaoInicialSDR,idConfiguracaoSDR,rnpSetoresSDR,&powerflow_result_rede,&powerflow_result_alim);
     resultadoNC=NowCastingDemanda(grafo_tf,barra_tf,numeroBarras_tf,alimentador_tf,curvasTrafos,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras);
-    
 
-
-
-
-    
+    // 
     //    salva (curva de carga de demanda estimada, resultados condensados do fluxo de potencia )
     // resultados de saída
     // Curvas Agregadas e fazer igual
