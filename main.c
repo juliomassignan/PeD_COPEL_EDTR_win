@@ -242,8 +242,12 @@ int main(int argc, char** argv) {
     // funcao principla para realizacao do nowcasting de demanda
     // resultadoNC=NowCastingDemanda_tf(grafo_tf,barra_tf,numeroBarras_tf,alimentador_tf,curvasTrafos,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras,configuracaoInicialSDR,idConfiguracaoSDR,rnpSetoresSDR,&powerflow_result_rede,&powerflow_result_alim);
     resultadoNC=NowCastingDemanda(grafo_tf,barra_tf,numeroBarras_tf,alimentador_tf,curvasTrafos,numeroAlimentadores,ramo_tf,Sbase,interfaceNiveis_tf,numeroInterfaces_tf,areasMedicao_tf,prev_tf,medidaPrev_tf,numeroMedidas,numeroAmostras);
+<<<<<<< HEAD
 
     // 
+=======
+    
+>>>>>>> refs/remotes/origin/Now_Casting
     //    salva (curva de carga de demanda estimada, resultados condensados do fluxo de potencia )
     // resultados de saída
     // Curvas Agregadas e fazer igual
